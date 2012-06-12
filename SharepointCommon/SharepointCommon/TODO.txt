@@ -1,0 +1,15 @@
+﻿QueryList:
+- *GetField
+- *check list contains all fields in .ctor
+- *fill id in Field
+- *Document Entity support to upload files
+- *ById, ByGuid and etc return TCt
+- *update field by null
+
+- ContentType attr Name property to support names with whitespaces
+
+- renew some fields after update item
+
+- add groups property to User
+- add EventReceivers methods
+- inject ILogger
