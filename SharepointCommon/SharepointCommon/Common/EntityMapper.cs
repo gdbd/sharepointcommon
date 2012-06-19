@@ -36,7 +36,8 @@ namespace SharepointCommon.Common
             var entity = _proxyGenerator.CreateClassProxy(
                 itemType, 
                 new LookupAccessInterceptor(listItem),
-                new DocumentAccessInterceptor(listItem));
+                new DocumentAccessInterceptor(listItem),
+                new ItemAccessInterceptor(listItem));
 
             foreach (PropertyInfo prop in props)
             {

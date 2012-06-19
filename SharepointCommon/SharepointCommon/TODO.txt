@@ -5,6 +5,7 @@
 - *Document Entity support to upload files
 - *ById, ByGuid and etc return TCt
 - *update field by null
+- *Add ParentList property to Item
 
 - ContentType attr Name property to support names with whitespaces
 
@@ -13,3 +14,6 @@
 - add groups property to User
 - add EventReceivers methods
 - inject ILogger
+
+
+* - completed

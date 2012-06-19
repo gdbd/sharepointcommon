@@ -17,5 +17,8 @@
         public virtual User Editor { get; internal set; }
         public Version Version { get; internal set; }
         public Guid Guid { get; internal set; }
+
+        [NotField]
+        public virtual IQueryList<Item> ParentList { get; set; }
     }
 }

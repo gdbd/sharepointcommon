@@ -1326,5 +1326,17 @@
                 }
             }
         }
+
+        [Test]
+        public void Item_ParentList_Contains_Reference_To_ParentList()
+        {
+            var itm = new Item { Title = "Item_ParentList_Contains_Reference_To_ParentList" };
+            _list.Add(itm);
+
+            var itm2 = _list.ById(itm.Id);
+
+            Assert.That(itm2.ParentList, Is.Not.Null);
+            Assert.That(itm2.ParentList.Id, Is.EqualTo(_list.Id));
+        }
     }
 }
