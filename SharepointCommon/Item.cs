@@ -19,6 +19,6 @@
         public Guid Guid { get; internal set; }
 
         [NotField]
-        public virtual IQueryList<Item> ParentList { get; set; }
+        public virtual IQueryList<Item> ParentList { get; internal set; }
     }
 }
