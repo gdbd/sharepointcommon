@@ -152,5 +152,83 @@
                 }
             }
         }
+        
+        [Test]
+        public void ExistsByUrl_Returns_Value_Test()
+        {
+            using (var factory = WebFactory.Open(_webUrl))
+            {
+                IQueryList<Item> list = null;
+
+                try
+                {
+                    list = factory.Create<Item>("ExistsByUrl_Returns_True_When_List_Exists_Test");
+                    bool exists = factory.ExistsByUrl(list.RelativeUrl);
+                    Assert.That(exists);
+
+                    exists = factory.ExistsByUrl("lists/ExistsByUrl_Returns_True_When_List_Exists_Test_Not_Existing");
+                    Assert.That(exists == false);
+                }
+                finally
+                {
+                    if (list != null)
+                    {
+                        list.DeleteList(false);
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void ExistsByName_Returns_Value_Test()
+        {
+            using (var factory = WebFactory.Open(_webUrl))
+            {
+                IQueryList<Item> list = null;
+
+                try
+                {
+                    list = factory.Create<Item>("ExistsByName_Returns_True_When_List_Exists_Test");
+                    bool exists = factory.ExistsByName(list.Title);
+                    Assert.That(exists);
+
+                    exists = factory.ExistsByName("ExistsByName_Returns_True_When_List_Exists_Test_Not_Existing");
+                    Assert.That(exists == false);
+                }
+                finally
+                {
+                    if (list != null)
+                    {
+                        list.DeleteList(false);
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void ExistsById_Returns_Value_Test()
+        {
+            using (var factory = WebFactory.Open(_webUrl))
+            {
+                IQueryList<Item> list = null;
+
+                try
+                {
+                    list = factory.Create<Item>("ExistsById_Returns_True_When_List_Exists_Test");
+                    bool exists = factory.ExistsById(list.Id);
+                    Assert.That(exists);
+
+                    exists = factory.ExistsById(Guid.NewGuid());
+                    Assert.That(exists == false);
+                }
+                finally
+                {
+                    if (list != null)
+                    {
+                        list.DeleteList(false);
+                    }
+                }
+            }
+        }
     }
 }

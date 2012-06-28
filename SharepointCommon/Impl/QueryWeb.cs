@@ -2,12 +2,10 @@ namespace SharepointCommon.Impl
 {
     using System;
     using System.Diagnostics;
-
     using Microsoft.SharePoint;
-
-    using SharepointCommon.Attributes;
-    using SharepointCommon.Entities;
-    using SharepointCommon.Exceptions;
+    using Attributes;
+    using Entities;
+    using Exceptions;
 
     [DebuggerDisplay("Url = {Web.Url}")]
     internal sealed class QueryWeb : IQueryWeb
@@ -18,60 +16,60 @@ namespace SharepointCommon.Impl
 
         internal QueryWeb(string webUrl, bool elevate)
         {
-            this._webUrl = webUrl;
+            _webUrl = webUrl;
             if (elevate == false)
             {
-                this.Site = new SPSite(webUrl);
-                this.Web = this.Site.OpenWeb();
+                Site = new SPSite(webUrl);
+                Web = Site.OpenWeb();
             }
             else
             {
                 SPSecurity.RunWithElevatedPrivileges(() =>
                 {
-                    this.Site = new SPSite(webUrl);
-                    this.Web = this.Site.OpenWeb();
+                    Site = new SPSite(webUrl);
+                    Web = Site.OpenWeb();
                 });
             }
         }
         internal QueryWeb(Guid site, Guid web, bool elevate)
         {
-            this._site = site;
-            this._web = web;
-            this._webUrl = null;
+            _site = site;
+            _web = web;
+            _webUrl = null;
 
 
             if (elevate == false)
             {
-                this.Site = new SPSite(site);
-                this.Web = this.Site.OpenWeb(web);
+                Site = new SPSite(site);
+                Web = Site.OpenWeb(web);
             }
             else
             {
                 SPSecurity.RunWithElevatedPrivileges(() =>
                 {
-                    this.Site = new SPSite(site);
-                    this.Web = this.Site.OpenWeb(web);
+                    Site = new SPSite(site);
+                    Web = Site.OpenWeb(web);
                 });
             }
         }
         internal QueryWeb(Guid site, bool elevate)
         {
-            this._site = site;
-            this._web = default(Guid);
-            this._webUrl = null;
+            _site = site;
+            _web = default(Guid);
+            _webUrl = null;
 
 
             if (elevate == false)
             {
-                this.Site = new SPSite(site);
-                this.Web = this.Site.OpenWeb();
+                Site = new SPSite(site);
+                Web = Site.OpenWeb();
             }
             else
             {
                 SPSecurity.RunWithElevatedPrivileges(() =>
                 {
-                    this.Site = new SPSite(site);
-                    this.Web = this.Site.OpenWeb();
+                    Site = new SPSite(site);
+                    Web = Site.OpenWeb();
                 });
             }
         }
@@ -81,17 +79,17 @@ namespace SharepointCommon.Impl
 
         public IQueryWeb Elevate()
         {
-            if (this._webUrl != null)
+            if (_webUrl != null)
             {
-                return new QueryWeb(this._webUrl, true);
+                return new QueryWeb(_webUrl, true);
             }
-            if (this._web != default(Guid) && this._site != default(Guid))
+            if (_web != default(Guid) && _site != default(Guid))
             {
-                return new QueryWeb(this._site, this._web, true);
+                return new QueryWeb(_site, _web, true);
             }
-            else if (this._site != default(Guid))
+            else if (_site != default(Guid))
             {
-                return new QueryWeb(this._site, true);
+                return new QueryWeb(_site, true);
             }
             else
             {
@@ -100,7 +98,7 @@ namespace SharepointCommon.Impl
         }
         public IQueryWeb Unsafe()
         {
-            this.Web.AllowUnsafeUpdates = true;
+            Web.AllowUnsafeUpdates = true;
             return this;
         }
 
@@ -126,7 +124,7 @@ namespace SharepointCommon.Impl
         {
             SPListTemplateType listType = GetListType<T>();
             var id = Web.Lists.Add(listName, string.Empty, listType);
-            var list = this.GetById<T>(id);
+            var list = GetById<T>(id);
 
             try
             {
@@ -163,10 +161,42 @@ namespace SharepointCommon.Impl
             }
         }
 
+        public bool ExistsByUrl(string listUrl)
+        {
+            try
+            {
+                var list = Web.GetList(listUrl);
+                return list != null;
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                return false;
+            }
+        }
+
+        public bool ExistsByName(string listName)
+        {
+            var list = Web.Lists.TryGetList(listName);
+            return list != null;
+        }
+
+        public bool ExistsById(Guid id)
+        {
+            try
+            {
+                var list = Web.Lists[id];
+                return list != null;
+            }
+            catch (SPException)
+            {
+                return false;
+            }
+        }
+
         public void Dispose()
         {
-            if (this.Site != null) this.Site.Dispose();
-            if (this.Web != null) this.Web.Dispose();
+            if (Site != null) Site.Dispose();
+            if (Web != null) Web.Dispose();
         }
 
         private SPListTemplateType GetListType<T>()
