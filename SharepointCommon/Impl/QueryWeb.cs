@@ -6,6 +6,7 @@ namespace SharepointCommon.Impl
     using Attributes;
     using Entities;
     using Exceptions;
+    using SharepointCommon.Common;
 
     [DebuggerDisplay("Url = {Web.Url}")]
     internal sealed class QueryWeb : IQueryWeb
@@ -13,6 +14,7 @@ namespace SharepointCommon.Impl
         private readonly Guid _site;
         private readonly Guid _web;
         private readonly string _webUrl;
+        private readonly bool _shouldDispose = true;
 
         internal QueryWeb(string webUrl, bool elevate)
         {
@@ -31,6 +33,7 @@ namespace SharepointCommon.Impl
                 });
             }
         }
+
         internal QueryWeb(Guid site, Guid web, bool elevate)
         {
             _site = site;
@@ -52,6 +55,7 @@ namespace SharepointCommon.Impl
                 });
             }
         }
+
         internal QueryWeb(Guid site, bool elevate)
         {
             _site = site;
@@ -72,6 +76,13 @@ namespace SharepointCommon.Impl
                     Web = Site.OpenWeb();
                 });
             }
+        }
+
+        internal QueryWeb(SPWeb web)
+        {
+            _shouldDispose = false;
+            Site = web.Site;
+            Web = web;
         }
 
         public SPSite Site { get; set; }
@@ -118,6 +129,12 @@ namespace SharepointCommon.Impl
         {
             var list = Web.Lists[id];
             return new QueryList<T>(list);
+        }
+
+        public IQueryList<T> CurrentList<T>() where T : Item, new()
+        {
+            Assert.CurrentContextAvailable();
+            return new QueryList<T>(SPContext.Current.List);
         }
 
         public IQueryList<T> Create<T>(string listName) where T : Item, new()
@@ -195,6 +212,8 @@ namespace SharepointCommon.Impl
 
         public void Dispose()
         {
+            if (_shouldDispose == false) return;
+
             if (Site != null) Site.Dispose();
             if (Web != null) Web.Dispose();
         }
