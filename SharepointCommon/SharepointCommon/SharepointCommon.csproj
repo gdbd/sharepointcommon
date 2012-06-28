@@ -308,6 +308,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Castle\DynamicProxy\DynProxy.snk" />
+    <None Include="Settings.StyleCop" />
     <None Include="SharepointCommon.pfx" />
   </ItemGroup>
   <ItemGroup>
