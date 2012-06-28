@@ -136,6 +136,7 @@
     <Content Include="Dll\nunit.framework.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Settings.StyleCop" />
     <None Include="SharepointCommonTest.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
