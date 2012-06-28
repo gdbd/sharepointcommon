@@ -1,8 +1,9 @@
 namespace SharepointCommon
 {
     using System;
-
-    using SharepointCommon.Impl;
+    using Common;
+    using Impl;
+    using Microsoft.SharePoint;
 
     public static class WebFactory
     {
@@ -24,6 +25,12 @@ namespace SharepointCommon
         public static IQueryWeb Unsafe(string url)
         {
             return new QueryWeb(url, false).Unsafe();
+        }
+
+        public static IQueryWeb CurrentContext()
+        {
+            Assert.CurrentContextAvailable();
+            return new QueryWeb(SPContext.Current.Web);
         }
     }
 }
