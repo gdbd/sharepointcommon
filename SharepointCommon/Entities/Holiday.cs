@@ -8,10 +8,10 @@
     public class Holiday : Item
     {
         [Field("V4HolidayDate")]
-        public DateTime Date { get; set; }
+        public virtual DateTime Date { get; set; }
 
-        public object Category { get; set; }
+        public virtual object Category { get; set; }
 
-        public bool IsNonWorkingDay { get; set; }
+        public virtual bool IsNonWorkingDay { get; set; }
     }
 }

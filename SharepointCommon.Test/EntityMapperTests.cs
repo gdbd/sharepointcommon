@@ -14,7 +14,7 @@
         [Test]
         public void CheckThatPropertyVirtualTest_Throws_On_NoVirtual()
         {
-            var noVirtualGetProp = typeof(CustomItem).GetProperty("CustomBoolean");
+            var noVirtualGetProp = typeof(CustomItemNoVirtualProperty).GetProperty("CustomField1");
             Assert.Throws<SharepointCommonException>(
                 () => EntityMapper.CheckThatPropertyVirtual(noVirtualGetProp));
         }

@@ -7,15 +7,15 @@
 
     public class CustomItem : Item
     {
-        public string CustomField1 { get; set; }
+        public virtual string CustomField1 { get; set; }
 
-        public string CustomField2 { get; set; }
+        public virtual string CustomField2 { get; set; }
 
-        public double CustomFieldNumber { get; set; }
+        public virtual double CustomFieldNumber { get; set; }
 
-        public bool CustomBoolean { get; set; }
+        public virtual bool CustomBoolean { get; set; }
 
-        public DateTime? CustomDate { get; set; }
+        public virtual DateTime? CustomDate { get; set; }
 
         public virtual User CustomUser { get; set; }
 
