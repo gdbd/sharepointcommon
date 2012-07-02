@@ -2,6 +2,8 @@
 {
     using System;
 
+    using Microsoft.SharePoint;
+
     using NUnit.Framework;
 
     using SharepointCommon.Entities;
@@ -37,7 +39,15 @@
         {
             using (var factory = WebFactory.Open(_webUrl))
             {
-                var list1 = factory.Create<Item>("ListForLookup");
+                IQueryList<Item> list1;
+                try
+                {
+                    list1 = factory.Create<Item>("ListForLookup");
+                }
+                catch (SPException)
+                {
+                    list1 = factory.GetByName<Item>("ListForLookup");
+                }
                 var list = factory.Create<CustomItem>("List755");
 
                 Assert.AreEqual(list.Title, "List755");
@@ -121,7 +131,14 @@
 
                 try
                 {
-                    list1 = factory.Create<Item>("ListForLookup");
+                    try
+                    {
+                        list1 = factory.Create<Item>("ListForLookup");
+                    }
+                    catch (SPException)
+                    {
+                        list1 = factory.GetByName<Item>("ListForLookup");
+                    }
                     list = factory.Create<CustomDocument>("List759");
 
                     Assert.AreEqual(list.Title, "List759");

@@ -4,15 +4,15 @@ namespace SharepointCommon.Test.Entity
 
     using SharepointCommon.Attributes;
 
-    public class CustomItemNoVirtualLookupCollection : Item
+    public class CustomItemNoVirtualProperty : Item
     {
         public string CustomField1 { get; set; }
 
-        public string CustomField2 { get; set; }
+        public virtual string CustomField2 { get; set; }
 
-        public double CustomFieldNumber { get; set; }
+        public virtual double CustomFieldNumber { get; set; }
 
-        public bool CustomBoolean { get; set; }
+        public virtual bool CustomBoolean { get; set; }
 
         public virtual User CustomUser { get; set; }
 
@@ -22,6 +22,6 @@ namespace SharepointCommon.Test.Entity
         public virtual Item CustomLookup { get; set; }
 
         [Field("CustomMultiLookup", LookupList = "ListForLookup")]
-        public IEnumerable<Item> CustomMultiLookup { get; set; }
+        public virtual IEnumerable<Item> CustomMultiLookup { get; set; }
     }
 }

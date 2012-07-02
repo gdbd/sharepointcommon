@@ -7,7 +7,7 @@
     [ContentType]
     public class Announcement : Item
     {
-        public string Body { get; set; }
-        public DateTime Expires { get; set; }
+        public virtual string Body { get; set; }
+        public virtual DateTime Expires { get; set; }
     }
 }

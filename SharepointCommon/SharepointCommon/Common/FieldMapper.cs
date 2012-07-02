@@ -165,7 +165,7 @@
             }
             throw new SharepointCommonException("no field type mapping found");
         }
-
+        
         internal static bool IsFieldCanBeAdded(string spName)
         {
             var fields = new List<string>

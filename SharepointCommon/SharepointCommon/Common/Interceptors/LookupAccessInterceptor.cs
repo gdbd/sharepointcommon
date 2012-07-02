@@ -27,7 +27,6 @@
 
         public void Intercept(IInvocation invocation)
         {
-
             if (typeof(Item).IsAssignableFrom(invocation.Method.ReturnType))
             {
                 var listItem = GetListItem();

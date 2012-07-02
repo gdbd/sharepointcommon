@@ -30,9 +30,30 @@
         public void Start()
         {
             _queryWeb = WebFactory.Open(_webUrl);
-            _list = _queryWeb.Create<Item>(ListName1);
-            _listForLookup = _queryWeb.Create<Item>(ListForLookup);
+            try
+            {
+                _list = _queryWeb.Create<Item>(ListName1);
+            }
+            catch (SPException)
+            {
+                // if tests aborted, list exist from previous session
+                _list = _queryWeb.GetByName<Item>(ListName1);
+                _list.DeleteList(false);
+                _list = _queryWeb.Create<Item>(ListName1);
+            }
 
+            try
+            {
+                _listForLookup = _queryWeb.Create<Item>(ListForLookup);
+            }
+            catch (SPException)
+            {
+                // if tests aborted, list exist from previous session
+                _listForLookup = _queryWeb.GetByName<Item>(ListForLookup);
+                _listForLookup.DeleteList(false);
+                _listForLookup = _queryWeb.Create<Item>(ListForLookup);
+            }
+            
             var users = _queryWeb.Web.SiteUsers.Cast<SPUser>().Where(u => u.IsDomainGroup == false).ToList();
 
             CurrentUserLogin = users[0];
@@ -120,11 +141,11 @@
                 }
             }
         }
-
+        
         [Test]
-        public void Add_Throws_OnUserNoVirtual()
+        public void Add_Throws_On_Property_No_Virtual()
         {
-            IQueryList<CustomItemNoVirtualUser> list = null;
+            IQueryList<CustomItemNoVirtualProperty> list = null;
             try
             {
                 TestDelegate work = () =>
@@ -135,8 +156,8 @@
                         var lookupItem2 = new Item { Title = "Add_Adds_CustomItem_Test_Lookup_2" };
                         _listForLookup.Add(lookupItem2);
 
-                        list = _queryWeb.Create<CustomItemNoVirtualUser>("Add_AddsCustomItem");
-                        var customItem = new CustomItemNoVirtualUser()
+                        list = _queryWeb.Create<CustomItemNoVirtualProperty>("Add_AddsCustomItem");
+                        var customItem = new CustomItemNoVirtualProperty()
                             {
                                 Title = "Items_ReturnsColectionOfCustomItemsTest",
                                 CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
@@ -151,7 +172,7 @@
                         list.Add(customItem);
                     };
                 var exc = Assert.Throws<SharepointCommonException>(work);
-                Assert.That(exc.Message, Is.EqualTo("Property CustomUser must be virtual to work correctly."));
+                Assert.That(exc.Message, Is.EqualTo("Property CustomField1 must be virtual to work correctly."));
             }
             finally
             {
@@ -165,7 +186,7 @@
         [Test]
         public void Add_Throws_OnUserCollectionNoVirtual()
         {
-            IQueryList<CustomItemNoVirtualUserCollection> list = null;
+            IQueryList<CustomItemNoVirtualProperty> list = null;
             try
             {
                 TestDelegate work = () =>
@@ -176,8 +197,8 @@
                     var lookupItem2 = new Item { Title = "Add_Adds_CustomItem_Test_Lookup_2" };
                     _listForLookup.Add(lookupItem2);
 
-                    list = _queryWeb.Create<CustomItemNoVirtualUserCollection>("Add_AddsCustomItem");
-                    var customItem = new CustomItemNoVirtualUserCollection()
+                    list = _queryWeb.Create<CustomItemNoVirtualProperty>("Add_AddsCustomItem");
+                    var customItem = new CustomItemNoVirtualProperty()
                     {
                         Title = "Items_ReturnsColectionOfCustomItemsTest",
                         CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
@@ -192,89 +213,7 @@
                     list.Add(customItem);
                 };
                 var exc = Assert.Throws<SharepointCommonException>(work);
-                Assert.That(exc.Message, Is.EqualTo("Property CustomUsers must be virtual to work correctly."));
-            }
-            finally
-            {
-                if (list != null)
-                {
-                    list.DeleteList(false);
-                }
-            }
-        }
-
-        [Test]
-        public void Add_Throws_OnLookupNoVirtual()
-        {
-            IQueryList<CustomItemNoVirtualLookup> list = null;
-            try
-            {
-                TestDelegate work = () =>
-                {
-                    var lookupItem = new Item { Title = "Add_Adds_CustomItem_Test_Lookup" };
-                    _listForLookup.Add(lookupItem);
-
-                    var lookupItem2 = new Item { Title = "Add_Adds_CustomItem_Test_Lookup_2" };
-                    _listForLookup.Add(lookupItem2);
-
-                    list = _queryWeb.Create<CustomItemNoVirtualLookup>("Add_AddsCustomItem");
-                    var customItem = new CustomItemNoVirtualLookup()
-                    {
-                        Title = "Items_ReturnsColectionOfCustomItemsTest",
-                        CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
-                        CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
-                        CustomFieldNumber = 123.5,
-                        CustomBoolean = true,
-                        CustomUser = new User { Login = CurrentUserLogin.LoginName },
-                        CustomUsers = new List<User> { new User { Login = CurrentUserLogin.LoginName }, },
-                        CustomLookup = lookupItem,
-                        CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 }
-                    };
-                    list.Add(customItem);
-                };
-                var exc = Assert.Throws<SharepointCommonException>(work);
-                Assert.That(exc.Message, Is.EqualTo("Property CustomLookup must be virtual to work correctly."));
-            }
-            finally
-            {
-                if (list != null)
-                {
-                    list.DeleteList(false);
-                }
-            }
-        }
-
-        [Test]
-        public void Add_Throws_OnMultiLookupNoVirtual()
-        {
-            IQueryList<CustomItemNoVirtualLookupCollection> list = null;
-            try
-            {
-                TestDelegate work = () =>
-                {
-                    var lookupItem = new Item { Title = "Add_Adds_CustomItem_Test_Lookup" };
-                    _listForLookup.Add(lookupItem);
-
-                    var lookupItem2 = new Item { Title = "Add_Adds_CustomItem_Test_Lookup_2" };
-                    _listForLookup.Add(lookupItem2);
-
-                    list = _queryWeb.Create<CustomItemNoVirtualLookupCollection>("Add_AddsCustomItem");
-                    var customItem = new CustomItemNoVirtualLookupCollection()
-                    {
-                        Title = "Items_ReturnsColectionOfCustomItemsTest",
-                        CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
-                        CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
-                        CustomFieldNumber = 123.5,
-                        CustomBoolean = true,
-                        CustomUser = new User { Login = CurrentUserLogin.LoginName },
-                        CustomUsers = new List<User> { new User { Login = CurrentUserLogin.LoginName }, },
-                        CustomLookup = lookupItem,
-                        CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 }
-                    };
-                    list.Add(customItem);
-                };
-                var exc = Assert.Throws<SharepointCommonException>(work);
-                Assert.That(exc.Message, Is.EqualTo("Property CustomMultiLookup must be virtual to work correctly."));
+                Assert.That(exc.Message, Is.EqualTo("Property CustomField1 must be virtual to work correctly."));
             }
             finally
             {
@@ -478,7 +417,7 @@
             _list.Add(item);
             Assert.That(item.Id, Is.Not.EqualTo(0));
 
-            var item2 = _list.Items( new CamlQuery()
+            var item2 = _list.Items(new CamlQuery()
                 .Query(Q.Where(Q.Eq(Q.FieldRef("Title"), Q.Value("Update_By_Field_Selector_Updates_Item_Test"))))).FirstOrDefault();
 
             Assert.That(item2, Is.Not.Null);
@@ -489,7 +428,8 @@
             _list.Update(item2, true, i => i.Title);
 
             var item3 = _list.Items(new CamlQuery()
-                .Query(Q.Where(Q.Eq(Q.FieldRef("Title"), Q.Value("Update_By_Field_Selector_Updates_Item_Test_Updated"))))).FirstOrDefault();
+                .Query(Q.Where(Q.Eq(Q.FieldRef("Title"), Q.Value("Update_By_Field_Selector_Updates_Item_Test_Updated")))))
+                .FirstOrDefault();
 
             Assert.That(item3, Is.Not.Null);
             Assert.That(item3.Id, Is.EqualTo(item.Id));
@@ -792,7 +732,19 @@
                     };
                 list.Add(customItem);
 
-                var item = list.Items(CamlQuery.Default).FirstOrDefault();
+                var customItem2 = new CustomItem
+                {
+                    Title = "Items_ReturnsColectionOfCustomItemsTest_2",
+                    CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1_2",
+                    CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2_2",
+                    CustomFieldNumber = 155.5,
+                    CustomBoolean = false,
+                };
+                list.Add(customItem2);
+
+                var items = list.Items(CamlQuery.Default).ToList();
+
+                var item = items.FirstOrDefault();
 
                 var lkp = item.CustomLookup;
 
@@ -870,47 +822,16 @@
         }
 
         [Test]
-        public void Items_Returns_Throws_On_No_Virtual_User_Test()
+        public void Items_Throws_On_No_Virtual_Property_Test()
         {
-            IQueryList<CustomItemNoVirtualUser> list = null;
-            try
-            {
-                TestDelegate work = () =>
-                    {
-                        list = _queryWeb.Create<CustomItemNoVirtualUser>("ListOfCustomItem");
-
-                        var customItem = new CustomItemNoVirtualUser
-                        {
-                            Title = "Items_ReturnsColectionOfCustomItemsTest",
-                            CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
-                            CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
-                            CustomFieldNumber = 123.5,
-                            CustomBoolean = true,
-                        };
-                        list.Add(customItem);
-
-                        var item = list.Items(CamlQuery.Default).FirstOrDefault();
-                    };
-                var exc = Assert.Throws<SharepointCommonException>(work);
-                Assert.That(exc.Message, Is.EqualTo("Property CustomUser must be virtual to work correctly."));
-            }
-            finally
-            {
-                if (list != null) list.DeleteList(false);
-            }
-        }
-
-        [Test]
-        public void Items_Returns_Throws_On_No_Virtual_UserCollection_Test()
-        {
-            IQueryList<CustomItemNoVirtualUserCollection> list = null;
+            IQueryList<CustomItemNoVirtualProperty> list = null;
             try
             {
                 TestDelegate work = () =>
                 {
-                    list = _queryWeb.Create<CustomItemNoVirtualUserCollection>("ListOfCustomItem");
+                    list = _queryWeb.Create<CustomItemNoVirtualProperty>("Items_Throws_On_No_Virtual_Property_Test");
 
-                    var customItem = new CustomItemNoVirtualUserCollection()
+                    var customItem = new CustomItemNoVirtualProperty
                     {
                         Title = "Items_ReturnsColectionOfCustomItemsTest",
                         CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
@@ -923,76 +844,14 @@
                     var item = list.Items(CamlQuery.Default).FirstOrDefault();
                 };
                 var exc = Assert.Throws<SharepointCommonException>(work);
-                Assert.That(exc.Message, Is.EqualTo("Property CustomUsers must be virtual to work correctly."));
+                Assert.That(exc.Message, Is.EqualTo("Property CustomField1 must be virtual to work correctly."));
             }
             finally
             {
                 if (list != null) list.DeleteList(false);
             }
         }
-
-        [Test]
-        public void Items_Returns_Throws_On_No_Virtual_Lookup_Test()
-        {
-            IQueryList<CustomItemNoVirtualLookup> list = null;
-            try
-            {
-                TestDelegate work = () =>
-                {
-                    list = _queryWeb.Create<CustomItemNoVirtualLookup>("ListOfCustomItem");
-
-                    var customItem = new CustomItemNoVirtualLookup
-                    {
-                        Title = "Items_ReturnsColectionOfCustomItemsTest",
-                        CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
-                        CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
-                        CustomFieldNumber = 123.5,
-                        CustomBoolean = true,
-                    };
-                    list.Add(customItem);
-
-                    var item = list.Items(CamlQuery.Default).FirstOrDefault();
-                };
-                var exc = Assert.Throws<SharepointCommonException>(work);
-                Assert.That(exc.Message, Is.EqualTo("Property CustomLookup must be virtual to work correctly."));
-            }
-            finally
-            {
-                if (list != null) list.DeleteList(false);
-            }
-        }
-
-        [Test]
-        public void Items_Returns_Throws_On_No_Virtual_MultiLookup_Test()
-        {
-            IQueryList<CustomItemNoVirtualLookupCollection> list = null;
-            try
-            {
-                TestDelegate work = () =>
-                {
-                    list = _queryWeb.Create<CustomItemNoVirtualLookupCollection>("ListOfCustomItem");
-
-                    var customItem = new CustomItemNoVirtualLookupCollection
-                    {
-                        Title = "Items_ReturnsColectionOfCustomItemsTest",
-                        CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
-                        CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
-                        CustomFieldNumber = 123.5,
-                        CustomBoolean = true,
-                    };
-                    list.Add(customItem);
-
-                    var item = list.Items(CamlQuery.Default).FirstOrDefault();
-                };
-                var exc = Assert.Throws<SharepointCommonException>(work);
-                Assert.That(exc.Message, Is.EqualTo("Property CustomMultiLookup must be virtual to work correctly."));
-            }
-            finally
-            {
-                if (list != null) list.DeleteList(false);
-            }
-        }
-
+        
         [Test]
         public void ById_Returns_Entity_Test()
         {
@@ -1342,6 +1201,32 @@
 
             Assert.That(itm2.ParentList, Is.Not.Null);
             Assert.That(itm2.ParentList.Id, Is.EqualTo(_list.Id));
+        }
+
+        [Test, Timeout(20000)]
+        public void Get_Many_Items_Test()
+        {
+           // var splist = _queryWeb.Web.Lists["TestList1"];
+           // var spitems = splist.Items.Cast<SPListItem>().ToList();
+
+            // list with 50K items
+            var list = _queryWeb.GetByName<TestList1>("TestList1");
+            list.CheckFields();
+
+            var items = list.Items(CamlQuery.Default);
+
+            items = items.ToList();
+
+            Assert.NotNull(items);
+            CollectionAssert.IsNotEmpty(items);
+            var first = items.First();
+
+            Assert.That(first.Id, Is.Not.EqualTo(default(int)));
+            Assert.That(first.Title, Is.Not.Null);
+            Assert.That(first.TheText, Is.Not.Null);
+            Assert.That(first.TheDate, Is.Not.EqualTo(default(DateTime)));
+            Assert.That(first.TheMan, Is.Not.Null);
+            Assert.That(first.TheLookup, Is.Not.Null);
         }
     }
 }

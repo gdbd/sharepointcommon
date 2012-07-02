@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Microsoft.SharePoint;
-
-namespace SharepointCommon.Common
+﻿namespace SharepointCommon.Common
 {
+    using System;
     using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
 
     using Castle.DynamicProxy;
 
+    using Microsoft.SharePoint;
+
     using SharepointCommon.Attributes;
     using SharepointCommon.Common.Interceptors;
-    using SharepointCommon.Entities;
     using SharepointCommon.Exceptions;
+    using SharepointCommon.Impl;
 
     internal sealed class EntityMapper
     {
@@ -33,112 +33,110 @@ namespace SharepointCommon.Common
         {
             var itemType = typeof(T);
             var props = itemType.GetProperties();
+
+            foreach (var propertyInfo in props)
+            {
+                var nomapAttrs = propertyInfo.GetCustomAttributes(typeof(NotFieldAttribute), false);
+                if (nomapAttrs.Length != 0) continue; // skip props with [NotField] attribute
+                
+                CheckThatPropertyVirtual(propertyInfo);
+            }
+
             var entity = _proxyGenerator.CreateClassProxy(
                 itemType, 
                 new LookupAccessInterceptor(listItem),
                 new DocumentAccessInterceptor(listItem),
                 new ItemAccessInterceptor(listItem));
+            
+            return (T)entity;
+        }
 
-            foreach (PropertyInfo prop in props)
+        internal static object ToEntityField(PropertyInfo prop, SPListItem listItem)
+        {
+            string propName = prop.Name;
+            Type propType = prop.PropertyType;
+
+            var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), true);
+
+            string spPropName;
+            if (fieldAttrs.Length != 0)
             {
-                var nomapAttrs = prop.GetCustomAttributes(typeof(NotFieldAttribute), false);
-                if (nomapAttrs.Length != 0) continue; // skip props with [NoMap] attribute
+                spPropName = ((FieldAttribute)fieldAttrs[0]).Name;
+                if (spPropName == null) spPropName = propName;
+            }
+            else
+            {
+                spPropName = FieldMapper.TranslateToFieldName(propName);
+            }
 
-                var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), false);
+            var field = listItem.Fields.TryGetFieldByStaticName(spPropName);
+            if (field == null) throw new SharepointCommonException(string.Format("Field '{0}' not exist", propName));
+            object fieldValue = listItem[spPropName];
 
-                string spPropName;
-                if (fieldAttrs.Length != 0)
+            if (field.Type == SPFieldType.User)
+            {
+                var f = field as SPFieldLookup;
+                Assert.NotNull(f);
+                if (f.AllowMultipleValues == false)
                 {
-                    spPropName = ((FieldAttribute)fieldAttrs[0]).Name;
-                    if (spPropName == null) spPropName = prop.Name;
+                    var spUser = CommonHelper.GetUser(listItem, spPropName);
+
+                    User user = null;
+                    if (spUser != null) user = _proxyGenerator.CreateClassProxy<User>(new UserAccessInterceptor(spUser));
+
+                    return user;                    
                 }
                 else
                 {
-                    spPropName = FieldMapper.TranslateToFieldName(prop.Name);
+                    var spUsers = CommonHelper.GetUsers(listItem, spPropName);
+                    var users = new UserIterator(spUsers);
+                    return users;
                 }
-                
-                var field = listItem.Fields.TryGetFieldByStaticName(spPropName);
-                if (field == null) throw new SharepointCommonException(string.Format("Field '{0}' not exist", prop.Name));
-                object fieldValue = listItem[spPropName];
-
-                if (field.Type == SPFieldType.User)
-                {
-                    CheckThatPropertyVirtual(prop);
-
-                    var f = field as SPFieldLookup;
-                    Assert.NotNull(f);
-                    if (f.AllowMultipleValues == false)
-                    {
-                        var spUser = CommonHelper.GetUser(listItem, spPropName);
-
-                        User user = null;
-                        if (spUser != null) user = _proxyGenerator.CreateClassProxy<User>(new UserAccessInterceptor(spUser));
-                        prop.SetValue(entity, user, null);
-                        continue;
-                    }
-                    else
-                    {
-                        var spUsers = CommonHelper.GetUsers(listItem, spPropName);
-                        var users = new UserIterator(spUsers);
-                        prop.SetValue(entity, users, null);
-                        continue;
-                    }
-                }
-
-                if (field.Type == SPFieldType.Lookup)
-                {
-                    CheckThatPropertyVirtual(prop);
-
-                    var fieldLookup = (SPFieldLookup)field;
-
-                    if (CommonHelper.ImplementsOpenGenericInterface(prop.PropertyType,
-                        typeof(IEnumerable<>)) == false)
-                    {
-                        var lookup = _proxyGenerator.CreateClassProxy(
-                            prop.PropertyType, new LookupAccessInterceptor(listItem.Web.Url, fieldLookup, fieldValue));
-
-                        prop.SetValue(entity, lookup, null);
-                    }
-                    else
-                    {
-                        var lookupType = prop.PropertyType.GetGenericArguments()[0];
-
-                        var t = typeof(LookupIterator<>);
-                        var gt = t.MakeGenericType(lookupType);
-
-                        object instance = Activator.CreateInstance(gt, field, listItem);
-
-                        prop.SetValue(entity, instance, null);
-                    }
-                    continue;
-                }
-
-                if (field.Type == SPFieldType.Guid)
-                {
-                    var guid = new Guid(fieldValue.ToString());
-                    prop.SetValue(entity, guid, null);
-                    continue;
-                }
-
-                if (field.Type == SPFieldType.Note)
-                {
-                    var field1 = (SPFieldMultiLineText)field;
-                    var text = field1.GetFieldValueAsText(fieldValue.ToString());
-                    prop.SetValue(entity, text, null);
-                    continue;
-                }
-
-                if (prop.Name == "Version")
-                {
-                    var version = new Version(fieldValue.ToString());
-                    prop.SetValue(entity, version, null);
-                    continue;
-                }
-                
-                prop.SetValue(entity, fieldValue, null);
             }
-            
-            return (T)entity;
+
+            if (field.Type == SPFieldType.Lookup)
+            {
+                var fieldLookup = (SPFieldLookup)field;
+
+                if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(IEnumerable<>)) == false)
+                {
+                    var lookup = _proxyGenerator.CreateClassProxy(
+                        propType, new LookupAccessInterceptor(listItem.Web.Url, fieldLookup, fieldValue));
+                    return lookup;
+                }
+                else
+                {
+                    var lookupType = propType.GetGenericArguments()[0];
+
+                    var t = typeof(LookupIterator<>);
+                    var gt = t.MakeGenericType(lookupType);
+
+                    object instance = Activator.CreateInstance(gt, field, listItem);
+
+                    return instance;
+                }
+            }
+
+            if (field.Type == SPFieldType.Guid)
+            {
+                var guid = new Guid(fieldValue.ToString());
+                return guid;
+            }
+
+            if (field.Type == SPFieldType.Note)
+            {
+                var field1 = (SPFieldMultiLineText)field;
+                var text = field1.GetFieldValueAsText(fieldValue.ToString());
+                return text;
+            }
+
+            if (propName == "Version")
+            {
+                var version = new Version(fieldValue.ToString());
+                return version;
+            }
+
+            return fieldValue;
         }
 
         internal static object ToEntity(Type entityType, SPListItem listItem)
@@ -154,6 +152,14 @@ namespace SharepointCommon.Common
         {
             var itemType = entity.GetType();
             var props = itemType.GetProperties();
+
+            foreach (var propertyInfo in props)
+            {
+                var nomapAttrs = propertyInfo.GetCustomAttributes(typeof(NotFieldAttribute), false);
+                if (nomapAttrs.Length != 0) continue; // skip props with [NotField] attribute
+
+                CheckThatPropertyVirtual(propertyInfo);
+            }
 
             foreach (PropertyInfo prop in props)
             {

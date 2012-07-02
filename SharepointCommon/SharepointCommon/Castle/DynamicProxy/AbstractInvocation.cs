@@ -131,6 +131,7 @@ namespace Castle.DynamicProxy
 			return arguments[index];
 		}
 
+        [DebuggerHidden]
 		public void Proceed()
 		{
 			if (interceptors == null)
