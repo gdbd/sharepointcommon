@@ -1,6 +1,7 @@
 ﻿namespace SharepointCommon.Test
 {
     using System;
+    using System.Linq;
 
     using Microsoft.SharePoint;
 
@@ -48,23 +49,37 @@
                 {
                     list1 = factory.GetByName<Item>("ListForLookup");
                 }
-                var list = factory.Create<CustomItem>("List755");
+                IQueryList<CustomItem> list = null;
+                try
+                {
+                    list = factory.Create<CustomItem>("List755");
 
-                Assert.AreEqual(list.Title, "List755");
+                    Assert.AreEqual(list.Title, "List755");
 
-                Assert.That(list1.ContainsContentType<Item>());
+                    Assert.That(list1.ContainsContentType<Item>());
 
-                Assert.That(list.ContainsField(ci => ci.CustomField1), Is.True);
-                Assert.That(list.ContainsField(ci => ci.CustomField2), Is.True);
-                Assert.That(list.ContainsField(ci => ci.CustomFieldNumber), Is.True);
-                Assert.That(list.ContainsField(ci => ci.CustomBoolean), Is.True);
-                Assert.That(list.ContainsField(ci => ci.CustomUser), Is.True);
-                Assert.That(list.ContainsField(ci => ci.CustomUsers), Is.True);
-                Assert.That(list.ContainsField(ci => ci.CustomLookup), Is.True);
-                Assert.That(list.ContainsField(ci => ci.CustomMultiLookup), Is.True);
+                    Assert.That(list.ContainsField(ci => ci.CustomField1), Is.True);
+                    Assert.That(list.ContainsField(ci => ci.CustomField2), Is.True);
+                    Assert.That(list.ContainsField(ci => ci.CustomFieldNumber), Is.True);
+                    Assert.That(list.ContainsField(ci => ci.CustomBoolean), Is.True);
+                    Assert.That(list.ContainsField(ci => ci.CustomUser), Is.True);
+                    Assert.That(list.ContainsField(ci => ci.CustomUsers), Is.True);
+                    Assert.That(list.ContainsField(ci => ci.CustomLookup), Is.True);
+                    Assert.That(list.ContainsField(ci => ci.CustomMultiLookup), Is.True);
+                    Assert.That(list.ContainsField(ci => ci.CustomChoice), Is.True);
 
-                list.DeleteList(false);
-                list1.DeleteList(false);
+                    var choiceField = list.GetField(ci => ci.CustomChoice);
+                    Assert.NotNull(choiceField.Choices);
+                    Assert.That(choiceField.Choices.Count(), Is.EqualTo(3));
+                }
+                finally
+                {
+                    if (list != null)
+                    {
+                        list.DeleteList(false);
+                    }
+                    list1.DeleteList(false);
+                }
             }
         }
         

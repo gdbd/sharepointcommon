@@ -6,7 +6,9 @@
 - *ById, ByGuid and etc return TCt
 - *update field by null
 - *Add ParentList property to Item
+- *Support of 'Choice' fields by enum property
 
+- WebFactory.Impersonate()
 - ContentType attr Name property to support names with whitespaces
 
 - renew some fields after update item

@@ -10,7 +10,7 @@
         [Field("V4HolidayDate")]
         public virtual DateTime Date { get; set; }
 
-        public virtual object Category { get; set; }
+        public virtual Category Category { get; set; }
 
         public virtual bool IsNonWorkingDay { get; set; }
     }

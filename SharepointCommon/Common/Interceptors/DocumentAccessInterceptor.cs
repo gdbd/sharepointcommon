@@ -6,7 +6,7 @@
 
     using Microsoft.SharePoint;
 
-    public class DocumentAccessInterceptor : IInterceptor
+    internal class DocumentAccessInterceptor : IInterceptor
     {
         private readonly SPListItem _item;
 

@@ -24,52 +24,19 @@
             {
                 using (var web = site.OpenWeb())
                 {
-                   // var list = web.GetList("lists/list1");
-                   // var field = list.Fields.GetFieldByInternalName("pog");
+                    var list = web.GetList("lists/list1");
+                    var field = (SPFieldChoice)list.Fields.GetFieldByInternalName("TheChoice");
 
-                   // var item = list.GetItemById(2);
-                   // var users = CommonHelper.GetUsers(item, "pog");
+                    var item = list.GetItemById(1);
 
-                    var lib = web.GetList("/lib1");
+                    var val = item["TheChoice"];
 
-                    this.EnsureFolder("Folder1/Folder2/Folder3", lib);
+                    item["TheChoice"] = "Choice4";
+                    item.Update();
 
+                    val = item["TheChoice"];
                 }
             }
-        }
-
-        private void EnsureFolder(string folderurl, SPList lib)
-        {
-            var splitted = folderurl.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
-            
-            string rootfolder = lib.RootFolder.Url;
-            
-            foreach (string newFolderName in splitted)
-            {
-                var folder = lib.ParentWeb.GetFolder(rootfolder + "/" + newFolderName);
-                if (false == folder.Exists)
-                {
-                    var f = lib.AddItem(rootfolder, SPFileSystemObjectType.Folder, newFolderName);
-                    f.Update();
-                }
-                rootfolder += "/" + newFolderName;
-            }
-        }
-
-        [Test]
-        public void Generics()
-        {
-            TestM(item => item.Version);
-
-            TestM<string>(item => item.Title);
-        }
-
-        private void TestM<TR>(Expression<Func<Item, TR>> exp)
-        {
-        }
-
-        private void TestM2(Dictionary<Expression<Func<Item, object>>, object> exps)
-        {
         }
     }
 }

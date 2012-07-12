@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
 
     using Microsoft.SharePoint;
@@ -155,14 +156,22 @@
                 if (typeof(Item).IsAssignableFrom(argumentType))
                 {
                     field.Type = SPFieldType.Lookup;
-                    field.Name = spName;
                     field.LookupListName = attr.LookupList;
                     field.LookupField = attr.LookupField;
                     field.IsMultiValue = true;
                     return field;
                 }
-
             }
+
+            if (propType.IsEnum)
+            {
+                field.Type = SPFieldType.Choice;
+                field.Choices = Enum.GetNames(propType);
+                if (field.Choices.Any() == false)
+                    throw new SharepointCommonException("enum must have at least one field");
+                return field;
+            }
+
             throw new SharepointCommonException("no field type mapping found");
         }
         

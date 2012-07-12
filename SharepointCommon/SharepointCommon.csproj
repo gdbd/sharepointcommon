@@ -276,8 +276,10 @@
     <Compile Include="Common\CamlConst.cs" />
     <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Common\CommonHelper.cs" />
+    <Compile Include="Common\EnumMapper.cs" />
     <Compile Include="Common\Interceptors\DocumentAccessInterceptor.cs" />
     <Compile Include="Common\Interceptors\ItemAccessInterceptor.cs" />
+    <Compile Include="Entities\Category.cs" />
     <Compile Include="Entities\Form.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="Common\Interceptors\LookupAccessInterceptor.cs" />
