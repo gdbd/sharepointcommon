@@ -1,6 +1,7 @@
 ﻿namespace SharepointCommon
 {
     using System;
+    using System.Collections.Generic;
 
     using Microsoft.SharePoint;
 
@@ -21,5 +22,7 @@
         public string LookupField { get; set; }
 
         public bool Requered { get; set; }
+
+        public IEnumerable<string> Choices { get; set; }
     }
 }

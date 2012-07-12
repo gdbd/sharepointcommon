@@ -119,6 +119,7 @@
 
             if (field.Type == SPFieldType.Guid)
             {
+#warning fieldValue null!!
                 var guid = new Guid(fieldValue.ToString());
                 return guid;
             }
@@ -134,6 +135,15 @@
             {
                 var version = new Version(fieldValue.ToString());
                 return version;
+            }
+
+            if (field.Type == SPFieldType.Choice)
+            {
+                if (propType.IsEnum == false)
+                    throw new SharepointCommonException(string.Format("Property '{0}' must be declared as enum with fields corresponds to choices", propName));
+
+
+                return EnumMapper.ToEntity(propType, fieldValue);
             }
 
             return fieldValue;
@@ -284,6 +294,12 @@
                         }
                         listItem[spName] = spLookupValues;
                     }
+                    continue;
+                }
+
+                if (prop.PropertyType.IsEnum == true)
+                {
+                    listItem[spName] = EnumMapper.ToItem(prop.PropertyType, propValue);
                     continue;
                 }
 

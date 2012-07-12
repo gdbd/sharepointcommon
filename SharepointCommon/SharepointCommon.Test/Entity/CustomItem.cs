@@ -26,5 +26,7 @@
 
         [Field(LookupList = "ListForLookup")]
         public virtual IEnumerable<Item> CustomMultiLookup { get; set; }
+
+        public virtual TheChoice CustomChoice { get; set; }
     }
 }

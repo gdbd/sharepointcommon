@@ -110,6 +110,7 @@
                         CustomLookup = lookupItem,
                         CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
                         CustomDate = DateTime.Now,
+                        CustomChoice = TheChoice.Choice2,
                     };
                 list.Add(customItem);
 
@@ -132,6 +133,7 @@
                 Assert.That(item.CustomMultiLookup, Is.Not.Null);
                 Assert.That(item.CustomMultiLookup.Count(), Is.EqualTo(2));
                 Assert.That(item.CustomMultiLookup.First().Title, Is.EqualTo(lookupItem.Title));
+                Assert.That(item.CustomChoice, Is.EqualTo(customItem.CustomChoice));
             }
             finally
             {
@@ -253,7 +255,7 @@
             var holiday = new Holiday
             {
                 Title = "Items_ReturnsOfSpecificContentType",
-                Category = "Category1",
+                Category = Category.Category1,
                 IsNonWorkingDay = true,
                 Date = DateTime.Now
             };
@@ -729,6 +731,7 @@
                         CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
                         CustomFieldNumber = 123.5,
                         CustomBoolean = true,
+                        CustomChoice = TheChoice.Choice2,
                     };
                 list.Add(customItem);
 
@@ -739,6 +742,7 @@
                     CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2_2",
                     CustomFieldNumber = 155.5,
                     CustomBoolean = false,
+                    CustomChoice = TheChoice.Choice3,
                 };
                 list.Add(customItem2);
 
@@ -755,6 +759,7 @@
                 Assert.That(customItem.CustomFieldNumber, Is.EqualTo(item.CustomFieldNumber));
                 Assert.That(customItem.CustomBoolean, Is.EqualTo(item.CustomBoolean));
                 Assert.That(item.CustomUser, Is.Null);
+                Assert.That(item.CustomChoice, Is.EqualTo(item.CustomChoice));
             }
             finally
             {
@@ -799,7 +804,7 @@
                 var holiday = new Holiday
                     {
                         Title = "Items_ReturnsOfSpecificContentType",
-                        Category = "Category1",
+                        Category = Category.Category2,
                         IsNonWorkingDay = true,
                         Date = DateTime.Now
                     };
@@ -1095,6 +1100,7 @@
             Assert.That(list.ContainsField(e => e.CustomUser));
             Assert.That(list.ContainsField(e => e.CustomUsers));
             Assert.That(list.ContainsField(e => e.CustomLookup));
+            Assert.That(list.ContainsField(e => e.CustomChoice));
         }
 
         [Test]
@@ -1106,7 +1112,7 @@
         }
 
         [Test]
-        public void CheckFields_Does_Throws_If_Field_Not_Exists_Test()
+        public void CheckFields_Throws_If_Field_Not_Exists_Test()
         {
             TestDelegate test = () =>
                 {

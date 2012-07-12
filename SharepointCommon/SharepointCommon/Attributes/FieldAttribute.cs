@@ -2,7 +2,7 @@ namespace SharepointCommon.Attributes
 {
     using System;
 
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple= false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple= false, Inherited = true)]
     public sealed class FieldAttribute : Attribute
     {
         public FieldAttribute()

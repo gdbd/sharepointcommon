@@ -501,6 +501,16 @@
                 return;
             }
 
+            if (fieldInfo.Type == SPFieldType.Choice)
+            {
+                _list.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
+                var field = (SPFieldChoice)_list.Fields.GetFieldByInternalName(fieldInfo.Name);
+                field.Choices.AddRange(fieldInfo.Choices.ToArray());
+                field.DefaultValue = field.Choices[0];
+                field.Update();
+                return;
+            }
+
             _list.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
 
             if (fieldInfo.Type == SPFieldType.User && fieldInfo.IsMultiValue)

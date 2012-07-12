@@ -9,7 +9,7 @@
     using SharepointCommon.Attributes;
     using SharepointCommon.Impl;
 
-    public class ItemAccessInterceptor : IInterceptor
+    internal class ItemAccessInterceptor : IInterceptor
     {
         private readonly SPListItem _listItem;
         private List<string> _changedFields;
