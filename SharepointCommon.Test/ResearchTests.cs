@@ -24,17 +24,7 @@
             {
                 using (var web = site.OpenWeb())
                 {
-                    var list = web.GetList("lists/list1");
-                    var field = (SPFieldChoice)list.Fields.GetFieldByInternalName("TheChoice");
-
-                    var item = list.GetItemById(1);
-
-                    var val = item["TheChoice"];
-
-                    item["TheChoice"] = "Choice4";
-                    item.Update();
-
-                    val = item["TheChoice"];
+                    
                 }
             }
         }
