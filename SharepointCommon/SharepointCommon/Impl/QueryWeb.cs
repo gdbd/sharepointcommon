@@ -2,6 +2,7 @@ namespace SharepointCommon.Impl
 {
     using System;
     using System.Diagnostics;
+    using System.Security.Principal;
     using Microsoft.SharePoint;
     using Attributes;
     using Entities;
@@ -11,8 +12,6 @@ namespace SharepointCommon.Impl
     [DebuggerDisplay("Url = {Web.Url}")]
     internal sealed class QueryWeb : IQueryWeb
     {
-        private readonly Guid _site;
-        private readonly Guid _web;
         private readonly string _webUrl;
         private readonly bool _shouldDispose = true;
 
@@ -36,11 +35,6 @@ namespace SharepointCommon.Impl
 
         internal QueryWeb(Guid site, Guid web, bool elevate)
         {
-            _site = site;
-            _web = web;
-            _webUrl = null;
-
-
             if (elevate == false)
             {
                 Site = new SPSite(site);
@@ -54,15 +48,12 @@ namespace SharepointCommon.Impl
                     Web = Site.OpenWeb(web);
                 });
             }
+
+            _webUrl = Web.Url;
         }
 
         internal QueryWeb(Guid site, bool elevate)
         {
-            _site = site;
-            _web = default(Guid);
-            _webUrl = null;
-
-
             if (elevate == false)
             {
                 Site = new SPSite(site);
@@ -76,10 +67,13 @@ namespace SharepointCommon.Impl
                     Web = Site.OpenWeb();
                 });
             }
+
+            _webUrl = Web.Url;
         }
 
         internal QueryWeb(SPWeb web)
         {
+            _webUrl = web.Url;
             _shouldDispose = false;
             Site = web.Site;
             Web = web;
@@ -90,23 +84,9 @@ namespace SharepointCommon.Impl
 
         public IQueryWeb Elevate()
         {
-            if (_webUrl != null)
-            {
-                return new QueryWeb(_webUrl, true);
-            }
-            if (_web != default(Guid) && _site != default(Guid))
-            {
-                return new QueryWeb(_site, _web, true);
-            }
-            else if (_site != default(Guid))
-            {
-                return new QueryWeb(_site, true);
-            }
-            else
-            {
-                throw new Exception("Cant find constructor");
-            }
+            return new QueryWeb(_webUrl, true);
         }
+
         public IQueryWeb Unsafe()
         {
             Web.AllowUnsafeUpdates = true;

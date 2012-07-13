@@ -2,7 +2,7 @@
 {
     using System;
     using System.Linq;
-
+    using System.Security.Principal;
     using Microsoft.SharePoint;
 
     using NUnit.Framework;
@@ -14,6 +14,29 @@
     public class WebFactoryTests
     {
         private readonly string _webUrl = string.Format("http://{0}/", Environment.MachineName);
+
+        [Test]
+        public void Open_By_Url_Creates_QueryWeb_Test()
+        {
+            using (var wf = WebFactory.Open(_webUrl))
+            {
+            }
+        }
+
+        [Test]
+        public void Open_By_Ids_Creates_QueryWeb_Test()
+        {
+            Guid siteId, webId;
+            using (var wf = WebFactory.Open(_webUrl))
+            {
+                siteId = wf.Site.ID;
+                webId = wf.Web.ID;
+            }
+
+            using (var wf = WebFactory.Open(siteId, webId))
+            {
+            }
+        }
 
         [Test]
         public void Create_Creates_List_Test()
