@@ -22,15 +22,14 @@
             return fieldValue.User;
         }
 
-        internal static IEnumerable<SPUser> GetUsers(SPListItem item, string fieldStaticName)
+        internal static SPFieldUserValueCollection GetUsers(SPListItem item, string fieldStaticName)
         {
             var userField = (SPFieldUser)item.Fields.TryGetFieldByStaticName(fieldStaticName);
             if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
 
             if (item[fieldStaticName] == null) return null;
 
-            var fieldValue = (SPFieldUserValueCollection)userField.GetFieldValue(item[fieldStaticName].ToString());
-            return fieldValue.Select(fv => fv.User);
+            return (SPFieldUserValueCollection)userField.GetFieldValue(item[fieldStaticName].ToString());
         }
 
         /// <summary>Determines whether a type, like IList&lt;int&gt;, implements an open generic interface, like
