@@ -387,22 +387,7 @@
             var memberAccessor = new MemberAccessVisitor();
             string propName = memberAccessor.GetMemberName(selector);
 
-            var prop = typeof(T).GetProperty(propName);
-
-            var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), true);
-
-            if (fieldAttrs.Length != 0)
-            {
-                var spPropName = ((FieldAttribute)fieldAttrs[0]).Name;
-                if (spPropName != null) propName = spPropName;
-            }
-            else
-            {
-                propName = FieldMapper.TranslateToFieldName(propName);
-            }
-
-            // check field in list
-            return _list.Fields.ContainsFieldWithStaticName(propName);
+            return ContainsFieldImpl(propName);
         }
 
         public Field GetField(Expression<Func<T, object>> selector)
@@ -489,8 +474,30 @@
             _list.ContentTypes.Delete(contentType.Id);
         }
 
+        private bool ContainsFieldImpl(string propName)
+        {
+            var prop = typeof(T).GetProperty(propName);
+
+            var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), true);
+
+            if (fieldAttrs.Length != 0)
+            {
+                var spPropName = ((FieldAttribute)fieldAttrs[0]).Name;
+                if (spPropName != null) propName = spPropName;
+            }
+            else
+            {
+                propName = FieldMapper.TranslateToFieldName(propName);
+            }
+
+            // check field in list
+            return _list.Fields.ContainsFieldWithStaticName(propName);
+        }
+
         private void EnsureFieldImpl(Field fieldInfo)
         {
+            if (ContainsFieldImpl(fieldInfo.PropName)) return;
+            
             if (fieldInfo.Type == SPFieldType.Lookup)
             {
                 var lookupList = _web.Lists.TryGetList(fieldInfo.LookupListName);
@@ -499,8 +506,10 @@
                     throw new SharepointCommonException(string.Format("List {0} not found on {1}", fieldInfo.LookupListName, _web.Url));
 
                 _list.Fields.AddLookup(fieldInfo.Name, lookupList.ID, false);
-
+                
                 var field = (SPFieldLookup)_list.Fields.GetFieldByInternalName(fieldInfo.Name);
+
+                FieldMapper.RenameToDisplay(field, fieldInfo);
 
                 if (!string.IsNullOrEmpty(fieldInfo.LookupField) && fieldInfo.LookupField != "Title")
                 {
@@ -519,22 +528,28 @@
             {
                 _list.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
                 var field = (SPFieldChoice)_list.Fields.GetFieldByInternalName(fieldInfo.Name);
+                
                 field.Choices.AddRange(fieldInfo.Choices.ToArray());
                 field.DefaultValue = field.Choices[0];
+
+                FieldMapper.RenameToDisplay(field, fieldInfo);
+
                 field.Update();
                 return;
             }
 
             _list.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
 
+            var field2 = _list.Fields.GetFieldByInternalName(fieldInfo.Name);
+
+            FieldMapper.RenameToDisplay(field2, fieldInfo);
+
             if (fieldInfo.Type == SPFieldType.User && fieldInfo.IsMultiValue)
             {
-                var field = _list.Fields.GetFieldByInternalName(fieldInfo.Name) as SPFieldLookup;
-
-                Assert.NotNull(field);
-
-                field.AllowMultipleValues = true;
-                field.Update();
+                var f = field2 as SPFieldLookup;
+                Assert.NotNull(f);
+                f.AllowMultipleValues = true;
+                f.Update();
             }
         }
 
