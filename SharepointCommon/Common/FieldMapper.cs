@@ -87,7 +87,18 @@
             }
 
             Type propType = propertyInfo.PropertyType;
+
+
             string spName = TranslateToFieldName(propertyInfo.Name);
+
+            var fieldAttrs = propertyInfo.GetCustomAttributes(typeof(FieldAttribute), true);
+
+            if (fieldAttrs.Length != 0)
+            {
+                var spPropName = ((FieldAttribute)fieldAttrs[0]).Name;
+                if (spPropName != null) spName = spPropName;
+            }
+
             var field = new Field { Name = spName };
 
             if (propType == typeof(string) || propType == typeof(Version) || propType == typeof(Guid))
