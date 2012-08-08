@@ -300,6 +300,7 @@
     <Compile Include="Expressions\MemberAccessVisitor.cs" />
     <Compile Include="PageType.cs" />
     <Compile Include="Attributes\NotFieldAttribute.cs" />
+    <Compile Include="Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IQueryList.cs" />
     <Compile Include="Impl\QueryList.cs" />

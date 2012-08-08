@@ -1,6 +1,5 @@
 ﻿namespace SharepointCommon.Common
 {
-    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
@@ -9,15 +8,15 @@
 
     using Microsoft.SharePoint;
 
-    using SharepointCommon.Common.Interceptors;
+    using Interceptors;
 
     internal class UserIterator : IEnumerable<User>
     {
-        private readonly IEnumerable<SPUser> _users;
+        private readonly SPFieldUserValueCollection _users;
 
         private readonly ProxyGenerator _proxyGenerator;
 
-        public UserIterator(IEnumerable<SPUser> users)
+        public UserIterator(SPFieldUserValueCollection users)
         {
             _users = users;
             _proxyGenerator = new ProxyGenerator();
@@ -28,7 +27,11 @@
             if (_users == null) return new List<User>().GetEnumerator();
 
             return _users
-                .Select(u => _proxyGenerator.CreateClassProxy<User>(new UserAccessInterceptor(u)))
+                .Select(u =>
+                {
+                    if (u.User == null) return _proxyGenerator.CreateClassProxy<User>(new UserAccessInterceptor(u));
+                    return _proxyGenerator.CreateClassProxy<Person>(new UserAccessInterceptor(u));
+                })
                 .GetEnumerator();
         }
 

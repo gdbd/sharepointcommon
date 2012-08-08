@@ -5,23 +5,25 @@
     using System.Linq;
     using Microsoft.SharePoint;
     using NUnit.Framework;
-
-    using SharepointCommon.Common;
-    using SharepointCommon.Entities;
-    using SharepointCommon.Exceptions;
-    using SharepointCommon.Impl;
-    using SharepointCommon.Test.Entity;
-
+    using Common;
+    using Entities;
+    using Exceptions;
+    using Entity;
     using Assert = NUnit.Framework.Assert;
 
     [TestFixture]
     public class QueryListTests
     {
-        private SPUser CurrentUserLogin;
-        private SPUser SecondUserLogin;
         private const string ListName1 = "SharepointCommonTestList";
         private const string ListForLookup = "ListForLookup";
+
         private readonly string _webUrl = string.Format("http://{0}/", Environment.MachineName);
+
+        private SPUser _firstUser;
+        private SPUser _secondUser;
+        private SPUser _domainGroup;
+        private SPGroup _spGroup;
+        
         private IQueryList<Item> _list;
         private IQueryList<Item> _listForLookup;
         private IQueryWeb _queryWeb;
@@ -53,11 +55,15 @@
                 _listForLookup.DeleteList(false);
                 _listForLookup = _queryWeb.Create<Item>(ListForLookup);
             }
-            
-            var users = _queryWeb.Web.SiteUsers.Cast<SPUser>().Where(u => u.IsDomainGroup == false).ToList();
 
-            CurrentUserLogin = users[0];
-            SecondUserLogin = users[1];
+            var users = _queryWeb.Web.SiteUsers.Cast<SPUser>().ToList();
+            var uu = users.Where(u => u.IsDomainGroup == false).ToList();
+
+            _domainGroup = users.First(u => u.IsDomainGroup);
+            _spGroup = _queryWeb.Web.SiteGroups[0];
+
+            _firstUser = uu[0];
+            _secondUser = uu[1];
         }
 
         [TestFixtureTearDown]
@@ -105,8 +111,8 @@
                         CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
                         CustomFieldNumber = 123.5,
                         CustomBoolean = true,
-                        CustomUser = new User { Login = CurrentUserLogin.LoginName },
-                        CustomUsers = new List<User> { new User { Login = CurrentUserLogin.LoginName } },
+                        CustomUser = new Person(_firstUser.LoginName),
+                        CustomUsers = new List<User> { new Person(_firstUser.LoginName), new User(_spGroup.Name) },
                         CustomLookup = lookupItem,
                         CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
                         CustomDate = DateTime.Now,
@@ -127,8 +133,16 @@
                 Assert.That(item.CustomFieldNumber, Is.EqualTo(customItem.CustomFieldNumber));
                 Assert.That(item.CustomBoolean, Is.EqualTo(customItem.CustomBoolean));
                 Assert.That(item.CustomUser.Id, Is.Not.EqualTo(0));
-                Assert.That(item.CustomUsers.Count(), Is.EqualTo(1));
-                Assert.That(item.CustomUsers.First().Id, Is.EqualTo(CurrentUserLogin.ID));
+
+                Assert.That(item.CustomUser.GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
+
+                var users = item.CustomUsers.ToList();
+                Assert.That(users[0].GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
+                Assert.That(users[1].GetType().ToString(), Is.EqualTo("Castle.Proxies.UserProxy"));
+
+
+                Assert.That(item.CustomUsers.Count(), Is.EqualTo(2));
+                Assert.That(item.CustomUsers.First().Id, Is.EqualTo(_firstUser.ID));
                 Assert.That(item.CustomLookup, Is.Not.Null);
                 Assert.That(item.CustomLookup.Id, Is.EqualTo(lookupItem.Id));
                 Assert.That(item.CustomMultiLookup, Is.Not.Null);
@@ -168,8 +182,8 @@
                                 CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
                                 CustomFieldNumber = 123.5,
                                 CustomBoolean = true,
-                                CustomUser = new User { Login = CurrentUserLogin.LoginName },
-                                CustomUsers = new List<User> { new User { Login = CurrentUserLogin.LoginName } },
+                                CustomUser = new Person(_firstUser.LoginName),
+                                CustomUsers = new List<User> { new Person(_firstUser.LoginName) },
                                 CustomLookup = lookupItem,
                                 CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 }
                             };
@@ -209,8 +223,8 @@
                         CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
                         CustomFieldNumber = 123.5,
                         CustomBoolean = true,
-                        CustomUser = new User { Login = CurrentUserLogin.LoginName },
-                        CustomUsers = new List<User> { new User { Login = CurrentUserLogin.LoginName }, },
+                        CustomUser = new Person(_firstUser.LoginName),
+                        CustomUsers = new List<User> { new Person(_firstUser.LoginName), },
                         CustomLookup = lookupItem,
                         CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 }
                     };
@@ -366,8 +380,8 @@
                     CustomField2 = "Add_Uploads_CustomDocument_Test2",
                     CustomFieldNumber = 123.5,
                     CustomBoolean = true,
-                    CustomUser = new User { Login = CurrentUserLogin.LoginName },
-                    CustomUsers = new List<User> { new User { Login = CurrentUserLogin.LoginName } },
+                    CustomUser = new Person(_firstUser.LoginName),
+                    CustomUsers = new List<User> { new Person(_firstUser.LoginName) },
                     CustomLookup = lookupItem,
                     CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
                     CustomDate = DateTime.Now,
@@ -395,7 +409,7 @@
                 Assert.That(item.CustomBoolean, Is.EqualTo(customDoc.CustomBoolean));
                 Assert.That(item.CustomUser.Id, Is.Not.EqualTo(0));
                 Assert.That(item.CustomUsers.Count(), Is.EqualTo(1));
-                Assert.That(item.CustomUsers.First().Id, Is.EqualTo(CurrentUserLogin.ID));
+                Assert.That(item.CustomUsers.First().Id, Is.EqualTo(_firstUser.ID));
                 Assert.That(item.CustomLookup, Is.Not.Null);
                 Assert.That(item.CustomLookup.Id, Is.EqualTo(lookupItem.Id));
                 Assert.That(item.CustomMultiLookup, Is.Not.Null);
@@ -498,8 +512,8 @@
                     CustomField2 = "Update_Updates_CustomItem_Test2",
                     CustomFieldNumber = 123.5,
                     CustomBoolean = true,
-                    CustomUser = new User { Login = CurrentUserLogin.LoginName },
-                    CustomUsers = new List<User> { new User { Login = CurrentUserLogin.LoginName }, },
+                    CustomUser = new Person(_firstUser.LoginName),
+                    CustomUsers = new List<User> { new Person(_firstUser.LoginName), },
                     CustomLookup = lookupItem,
                     CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
                     CustomDate = DateTime.Now,
@@ -512,11 +526,11 @@
                 customItem.CustomField2 = "Update_Updates_CustomItem_Test2";
                 customItem.CustomFieldNumber = 235;
                 customItem.CustomBoolean = false;
-                customItem.CustomUser = new User { Login = SecondUserLogin.LoginName };
+                customItem.CustomUser = new Person(_secondUser.LoginName);
                 customItem.CustomUsers = new List<User>
                     {
-                        new User { Login = CurrentUserLogin.LoginName, },
-                        new User { Login = SecondUserLogin.LoginName, }
+                        new Person(_firstUser.LoginName),
+                        new Person(_secondUser.LoginName)
                     };
                 customItem.CustomLookup = lookupItem2;
                 customItem.CustomMultiLookup = new List<Item> { lookupItem2 };
@@ -539,7 +553,7 @@
                 Assert.That(item.CustomUser, Is.Not.Null);
                 Assert.That(item.CustomUser.Id, Is.Not.EqualTo(0));
                 Assert.That(item.CustomUsers.Count(), Is.EqualTo(2));
-                Assert.That(item.CustomUsers.First().Id, Is.EqualTo(CurrentUserLogin.ID));
+                Assert.That(item.CustomUsers.First().Id, Is.EqualTo(_firstUser.ID));
                 Assert.That(item.CustomLookup, Is.Not.Null);
                 Assert.That(item.CustomLookup.Id, Is.EqualTo(lookupItem2.Id));
                 Assert.That(item.CustomMultiLookup, Is.Not.Null);
@@ -575,8 +589,8 @@
                     CustomField2 = "Update_Updates_CustomItem_Test2",
                     CustomFieldNumber = 123.5,
                     CustomBoolean = true,
-                    CustomUser = new User { Login = CurrentUserLogin.LoginName },
-                    CustomUsers = new List<User> { new User { Login = CurrentUserLogin.LoginName }, },
+                    CustomUser = new Person(_firstUser.LoginName),
+                    CustomUsers = new List<User> { new Person(_firstUser.LoginName) },
                     CustomLookup = lookupItem,
                     CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
                     CustomDate = DateTime.Now,
@@ -738,6 +752,12 @@
                         CustomBoolean = true,
                         CustomChoice = TheChoice.Choice2,
                         Тыдыщ = "тест",
+                        CustomUsers = new List<User>
+                                          {
+                                              new Person(_firstUser.LoginName),
+                                              new Person(_domainGroup.LoginName),
+                                              new User(_spGroup.Name),
+                                          },
                     };
                 list.Add(customItem);
 
@@ -767,6 +787,10 @@
                 Assert.That(customItem.CustomBoolean, Is.EqualTo(item.CustomBoolean));
                 Assert.That(customItem.Тыдыщ, Is.EqualTo(item.Тыдыщ));
                 Assert.That(item.CustomUser, Is.Null);
+                Assert.That(item.CustomUsers, Is.Not.Null);
+
+                var users = item.CustomUsers.ToList();
+
                 Assert.That(item.CustomChoice, Is.EqualTo(item.CustomChoice));
             }
             finally
@@ -1217,7 +1241,6 @@
             Assert.That(itm2.ParentList, Is.Not.Null);
             Assert.That(itm2.ParentList.Id, Is.EqualTo(_list.Id));
         }
-
 
         /*
         [Test, Timeout(20000)]

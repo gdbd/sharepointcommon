@@ -80,11 +80,16 @@
                 if (f.AllowMultipleValues == false)
                 {
                     var spUser = CommonHelper.GetUser(listItem, spPropName);
-
-                    User user = null;
-                    if (spUser != null) user = _proxyGenerator.CreateClassProxy<User>(new UserAccessInterceptor(spUser));
-
-                    return user;                    
+                    if (spUser == null)
+                    {
+                        if (listItem[spPropName] == null) return null;
+                        var userValue = new SPFieldLookupValue(listItem[spPropName].ToString());
+                        return _proxyGenerator.CreateClassProxy<User>(new UserAccessInterceptor(userValue));
+                    }
+                    else
+                    {
+                        return _proxyGenerator.CreateClassProxy<Person>(new UserAccessInterceptor(spUser));
+                    }
                 }
                 else
                 {
@@ -214,27 +219,50 @@
                         listItem[spName] = propValue;
                     continue;
                 }
-                
+
                 if (prop.PropertyType == typeof(User))
                 {
+                    // domain user or group
                     CheckThatPropertyVirtual(prop);
 
                     var user = (User)propValue;
 
-                    SPUser spUser = null;
-                    try
+                    if (user is Person)
                     {
-                        spUser = listItem.ParentList.ParentWeb.SiteUsers[user.Login];
-                    }
-                    catch (SPException)
-                    {
-                        throw new SharepointCommonException(string.Format("User {0} not found.", user.Id));
-                    }
+                        var person = (Person)propValue;
 
-                    var spUserValue = new SPFieldUserValue { LookupId = spUser.ID, };
-                    listItem[spName] = spUserValue;
+                        SPUser spUser = null;
+                        try
+                        {
+                            spUser = listItem.ParentList.ParentWeb.SiteUsers[person.Login];
+                        }
+                        catch (SPException)
+                        {
+                            throw new SharepointCommonException(string.Format("User {0} not found.", user.Id));
+                        }
 
-                    continue;
+                        var spUserValue = new SPFieldUserValue { LookupId = spUser.ID, };
+                        listItem[spName] = spUserValue;
+
+                        continue;
+                    }
+                    else
+                    {   // sharepoint group
+                        SPGroup spUser = null;
+                        try
+                        {
+                            spUser = listItem.ParentList.ParentWeb.SiteGroups[user.Name];
+                        }
+                        catch (SPException)
+                        {
+                            throw new SharepointCommonException(string.Format("Group {0} not found.", user.Name));
+                        }
+
+                        var spUserValue = new SPFieldUserValue {LookupId = spUser.ID,};
+                        listItem[spName] = spUserValue;
+
+                        continue;
+                    }
                 }
 
                 // handle lookup fields
@@ -259,27 +287,49 @@
                         var users = propValue as IEnumerable<User>;
                         Assert.NotNull(users);
 
-                        var spUserValue = new SPFieldUserValueCollection();
+                        var values = new SPFieldUserValueCollection();
 
                         foreach (User user in users)
                         {
-                            SPUser spUser = null;
-                            try
-                            {
-                                spUser = listItem.ParentList.ParentWeb.SiteUsers[user.Login];
-                            }
-                            catch (SPException)
-                            {
-                                throw new SharepointCommonException(string.Format("User {0} not found.", user.Id));
-                            }
+                            if (user is Person)
+                            {   // domain user or group
+                                var person = (Person)user;
+                                SPUser spUser = null;
+                                try
+                                {
+                                    spUser = listItem.ParentList.ParentWeb.SiteUsers[person.Login];
+                                }
+                                catch (SPException)
+                                {
+                                    throw new SharepointCommonException(string.Format("User {0} not found.", user.Id));
+                                }
 
-                            var userValue = new SPFieldUserValue();
-                            userValue.LookupId = spUser.ID;
-                            spUserValue.Add(userValue);
+                                var val = new SPFieldUserValue();
+                                val.LookupId = spUser.ID;
+                                values.Add(val);
+                            }
+                            else
+                            {   // sharepoint group
+                                SPGroup spGroup = null;
+                                try
+                                {
+                                    spGroup = listItem.ParentList.ParentWeb.SiteGroups[user.Name];
+                                }
+                                catch (SPException)
+                                {
+                                    throw new SharepointCommonException(string.Format("Group {0} not found.", user.Name));
+                                }
+
+                                var val = new SPFieldUserValue();
+                                val.LookupId = spGroup.ID;
+                                values.Add(val);
+                            }
                         }
 
-                        listItem[spName] = spUserValue;
+                        listItem[spName] = values;
+                        
                     }
+
                     if (typeof(Item).IsAssignableFrom(argumentType))
                     {
                         var lookupvalues = propValue as IEnumerable;
