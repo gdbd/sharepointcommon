@@ -90,6 +90,7 @@
                     Assert.That(list.ContainsField(ci => ci.CustomLookup), Is.True);
                     Assert.That(list.ContainsField(ci => ci.CustomMultiLookup), Is.True);
                     Assert.That(list.ContainsField(ci => ci.CustomChoice), Is.True);
+                    Assert.That(list.ContainsField(ci => ci.Тыдыщ), Is.True);
 
                     var choiceField = list.GetField(ci => ci.CustomChoice);
                     Assert.NotNull(choiceField.Choices);

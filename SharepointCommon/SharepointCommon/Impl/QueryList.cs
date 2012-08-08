@@ -387,6 +387,20 @@
             var memberAccessor = new MemberAccessVisitor();
             string propName = memberAccessor.GetMemberName(selector);
 
+            var prop = typeof(T).GetProperty(propName);
+
+            var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), true);
+
+            if (fieldAttrs.Length != 0)
+            {
+                var spPropName = ((FieldAttribute)fieldAttrs[0]).Name;
+                if (spPropName != null) propName = spPropName;
+            }
+            else
+            {
+                propName = FieldMapper.TranslateToFieldName(propName);
+            }
+
             // check field in list
             return _list.Fields.ContainsFieldWithStaticName(propName);
         }

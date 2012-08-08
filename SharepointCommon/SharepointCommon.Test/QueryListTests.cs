@@ -111,6 +111,7 @@
                         CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
                         CustomDate = DateTime.Now,
                         CustomChoice = TheChoice.Choice2,
+                        Тыдыщ = "тест",
                     };
                 list.Add(customItem);
 
@@ -134,6 +135,7 @@
                 Assert.That(item.CustomMultiLookup.Count(), Is.EqualTo(2));
                 Assert.That(item.CustomMultiLookup.First().Title, Is.EqualTo(lookupItem.Title));
                 Assert.That(item.CustomChoice, Is.EqualTo(customItem.CustomChoice));
+                Assert.That(item.Тыдыщ, Is.EqualTo(customItem.Тыдыщ));
             }
             finally
             {
@@ -501,6 +503,7 @@
                     CustomLookup = lookupItem,
                     CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
                     CustomDate = DateTime.Now,
+                    Тыдыщ = "тест",
                 };
                 list.Add(customItem);
 
@@ -517,6 +520,7 @@
                     };
                 customItem.CustomLookup = lookupItem2;
                 customItem.CustomMultiLookup = new List<Item> { lookupItem2 };
+                customItem.Тыдыщ = "обновлено";
 
                 list.Update(customItem, true);
 
@@ -528,6 +532,7 @@
                 Assert.That(item.Id, Is.EqualTo(customItem.Id));
                 Assert.That(item.Title, Is.EqualTo(customItem.Title));
                 Assert.That(item.CustomField1, Is.EqualTo(customItem.CustomField1));
+                Assert.That(item.Тыдыщ, Is.EqualTo(customItem.Тыдыщ));
                 Assert.That(item.CustomField2, Is.EqualTo(customItem.CustomField2));
                 Assert.That(item.CustomFieldNumber, Is.EqualTo(customItem.CustomFieldNumber));
                 Assert.That(item.CustomBoolean, Is.EqualTo(customItem.CustomBoolean));
@@ -732,6 +737,7 @@
                         CustomFieldNumber = 123.5,
                         CustomBoolean = true,
                         CustomChoice = TheChoice.Choice2,
+                        Тыдыщ = "тест",
                     };
                 list.Add(customItem);
 
@@ -743,6 +749,7 @@
                     CustomFieldNumber = 155.5,
                     CustomBoolean = false,
                     CustomChoice = TheChoice.Choice3,
+                    Тыдыщ = "тест2",
                 };
                 list.Add(customItem2);
 
@@ -758,6 +765,7 @@
                 Assert.That(customItem.CustomField2, Is.EqualTo(item.CustomField2));
                 Assert.That(customItem.CustomFieldNumber, Is.EqualTo(item.CustomFieldNumber));
                 Assert.That(customItem.CustomBoolean, Is.EqualTo(item.CustomBoolean));
+                Assert.That(customItem.Тыдыщ, Is.EqualTo(item.Тыдыщ));
                 Assert.That(item.CustomUser, Is.Null);
                 Assert.That(item.CustomChoice, Is.EqualTo(item.CustomChoice));
             }
@@ -1209,6 +1217,8 @@
             Assert.That(itm2.ParentList.Id, Is.EqualTo(_list.Id));
         }
 
+
+        /*
         [Test, Timeout(20000)]
         public void Get_Many_Items_Test()
         {
@@ -1233,6 +1243,6 @@
             Assert.That(first.TheDate, Is.Not.EqualTo(default(DateTime)));
             Assert.That(first.TheMan, Is.Not.Null);
             Assert.That(first.TheLookup, Is.Not.Null);
-        }
+        }*/
     }
 }
