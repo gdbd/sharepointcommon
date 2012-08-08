@@ -1109,6 +1109,7 @@
             Assert.That(list.ContainsField(e => e.CustomUsers));
             Assert.That(list.ContainsField(e => e.CustomLookup));
             Assert.That(list.ContainsField(e => e.CustomChoice));
+            list.EnsureFields();
         }
 
         [Test]

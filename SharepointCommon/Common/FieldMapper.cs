@@ -7,8 +7,9 @@
 
     using Microsoft.SharePoint;
 
-    using SharepointCommon.Attributes;
-    using SharepointCommon.Exceptions;
+    using Attributes;
+    using Exceptions;
+
 
     internal sealed class FieldMapper
     {
@@ -67,7 +68,7 @@
                 }
                 catch (Exception ex)
                 {
-                    throw new SharepointCommonException(String.Format("Error adding field to fields collection: {0}. Field title = \"{1}\", internal name = \"{2}\"", ex.Message, field.Title, field.InternalName));
+                    throw new SharepointCommonException(string.Format("Error adding field to fields collection: {0}. Field title = \"{1}\", internal name = \"{2}\"", ex.Message, field.Title, field.InternalName));
                 }
             }
             return fields;
@@ -87,19 +88,19 @@
             }
 
             Type propType = propertyInfo.PropertyType;
-
-
             string spName = TranslateToFieldName(propertyInfo.Name);
-
             var fieldAttrs = propertyInfo.GetCustomAttributes(typeof(FieldAttribute), true);
+            string dispName = null;
 
             if (fieldAttrs.Length != 0)
             {
-                var spPropName = ((FieldAttribute)fieldAttrs[0]).Name;
+                var attr = (FieldAttribute)fieldAttrs[0];
+                var spPropName = attr.Name;
                 if (spPropName != null) spName = spPropName;
+                dispName = attr.DisplayName;
             }
 
-            var field = new Field { Name = spName };
+            var field = new Field { Name = spName, PropName = propertyInfo.Name, DisplayName = dispName, };
 
             if (propType == typeof(string) || propType == typeof(Version) || propType == typeof(Guid))
             {
@@ -155,10 +156,17 @@
             {
                 Type argumentType = propType.GetGenericArguments()[0];
 
-                if (argumentType == typeof(User))
-                    return new Field { Type = SPFieldType.User, Name = propertyInfo.Name, IsMultiValue = true, };
+                //// user multi value
 
-                // lookup multi value
+                if (argumentType == typeof(User))
+                {
+                    field.Type = SPFieldType.User;
+                    field.IsMultiValue = true;
+                    return field;
+                    //return new Field {Type = SPFieldType.User, Name = propertyInfo.Name, IsMultiValue = true,};
+                }
+
+                //// lookup multi value
 
                 var fieldAttr = propertyInfo.GetCustomAttributes(typeof(FieldAttribute), true);
                 if (fieldAttr.Length == 0) throw new SharepointCommonException("Lookups must be marked with [SharepointCommon.Attributes.FieldAttribute]");
@@ -220,6 +228,14 @@
                                 "_UIVersionString",
                             };
             return fields.Contains(spName) == false;
+        }
+
+        internal static void RenameToDisplay(SPField field, Field fieldInfo)
+        {
+            if (fieldInfo.DisplayName == null) return;
+
+            field.Title = fieldInfo.DisplayName;
+            field.Update();
         }
 
         private static bool IsDefaultField(SPField field)

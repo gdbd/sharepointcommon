@@ -24,5 +24,7 @@
         public bool Requered { get; set; }
 
         public IEnumerable<string> Choices { get; set; }
+
+        internal string PropName { get; set; }
     }
 }

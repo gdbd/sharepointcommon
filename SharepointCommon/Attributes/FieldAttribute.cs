@@ -17,6 +17,11 @@ namespace SharepointCommon.Attributes
 
         public string Name { get; set; }
 
+        /// <summary>
+        /// set 'displayname' to rename field after it created(ex: localized name)
+        /// </summary>
+        public string DisplayName { get; set; }
+
         public string LookupList { get; set; }
 
         public string LookupField { get; set; }
