@@ -568,6 +568,85 @@
                 }
             }
         }
+        
+        [Test]
+        public void Update_Updates_CustomItem_GetById_Test()
+        {
+            IQueryList<CustomItem> list = null;
+            try
+            {
+                var lookupItem = new Item { Title = "Update_Updates_CustomItem_Test_Lookup" };
+                _listForLookup.Add(lookupItem);
+
+                var lookupItem2 = new Item { Title = "Update_Updates_CustomItem_Test_2" };
+                _listForLookup.Add(lookupItem2);
+
+                list = _queryWeb.Create<CustomItem>("Update_Updates_CustomItem_Test");
+                var customItem = new CustomItem
+                {
+                    Title = "Update_Updates_CustomItem_Test",
+                    CustomField1 = "Update_Updates_CustomItem_Test1",
+                    CustomField2 = "Update_Updates_CustomItem_Test2",
+                    CustomFieldNumber = 123.5,
+                    CustomBoolean = true,
+                    CustomUser = new Person(_firstUser.LoginName),
+                    CustomUsers = new List<User> { new Person(_firstUser.LoginName), },
+                    CustomLookup = lookupItem,
+                    CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
+                    CustomDate = DateTime.Now,
+                    Тыдыщ = "тест",
+                };
+                list.Add(customItem);
+
+                customItem = list.ById(customItem.Id);
+
+                customItem.Title = "Update_Updates_CustomItem_Test_Updated";
+                customItem.CustomField1 = "Update_Updates_CustomItem_Test1";
+                customItem.CustomField2 = "Update_Updates_CustomItem_Test2";
+                customItem.CustomFieldNumber = 235;
+                customItem.CustomBoolean = false;
+                customItem.CustomUser = new Person(_secondUser.LoginName);
+                customItem.CustomUsers = new List<User>
+                    {
+                        new Person(_firstUser.LoginName),
+                        new Person(_secondUser.LoginName)
+                    };
+                customItem.CustomLookup = lookupItem2;
+                customItem.CustomMultiLookup = new List<Item> { lookupItem2 };
+                customItem.Тыдыщ = "обновлено";
+
+                list.Update(customItem, true);
+
+                var item = list.Items(new CamlQuery()
+                .Query(Q.Where(Q.Eq(Q.FieldRef("Title"), Q.Value("Update_Updates_CustomItem_Test_Updated")))))
+                .FirstOrDefault();
+
+                Assert.IsNotNull(item);
+                Assert.That(item.Id, Is.EqualTo(customItem.Id));
+                Assert.That(item.Title, Is.EqualTo(customItem.Title));
+                Assert.That(item.CustomField1, Is.EqualTo(customItem.CustomField1));
+                Assert.That(item.Тыдыщ, Is.EqualTo(customItem.Тыдыщ));
+                Assert.That(item.CustomField2, Is.EqualTo(customItem.CustomField2));
+                Assert.That(item.CustomFieldNumber, Is.EqualTo(customItem.CustomFieldNumber));
+                Assert.That(item.CustomBoolean, Is.EqualTo(customItem.CustomBoolean));
+                Assert.That(item.CustomUser, Is.Not.Null);
+                Assert.That(item.CustomUser.Id, Is.Not.EqualTo(0));
+                Assert.That(item.CustomUsers.Count(), Is.EqualTo(2));
+                Assert.That(item.CustomUsers.First().Id, Is.EqualTo(_firstUser.ID));
+                Assert.That(item.CustomLookup, Is.Not.Null);
+                Assert.That(item.CustomLookup.Id, Is.EqualTo(lookupItem2.Id));
+                Assert.That(item.CustomMultiLookup, Is.Not.Null);
+                Assert.That(item.CustomMultiLookup.Count(), Is.EqualTo(1));
+                Assert.That(item.CustomMultiLookup.First().Title, Is.EqualTo(lookupItem2.Title));
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
 
         [Test]
         public void Update_Updates_Field_By_Null_Test()
