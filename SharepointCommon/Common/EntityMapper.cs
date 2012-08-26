@@ -181,12 +181,14 @@
                 if (propertiesToSet != null && propertiesToSet.Count > 0)
                     if (propertiesToSet.Contains(prop.Name) == false) continue;
 
-                var nomapAttrs = prop.GetCustomAttributes(typeof(NotFieldAttribute), false);
+               // var nomapAttrs = prop.GetCustomAttributes(typeof(NotFieldAttribute), false);
+                var nomapAttrs = Attribute.GetCustomAttributes(prop, typeof(NotFieldAttribute));
                 if (nomapAttrs.Length != 0) continue; // skip props with [NoMap] attribute
 
                 string spName;
 
-                var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), false);
+                // var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), false);
+                var fieldAttrs = Attribute.GetCustomAttributes(prop, typeof(FieldAttribute));
                 if (fieldAttrs.Length != 0)
                 {
                     spName = ((FieldAttribute)fieldAttrs[0]).Name;
@@ -215,7 +217,7 @@
                 if (prop.PropertyType == typeof(DateTime))
                 {
                     // update DateTime field with empty value thrown exception
-                    if(((DateTime)propValue) != DateTime.MinValue)
+                    if (((DateTime)propValue) != DateTime.MinValue)
                         listItem[spName] = propValue;
                     continue;
                 }

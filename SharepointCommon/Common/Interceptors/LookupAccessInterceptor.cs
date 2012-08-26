@@ -1,6 +1,7 @@
 ﻿namespace SharepointCommon.Common.Interceptors
 {
     using System;
+    using System.Collections.Generic;
 
     using Castle.DynamicProxy;
 
@@ -12,10 +13,12 @@
         private readonly SPFieldLookup _fieldLookup;
         private readonly object _fieldValue;
         private readonly SPListItem _listItem;
+        private List<string> _changedFields;
 
         public LookupAccessInterceptor(SPListItem listItem)
         {
             _listItem = listItem;
+            _changedFields = new List<string>();
         }
 
         public LookupAccessInterceptor(string webUrl, SPFieldLookup fieldLookup, object fieldValue)
@@ -23,27 +26,42 @@
             _webUrl = webUrl;
             _fieldLookup = fieldLookup;
             _fieldValue = fieldValue;
+            _changedFields = new List<string>();
         }
 
         public void Intercept(IInvocation invocation)
         {
-            if (typeof(Item).IsAssignableFrom(invocation.Method.ReturnType))
+            if (invocation.Method.Name.StartsWith("set_"))
             {
-                var listItem = GetListItem();
-                var ft = FieldMapper.ToFieldType(invocation.Method);
-                var lookupField = listItem.Fields.TryGetFieldByStaticName(ft.Name) as SPFieldLookup;
-                Assert.That(lookupField != null);
-                var lookupItem = GetLookupItem(
-                    listItem.Web.Url,
-                    new Guid(lookupField.LookupList), 
-                    listItem[ft.Name]);
-
-                invocation.ReturnValue = lookupItem == null
-                    ? null
-                    : EntityMapper.ToEntity(invocation.Method.ReturnType, lookupItem);
+                _changedFields.Add(invocation.Method.Name.Substring(4));
+                invocation.Proceed();
                 return;
             }
+            if (invocation.Method.Name.StartsWith("get_"))
+            {
+                if (_changedFields.Contains(invocation.Method.Name.Substring(4)))
+                {
+                    invocation.Proceed();
+                    return;
+                }
 
+                if (typeof(Item).IsAssignableFrom(invocation.Method.ReturnType))
+                {
+                    var listItem = GetListItem();
+                    var ft = FieldMapper.ToFieldType(invocation.Method);
+                    var lookupField = listItem.Fields.TryGetFieldByStaticName(ft.Name) as SPFieldLookup;
+                    Assert.That(lookupField != null);
+                    var lookupItem = GetLookupItem(
+                        listItem.Web.Url,
+                        new Guid(lookupField.LookupList),
+                        listItem[ft.Name]);
+
+                    invocation.ReturnValue = lookupItem == null
+                        ? null
+                        : EntityMapper.ToEntity(invocation.Method.ReturnType, lookupItem);
+                    return;
+                }
+            }
             invocation.Proceed();
         }
 
