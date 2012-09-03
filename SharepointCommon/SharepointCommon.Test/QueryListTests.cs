@@ -277,7 +277,39 @@
             };
             _list.Add(holiday);
             Assert.That(holiday.Id, Is.Not.EqualTo(0));
-        } 
+        }
+
+        [Test]
+        public void Add_Adds_CustomItem_With_Nullable()
+        {
+            IQueryList<Item> list = null;
+            try
+            {
+                list = _queryWeb.Create<Item>("Add_Adds_CustomItem_With_Nullable");
+                var item1 = new Item
+                {
+                    Title = "Item1",
+                };
+                list.Add(item1);
+
+                var list2 = _queryWeb.GetById<OneMoreField<bool?>>(list.Id);
+                list2.EnsureField(i => i.AdditionalField);
+
+                var item2 = list2.Items(CamlQuery.Default).First();
+
+                bool? addval = item2.AdditionalField;
+
+                Assert.Null(addval);
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
+
         #endregion
 
         #region Add Document Tests

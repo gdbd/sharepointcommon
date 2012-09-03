@@ -132,7 +132,7 @@
                 return field;
             }
 
-            if (propType == typeof(bool))
+            if (propType == typeof(bool) || propType == typeof(bool?))
             {
                 field.Type = SPFieldType.Boolean;
                 return field;
