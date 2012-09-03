@@ -89,6 +89,7 @@
     <Compile Include="CamlQueryTests.cs" />
     <Compile Include="CastleTests.cs" />
     <Compile Include="Entity\CustomDocument.cs" />
+    <Compile Include="Entity\OneMoreField.cs" />
     <Compile Include="Entity\TestList1.cs" />
     <Compile Include="Entity\TheChoice.cs" />
     <Compile Include="WebFactoryTests.cs" />

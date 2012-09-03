@@ -271,7 +271,7 @@
             {
                 return null;
             }
-
+#warning error on localized system
             if (itemById.ContentType.Name.Equals(typeName) == false)
                 throw new SharepointCommonException(string.Format("Item has different than '{0}' contenttype", typeName));
 
