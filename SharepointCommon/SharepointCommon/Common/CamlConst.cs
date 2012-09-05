@@ -30,6 +30,7 @@ namespace SharepointCommon.Common
         public const string DateTime = "DateTime";
         public const string Boolean = "Boolean";
         public const string Computed = "Computed";
+        public const string ContentTypeId = "ContentTypeId";
         public const string ViewFields = "ViewFields";
         public const string Webs = "Webs";
         public const string Scope = "Scope";

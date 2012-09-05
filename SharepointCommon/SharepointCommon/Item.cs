@@ -6,7 +6,7 @@
     using SharepointCommon.Attributes;
 
     [DebuggerDisplay("Id={Id},Title={Title}")]
-    [ContentType]
+    [ContentType("0x01")]
     public class Item
     {
         public virtual int Id { get; internal set; }

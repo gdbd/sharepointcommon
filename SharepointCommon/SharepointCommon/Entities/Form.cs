@@ -2,7 +2,7 @@
 {
     using SharepointCommon.Attributes;
 
-    [ContentType]
+    [ContentType("0x010101")]
     public class Form : Document
     {
     }
