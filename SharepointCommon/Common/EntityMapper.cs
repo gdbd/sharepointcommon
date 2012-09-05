@@ -124,7 +124,6 @@
 
             if (field.Type == SPFieldType.Guid)
             {
-#warning fieldValue null!!
                 var guid = new Guid(fieldValue.ToString());
                 return guid;
             }
@@ -132,7 +131,8 @@
             if (field.Type == SPFieldType.Note)
             {
                 var field1 = (SPFieldMultiLineText)field;
-                var text = field1.GetFieldValueAsText(fieldValue.ToString());
+                if (fieldValue == null) return null;
+                var text = field1.GetFieldValueAsText(fieldValue);
                 return text;
             }
 

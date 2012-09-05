@@ -91,6 +91,7 @@
             string spName = TranslateToFieldName(propertyInfo.Name);
             var fieldAttrs = propertyInfo.GetCustomAttributes(typeof(FieldAttribute), true);
             string dispName = null;
+            bool isMultilineText = false;
 
             if (fieldAttrs.Length != 0)
             {
@@ -98,11 +99,20 @@
                 var spPropName = attr.Name;
                 if (spPropName != null) spName = spPropName;
                 dispName = attr.DisplayName;
+                isMultilineText = attr.IsMultilineText;
             }
 
             var field = new Field { Name = spName, PropName = propertyInfo.Name, DisplayName = dispName, };
 
-            if (propType == typeof(string) || propType == typeof(Version) || propType == typeof(Guid))
+            if (propType == typeof(string))
+            {
+                field.Type = isMultilineText ? SPFieldType.Note : SPFieldType.Text;
+                return field;
+            }
+
+            if (isMultilineText) throw new SharepointCommonException("[IsMultilineText] can be used only for text fields.");
+
+            if (propType == typeof(Version) || propType == typeof(Guid))
             {
                 field.Type = SPFieldType.Text;
                 return field;
