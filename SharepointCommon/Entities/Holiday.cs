@@ -2,9 +2,9 @@
 {
     using System;
 
-    using SharepointCommon.Attributes;
+    using Attributes;
 
-    [ContentType]
+    [ContentType("0x01009BE2AB5291BF4C1A986910BD278E4F18")]
     public class Holiday : Item
     {
         [Field("V4HolidayDate")]

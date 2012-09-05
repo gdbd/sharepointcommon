@@ -1,4 +1,8 @@
-﻿namespace SharepointCommon.Impl
+﻿using System.Globalization;
+using System.Threading;
+using Microsoft.SharePoint.Utilities;
+
+namespace SharepointCommon.Impl
 {
     using System;
     using System.Collections.Generic;
@@ -168,8 +172,13 @@
 
             EntityMapper.ToItem(entity, newitem);
 
+            var ct = GetContentType(entity, false);
+            SPContentTypeId ctId;
+            if (ct == null) ctId = SPBuiltInContentTypeId.Item;
+            else ctId = ct.Id;
+
             // GetType() prefered because T might be child of 'Item'
-            newitem[SPBuiltInFieldId.ContentType] = entity.GetType().Name;
+            newitem[SPBuiltInFieldId.ContentTypeId] = ctId;
 
             newitem.Update();
             entity.Id = newitem.ID;
@@ -271,10 +280,12 @@
             {
                 return null;
             }
-#warning error on localized system
-            if (itemById.ContentType.Name.Equals(typeName) == false)
-                throw new SharepointCommonException(string.Format("Item has different than '{0}' contenttype", typeName));
 
+            var ct = GetContentType(new TCt(), true);
+
+            if (itemById.ContentType.Id.Parent.Equals(ct.Parent.Id) == false)
+                throw new SharepointCommonException(string.Format("Item has different than '{0}' contenttype", typeName));
+            
             return EntityMapper.ToEntity<TCt>(itemById);
         }
 
@@ -294,7 +305,9 @@
             var itemByGuid = this.ByCaml(camlByGuid).Cast<SPListItem>().FirstOrDefault();
             if (itemByGuid == null) return null;
 
-            if (itemByGuid.ContentType.Name.Equals(typeName) == false)
+            var ct = GetContentType(new TCt(), true);
+
+            if (itemByGuid.ContentType.Id.Parent.Equals(ct.Parent.Id) == false)
                 throw new SharepointCommonException(string.Format("Item has different than '{0}' contenttype", typeName));
 
             return EntityMapper.ToEntity<TCt>(itemByGuid);
@@ -328,16 +341,15 @@
         {
             if (option == null) throw new ArgumentNullException("option");
 
-            string typeName = typeof(TCt).Name;
-
-            var ct = _list.ContentTypes[typeName];
-            if (ct == null) typeName = "Item";
-
+            var ct = GetContentType(new TCt(), true);
+            
+            string ctId = ct.Id.ToString();
+            
             string noAffectFilter = Q.Neq(Q.FieldRef("ID"), Q.Value(0));
 
             string camlByContentType =
                 Q.Where(
-                    Q.And("**filter-replace**", Q.Eq(Q.FieldRef("ContentType"), Q.Value(CamlConst.Computed, typeName))));
+                    Q.And("**filter-replace**", Q.Eq(Q.FieldRef("ContentTypeId"), Q.Value(CamlConst.ContentTypeId, ctId))));
 
             if (option.CamlStore == null)
             {
@@ -439,37 +451,23 @@
 
         public void AddContentType<TCt>() where TCt : Item, new()
         {
-            var type = typeof(TCt);
-            if (type.GetCustomAttributes(typeof(ContentTypeAttribute), false).Length == 0)
-                throw new SharepointCommonException(string.Format("Type {0} need to be marked with ContentTypeAttribute to use in this method", type.FullName));
-            var contentType = _web.AvailableContentTypes.Cast<SPContentType>().FirstOrDefault(ct => ct.Name.Equals(type.Name));
-            if (contentType == null) throw new SharepointCommonException(string.Format("ContentType {0} not available at {1}", type.Name, _web.Url));
+            var contentType = GetContentTypeFromWeb(new TCt(), true);
+            if (contentType == null) throw new SharepointCommonException(string.Format("ContentType {0} not available at {1}", typeof(TCt), _web.Url));
             AllowManageContentTypes = true;
-            if (_list.IsContentTypeAllowed(contentType) == false) throw new SharepointCommonException(string.Format("ContentType {0} not allowed for list {1}", type.Name, _list.RootFolder));
+            if (_list.IsContentTypeAllowed(contentType) == false) throw new SharepointCommonException(string.Format("ContentType {0} not allowed for list {1}", typeof(TCt), _list.RootFolder));
             _list.ContentTypes.Add(contentType);
         }
 
         public bool ContainsContentType<TCt>() where TCt : Item, new()
         {
-            var type = typeof(TCt);
-            if (type.GetCustomAttributes(typeof(ContentTypeAttribute), false).Length == 0)
-                throw new SharepointCommonException(string.Format("Type {0} need to be marked with ContentTypeAttribute to use in this method", type.FullName));
-
-            var contentType = _web.AvailableContentTypes.Cast<SPContentType>().FirstOrDefault(ct => ct.Name.Equals(type.Name));
-            if (contentType == null) throw new SharepointCommonException(string.Format("ContentType {0} not available at {1}", type.Name, _web.Url));
-
-            return _list.ContentTypes.Cast<SPContentType>().Any(ct => ct.Name == type.Name);
+            var ct = GetContentType(new TCt(), true);
+            return ct != null;
         }
 
         public void RemoveContentType<TCt>() where TCt : Item, new()
         {
-            var type = typeof(TCt);
-
-            if (type.GetCustomAttributes(typeof(ContentTypeAttribute), false).Length == 0)
-                throw new SharepointCommonException(string.Format("Type {0} need to be marked with ContentTypeAttribute to use in this method", type.FullName));
-
-            var contentType = _list.ContentTypes.Cast<SPContentType>().FirstOrDefault(ct => ct.Name == type.Name);
-            if (contentType == null) throw new SharepointCommonException(string.Format("ContentType {0} not applied to list {1}", type.Name, _list.RootFolder));
+            var contentType = GetContentType(new TCt(), true);
+            if (contentType == null) throw new SharepointCommonException(string.Format("ContentType [{0}] not applied to list [{1}]", typeof(TCt), _list.RootFolder));
 
             _list.ContentTypes.Delete(contentType.Id);
         }
@@ -584,7 +582,7 @@
         {
             var wf = WebFactory.Open(_web.Url);
             _web = wf.Web;
-            _list = wf.Web.GetList(_list.RootFolder.Url);
+            _list = wf.Web.Lists[_list.ID];
         }
 
         private SPFolder EnsureFolder(string folderurl)
@@ -607,6 +605,38 @@
                 rootfolder += "/" + newFolderName;
             }
             return folder;
+        }
+
+        private SPContentType GetContentType<TCt>(TCt ct, bool throwIfNoAttribute)
+        {
+            var ctAttrs = Attribute.GetCustomAttributes(ct.GetType(), typeof(ContentTypeAttribute));
+            if (ctAttrs.Length == 0)
+            {
+                if (throwIfNoAttribute) throw new SharepointCommonException(string.Format("Cant find contenttype for [{0}] entity", typeof(TCt)));
+                return null;
+            }
+
+            var ctAttr = (ContentTypeAttribute)ctAttrs[0];
+
+            var bm = _list.ContentTypes.Cast<SPContentType>().FirstOrDefault(c => c.Parent.Id.ToString() == ctAttr.ContentTypeId);
+
+            if (bm == null) return null;
+            var cct = _list.ContentTypes[bm.Id];
+            return cct;
+        }
+
+        private SPContentType GetContentTypeFromWeb<TCt>(TCt ct, bool throwIfNoAttribute)
+        {
+            var ctAttrs = Attribute.GetCustomAttributes(ct.GetType(), typeof(ContentTypeAttribute));
+            if (ctAttrs.Length == 0)
+            {
+                if (throwIfNoAttribute) throw new SharepointCommonException(string.Format("Cant find contenttype for [{0}] entity", typeof(TCt)));
+                return null;
+            }
+
+            var ctAttr = (ContentTypeAttribute)ctAttrs[0];
+            var bm = _list.ParentWeb.AvailableContentTypes.Cast<SPContentType>().FirstOrDefault(c => c.Id.ToString().StartsWith(ctAttr.ContentTypeId));
+            return bm;
         }
     }
 }

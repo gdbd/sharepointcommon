@@ -1,8 +1,8 @@
 ﻿namespace SharepointCommon.Entities
 {
-    using SharepointCommon.Attributes;
+    using Attributes;
 
-    [ContentType]
+    [ContentType("0x0120")]
     public class Folder : Item
     {
        // public string Url { get; set; }

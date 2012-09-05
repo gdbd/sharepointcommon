@@ -2,7 +2,7 @@
 {
     using SharepointCommon.Attributes;
 
-    [ContentType]
+    [ContentType("0x0101")]
     public class Document : Item
     {
         [NotField]

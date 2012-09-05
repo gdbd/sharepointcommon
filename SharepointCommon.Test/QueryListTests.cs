@@ -59,7 +59,12 @@
             var users = _queryWeb.Web.SiteUsers.Cast<SPUser>().ToList();
             var uu = users.Where(u => u.IsDomainGroup == false).ToList();
 
-            _domainGroup = users.First(u => u.IsDomainGroup);
+            _domainGroup = users.FirstOrDefault(u => u.IsDomainGroup);
+            if (_domainGroup == null)
+            {
+                throw new Exception("No domain groups in site users!");
+            }
+
             _spGroup = _queryWeb.Web.SiteGroups[0];
 
             _firstUser = uu[0];

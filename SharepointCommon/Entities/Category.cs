@@ -1,6 +1,6 @@
 namespace SharepointCommon.Entities
 {
-    using SharepointCommon.Attributes;
+    using Attributes;
 
     public enum Category
     {

@@ -2,9 +2,9 @@
 {
     using System;
 
-    using SharepointCommon.Attributes;
+    using Attributes;
 
-    [ContentType]
+    [ContentType("0x0104")]
     public class Announcement : Item
     {
         public virtual string Body { get; set; }
