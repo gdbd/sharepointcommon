@@ -9,6 +9,7 @@
     {
         public virtual string CustomField1 { get; set; }
 
+        [Field(IsMultilineText = true)]
         public virtual string CustomField2 { get; set; }
 
         public virtual double CustomFieldNumber { get; set; }

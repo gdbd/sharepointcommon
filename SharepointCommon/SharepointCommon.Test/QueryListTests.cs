@@ -164,6 +164,50 @@
                 }
             }
         }
+
+        [Test]
+        public void Add_Adds_CustomItem_With_Empty_Fields()
+        {
+            IQueryList<CustomItem> list = null;
+            try
+            {
+                list = _queryWeb.Create<CustomItem>("Add_Adds_CustomItem_With_Empty_Fields");
+                var customItem = new CustomItem
+                {
+                    Title = null,
+                    CustomField1 = null,
+                    CustomField2 = null,
+                   // CustomFieldNumber = 123.5,
+                   // CustomBoolean = true,
+                    CustomUser = null,
+                    CustomUsers = null,
+                    CustomLookup = null,
+                    CustomMultiLookup = null,
+                    CustomDate = null,
+                  //  CustomChoice = TheChoice.Choice2,
+                    Тыдыщ = null,
+                };
+                list.Add(customItem);
+
+                var item = list.ById(customItem.Id);
+
+                Assert.IsNotNull(item);
+                Assert.That(item.Id, Is.EqualTo(customItem.Id));
+                Assert.That(item.Title, Is.EqualTo(customItem.Title));
+                Assert.That(item.CustomField1, Is.EqualTo(customItem.CustomField1));
+                Assert.That(item.CustomField2, Is.EqualTo(customItem.CustomField2));
+                Assert.That(item.CustomFieldNumber, Is.EqualTo(customItem.CustomFieldNumber));
+                Assert.That(item.CustomBoolean, Is.EqualTo(customItem.CustomBoolean));
+              
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
         
         [Test]
         public void Add_Throws_On_Property_No_Virtual()

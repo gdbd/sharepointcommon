@@ -25,5 +25,7 @@ namespace SharepointCommon.Attributes
         public string LookupList { get; set; }
 
         public string LookupField { get; set; }
+
+        public bool IsMultilineText { get; set; }
     }
 }
