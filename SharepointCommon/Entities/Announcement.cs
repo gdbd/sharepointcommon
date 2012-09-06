@@ -4,6 +4,9 @@
 
     using Attributes;
 
+    /// <summary>
+    /// Represents an item with content type 'Announcement' in SharePoint list
+    /// </summary>
     [ContentType("0x0104")]
     public class Announcement : Item
     {

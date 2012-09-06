@@ -5,7 +5,7 @@
     using System.Collections.ObjectModel;
     using System.Linq.Expressions;
 
-    public abstract class ExpressionVisitor
+    internal abstract class ExpressionVisitor
     {
         protected virtual Expression Visit(Expression exp)
         {

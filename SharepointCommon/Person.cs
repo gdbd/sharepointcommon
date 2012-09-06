@@ -1,19 +1,33 @@
 namespace SharepointCommon
 {
+    /// <summary>
+    /// Presents value for a 'User or Group' listitem field
+    /// Used for domain user or group returns 'Person' object, but entity mapping should use only 'User' type
+    /// </summary>
     public class Person : User
     {
-        public Person()
-        {
-            
-        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Person"/> class.
+        /// </summary>
+        public Person() { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Person"/> class.
+        /// </summary>
+        /// <param name="login">domain user or group login</param>
         public Person(string login)
         {
             Login = login;
         }
 
+        /// <summary>
+        /// domain user or group e-mail
+        /// </summary>
         public virtual string Email { get; set; }
 
+        /// <summary>
+        /// domain user or group login
+        /// </summary>
         public virtual string Login { get; set; }
 
         //// TODO: add groups property
