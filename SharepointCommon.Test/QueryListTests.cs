@@ -331,30 +331,71 @@
         [Test]
         public void Add_Adds_CustomItem_With_Nullable()
         {
-            IQueryList<Item> list = null;
-            try
+            using (var factory = WebFactory.Open(_webUrl))
             {
-                list = _queryWeb.Create<Item>("Add_Adds_CustomItem_With_Nullable");
-                var item1 = new Item
+                IQueryList<NullableItem> list = null;
+                try
                 {
-                    Title = "Item1",
-                };
-                list.Add(item1);
+                    list = factory.Create<NullableItem>("Add_Adds_CustomItem_With_Nullable");
 
-                var list2 = _queryWeb.GetById<OneMoreField<bool?>>(list.Id);
-                list2.EnsureField(i => i.AdditionalField);
+                    var item = new NullableItem();
+                    list.Add(item);
 
-                var item2 = list2.Items(CamlQuery.Default).First();
+                    var item2 = list.ById(item.Id);
 
-                bool? addval = item2.AdditionalField;
-
-                Assert.Null(addval);
+                    Assert.Null(item2.CustomDouble);
+                    Assert.Null(item2.CustomInt);
+                    Assert.Null(item2.CustomDecimal);
+                    Assert.Null(item2.CustomBoolean);
+                    Assert.Null(item2.CustomDate);
+                    Assert.Null(item2.CustomChoice);
+                }
+                finally
+                {
+                    if (list != null)
+                    {
+                        list.DeleteList(false);
+                    }
+                }
             }
-            finally
+        }
+
+        [Test]
+        public void Add_Adds_CustomItem_With_Nullable_Set_Fields()
+        {
+            using (var factory = WebFactory.Open(_webUrl))
             {
-                if (list != null)
+                IQueryList<NullableItem> list = null;
+                try
                 {
-                    list.DeleteList(false);
+                    list = factory.Create<NullableItem>("Add_Adds_CustomItem_With_Nullable");
+
+                    var item = new NullableItem
+                                   {
+                                       CustomBoolean = true,
+                                       CustomDouble = 123.5,
+                                       CustomDate = DateTime.Now,
+                                       CustomInt = 101,
+                                       CustomDecimal = 15000,
+                                       CustomChoice = TheChoice.Choice2,
+                                   };
+                    list.Add(item);
+
+                    var item2 = list.ById(item.Id);
+
+                    Assert.That(item2.CustomBoolean, Is.True);
+                    Assert.That(item2.CustomDouble, Is.EqualTo(item.CustomDouble));
+                    Assert.That(item2.CustomDate, Is.EqualTo(item.CustomDate).Within(1).Minutes);
+                    Assert.That(item2.CustomInt, Is.EqualTo(item.CustomInt));
+                    Assert.That(item2.CustomDecimal, Is.EqualTo(item.CustomDecimal));
+                    Assert.That(item2.CustomChoice, Is.EqualTo(item.CustomChoice));
+                }
+                finally
+                {
+                    if (list != null)
+                    {
+                        list.DeleteList(false);
+                    }
                 }
             }
         }
