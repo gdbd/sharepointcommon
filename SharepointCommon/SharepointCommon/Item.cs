@@ -3,8 +3,12 @@
     using System;
     using System.Diagnostics;
 
-    using SharepointCommon.Attributes;
+    using Attributes;
 
+    /// <summary>
+    /// Base entity for present SPList item of content type 'Item'
+    /// Used as root of inheritance for all custom entities and content types
+    /// </summary>
     [DebuggerDisplay("Id={Id},Title={Title}")]
     [ContentType("0x01")]
     public class Item
@@ -18,6 +22,9 @@
         public virtual Version Version { get; internal set; }
         public virtual Guid Guid { get; internal set; }
 
+        /// <summary>
+        /// Gets the reference to item's parent list.
+        /// </summary>
         [NotField]
         public virtual IQueryList<Item> ParentList { get; internal set; }
     }

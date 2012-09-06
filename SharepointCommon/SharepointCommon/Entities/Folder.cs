@@ -2,6 +2,9 @@
 {
     using Attributes;
 
+    /// <summary>
+    /// Represents a folder in SharePoint list
+    /// </summary>
     [ContentType("0x0120")]
     public class Folder : Item
     {

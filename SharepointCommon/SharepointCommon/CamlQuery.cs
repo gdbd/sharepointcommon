@@ -1,11 +1,16 @@
 namespace SharepointCommon
 {
+    using Common;
     using Microsoft.SharePoint;
-
-    using SharepointCommon.Common;
-
+    
+    /// <summary>
+    /// Class used to represent query to SharePoint list, such CAML query, ViewFields and etc.
+    /// </summary>
     public class CamlQuery
     {
+        /// <summary>
+        /// Gets the default query, that return all items with all view fields
+        /// </summary>
         public static CamlQuery Default
         {
             get
@@ -31,30 +36,54 @@ namespace SharepointCommon
 
         internal string CamlStore { get; private set; }
 
+        /// <summary>
+        /// Sets ViewFields used in CAML query
+        /// </summary>
+        /// <param name="viewFields">The view field names (not xml tags!).</param>
+        /// <returns>Fluent instance of that class</returns>
         public CamlQuery ViewFields(params string[] viewFields)
         {
             ViewFieldsStore = viewFields;
             return this;
         }
 
+        /// <summary>
+        /// Indicates that CAML query affects items in subfolders
+        /// </summary>
+        /// <returns>Fluent instance of that class</returns>
         public CamlQuery Recursive()
         {
             IsRecursive = true;
             return this;
         }
 
+        /// <summary>
+        /// Sets limit of rows, returned by CAML query
+        /// </summary>
+        /// <param name="rowlimit"></param>
+        /// <returns>Fluent instance of that class</returns>
         public CamlQuery RowLimit(int rowlimit)
         {
             RowLimitStore = rowlimit;
             return this;
         }
 
+        /// <summary>
+        /// Sets folder url, used in CAML query
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns>Fluent instance of that class</returns>
         public CamlQuery Folder(string url)
         {
             FolderStore = url;
             return this;
         }
 
+        /// <summary>
+        /// Sets CAML query text. Use '<see cref="SharepointCommon.Common.Q"/>' class to construct query
+        /// </summary>
+        /// <param name="caml">The caml.</param>
+        /// <returns>Fluent instance of that class</returns>
         public CamlQuery Query(string caml)
         {
             CamlStore = caml;
