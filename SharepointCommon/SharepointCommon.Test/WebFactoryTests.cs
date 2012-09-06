@@ -106,6 +106,33 @@
                 }
             }
         }
+
+        [Test]
+        public void Create_Creates_List_With_Custom_Nullable_Test()
+        {
+            using (var factory = WebFactory.Open(_webUrl))
+            {
+                IQueryList<NullableItem> list = null;
+                try
+                {
+                    list = factory.Create<NullableItem>("Create_Creates_List_With_Custom_Nullable_Test");
+
+                    list.ContainsField(i => i.CustomDouble);
+                    list.ContainsField(i => i.CustomInt);
+                    list.ContainsField(i => i.CustomDecimal);
+                    list.ContainsField(i => i.CustomBoolean);
+                    list.ContainsField(i => i.CustomDate);
+                    list.ContainsField(i => i.CustomChoice);
+                }
+                finally
+                {
+                    if (list != null)
+                    {
+                        list.DeleteList(false);
+                    }
+                }
+            }
+        }
         
         [Test]
         public void Create_Creates_List_With_ContentType_Test()

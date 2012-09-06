@@ -20,7 +20,7 @@
         [Test]
         public void SP()
         {
-           /* using (var site = new SPSite(string.Format("http://{0}/", Environment.MachineName)))
+            /* using (var site = new SPSite(string.Format("http://{0}/", Environment.MachineName)))
             {
                 using (var web = site.OpenWeb())
                 {

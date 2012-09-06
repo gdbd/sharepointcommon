@@ -142,11 +142,53 @@
                 return version;
             }
 
+            if (field.Type == SPFieldType.Number)
+            {
+                if (propType == typeof(int))
+                {
+                    int val = Convert.ToInt32(fieldValue);
+                    return val;
+                }
+
+                if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
+                {
+                    Type argumentType = propType.GetGenericArguments()[0];
+                    if (argumentType == typeof(int))
+                    {
+                        return fieldValue == null ? (int?)null : Convert.ToInt32(fieldValue);
+                    }
+                }
+            }
+
+            if (field.Type == SPFieldType.Currency)
+            {
+                if (propType == typeof(decimal))
+                {
+                    decimal val = Convert.ToDecimal(fieldValue);
+                    return val;
+                }
+
+                if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
+                {
+                    Type argumentType = propType.GetGenericArguments()[0];
+                    if (argumentType == typeof(decimal))
+                    {
+                        return fieldValue == null ? (decimal?)null : Convert.ToDecimal(fieldValue);
+                    }
+                }
+            }
+
             if (field.Type == SPFieldType.Choice)
             {
                 if (propType.IsEnum == false)
-                    throw new SharepointCommonException(string.Format("Property '{0}' must be declared as enum with fields corresponds to choices", propName));
-
+                {
+                    if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
+                    {
+                        Type argumentType = propType.GetGenericArguments()[0];
+                        if (argumentType.IsEnum == false) throw new SharepointCommonException(string.Format("Property '{0}' must be declared as enum with fields corresponds to choices", propName));
+                        propType = argumentType;
+                    }
+                }
 
                 return EnumMapper.ToEntity(propType, fieldValue);
             }

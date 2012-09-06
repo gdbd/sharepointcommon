@@ -118,17 +118,12 @@
                 return field;
             }
 
-            if (propType == typeof(DateTime))
+            if (propType == typeof(DateTime) || propType == typeof(DateTime?))
             {
                 field.Type = SPFieldType.DateTime;
                 return field;
             }
-
-            if (propType == typeof(DateTime?))
-            {
-                field.Type = SPFieldType.DateTime;
-                return field;
-            }
+            
 
             if (propType == typeof(User))
             {
@@ -136,9 +131,16 @@
                 return field;
             }
 
-            if (propType == typeof(double) || propType == typeof(int) || propType == typeof(float))
+            if (propType == typeof(double) || propType == typeof(double?)
+                || propType == typeof(int) || propType == typeof(int?))
             {
                 field.Type = SPFieldType.Number;
+                return field;
+            }
+
+            if (propType == typeof(decimal) || propType == typeof(decimal?))
+            {
+                field.Type = SPFieldType.Currency;
                 return field;
             }
 
@@ -191,7 +193,7 @@
                     return field;
                 }
             }
-
+            
             if (propType.IsEnum)
             {
                 field.Type = SPFieldType.Choice;
@@ -199,6 +201,20 @@
                 if (field.Choices.Any() == false)
                     throw new SharepointCommonException("enum must have at least one field");
                 return field;
+            }
+
+            if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
+            {
+                Type argumentType = propType.GetGenericArguments()[0];
+
+                if (argumentType.IsEnum)
+                {
+                    field.Type = SPFieldType.Choice;
+                    field.Choices = Enum.GetNames(argumentType);
+                    if (field.Choices.Any() == false)
+                        throw new SharepointCommonException("enum must have at least one field");
+                    return field;
+                }
             }
 
             throw new SharepointCommonException("no field type mapping found");
