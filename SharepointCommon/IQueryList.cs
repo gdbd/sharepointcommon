@@ -3,7 +3,6 @@ namespace SharepointCommon
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
-    using Exceptions;
 
     /// <summary>
     /// Represents wrapper on a SharePoint list or library

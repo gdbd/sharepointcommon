@@ -1,7 +1,6 @@
 ﻿namespace SharepointCommon.Common
 {
     using System;
-    using Exceptions;
     using Microsoft.SharePoint;
 
     internal static class Assert

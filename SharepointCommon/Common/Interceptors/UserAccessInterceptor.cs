@@ -4,8 +4,6 @@
 
     using Microsoft.SharePoint;
 
-    using SharepointCommon.Exceptions;
-
     internal class UserAccessInterceptor : IInterceptor
     {
         private readonly SPUser _user;

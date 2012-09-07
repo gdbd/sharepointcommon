@@ -80,7 +80,7 @@ namespace SharepointCommon
         }
 
         /// <summary>
-        /// Sets CAML query text. Use '<see cref="SharepointCommon.Common.Q"/>' class to construct query
+        /// Sets CAML query text. Use '<see cref="SharepointCommon.Q"/>' class to construct query
         /// </summary>
         /// <param name="caml">The caml.</param>
         /// <returns>Fluent instance of that class</returns>

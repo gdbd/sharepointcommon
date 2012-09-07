@@ -2,12 +2,12 @@ namespace SharepointCommon.Impl
 {
     using System;
     using System.Diagnostics;
-    using System.Security.Principal;
+
     using Microsoft.SharePoint;
+
     using Attributes;
+    using Common;
     using Entities;
-    using Exceptions;
-    using SharepointCommon.Common;
 
     [DebuggerDisplay("Url = {Web.Url}")]
     internal sealed class QueryWeb : IQueryWeb

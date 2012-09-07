@@ -5,7 +5,7 @@
     using Microsoft.SharePoint;
 
     /// <summary>
-    /// Presents an abstract wrapper for SPWeb and SPSite objects
+    /// Represents an abstract wrapper for SPWeb and SPSite objects
     /// </summary>
     public interface IQueryWeb : IDisposable
     {

@@ -5,9 +5,7 @@
     using System.Linq;
     using Microsoft.SharePoint;
     using NUnit.Framework;
-    using Common;
     using Entities;
-    using Exceptions;
     using Entity;
     using Assert = NUnit.Framework.Assert;
 

@@ -32,8 +32,10 @@ using System;
 using System.Globalization;
 using System.Text;
 
-namespace SharepointCommon.Common
+namespace SharepointCommon
 {
+    using Common;
+
     /// <summary>
     /// A helper class for working with CAML queries.
     /// </summary>

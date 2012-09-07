@@ -5,9 +5,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharepointCommon", "Sharepo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharepointCommon.Test", "SharepointCommon.Test\SharepointCommon.Test.csproj", "{862730D3-4233-46D1-B8CC-E0C828943AF8}"
 EndProject
+Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "SharepointCommon.Docs", "SharepointCommon.Docs\SharepointCommon.Docs.shfbproj", "{03F011F7-993D-47F4-8906-D02FA02C684F}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
+		SccNumberOfProjects = 4
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs29
 		SccLocalPath0 = .
@@ -17,6 +19,9 @@ Global
 		SccProjectUniqueName2 = SharepointCommon\\SharepointCommon.csproj
 		SccProjectName2 = SharepointCommon
 		SccLocalPath2 = SharepointCommon
+		SccProjectUniqueName3 = SharepointCommon.Docs\\SharepointCommon.Docs.shfbproj
+		SccProjectName3 = SharepointCommon.Docs
+		SccLocalPath3 = SharepointCommon.Docs
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +36,10 @@ Global
 		{862730D3-4233-46D1-B8CC-E0C828943AF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{862730D3-4233-46D1-B8CC-E0C828943AF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{862730D3-4233-46D1-B8CC-E0C828943AF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03F011F7-993D-47F4-8906-D02FA02C684F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03F011F7-993D-47F4-8906-D02FA02C684F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03F011F7-993D-47F4-8906-D02FA02C684F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03F011F7-993D-47F4-8906-D02FA02C684F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
