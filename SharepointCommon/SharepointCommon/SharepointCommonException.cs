@@ -1,4 +1,4 @@
-﻿namespace SharepointCommon.Exceptions
+﻿namespace SharepointCommon
 {
     using System;
 

@@ -2,9 +2,8 @@
 {
     using NUnit.Framework;
 
-    using SharepointCommon.Common;
-    using SharepointCommon.Exceptions;
-    using SharepointCommon.Test.Entity;
+    using Common;
+    using Entity;
 
     using Assert = NUnit.Framework.Assert;
 

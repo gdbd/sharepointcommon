@@ -14,11 +14,10 @@ namespace SharepointCommon.Impl
 
     using Microsoft.SharePoint;
 
-    using SharepointCommon.Attributes;
-    using SharepointCommon.Common;
-    using SharepointCommon.Entities;
-    using SharepointCommon.Exceptions;
-    using SharepointCommon.Expressions;
+    using Attributes;
+    using Common;
+    using Entities;
+    using Expressions;
 
     [DebuggerDisplay("Title = {Title}, Url= {Url}")]
     internal sealed class QueryList<T> : IQueryList<T> where T : Item, new()

@@ -2,6 +2,9 @@ namespace SharepointCommon.Entities
 {
     using Attributes;
 
+    /// <summary>
+    /// Enumeration for content type 'Holiday' field 'Category'
+    /// </summary>
     public enum Category
     {
         [Field("(1) Category1")]

@@ -290,10 +290,10 @@
     <Compile Include="Common\Interceptors\UserAccessInterceptor.cs" />
     <Compile Include="Common\UserIterator.cs" />
     <Compile Include="Entities\Holiday.cs" />
-    <Compile Include="Exceptions\SharepointCommonException.cs" />
+    <Compile Include="SharepointCommonException.cs" />
     <Compile Include="Expressions\ExpressionVisitor.cs" />
     <Compile Include="Common\FieldMapper.cs" />
-    <Compile Include="Common\Q.cs" />
+    <Compile Include="Q.cs" />
     <Compile Include="Attributes\ContentTypeAttribute.cs" />
     <Compile Include="Entities\Announcement.cs" />
     <Compile Include="Entities\Document.cs" />
@@ -301,6 +301,7 @@
     <Compile Include="Entities\Folder.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Expressions\MemberAccessVisitor.cs" />
+    <Compile Include="Properties\NamespaceDoc.cs" />
     <Compile Include="PageType.cs" />
     <Compile Include="Attributes\NotFieldAttribute.cs" />
     <Compile Include="Person.cs" />
@@ -333,6 +334,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

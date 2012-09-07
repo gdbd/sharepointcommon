@@ -10,10 +10,8 @@
 
     using Microsoft.SharePoint;
 
-    using SharepointCommon.Attributes;
-    using SharepointCommon.Common.Interceptors;
-    using SharepointCommon.Exceptions;
-    using SharepointCommon.Impl;
+    using Attributes;
+    using Interceptors;
 
     internal sealed class EntityMapper
     {
