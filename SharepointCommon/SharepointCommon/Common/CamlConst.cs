@@ -2,6 +2,8 @@ namespace SharepointCommon.Common
 {
     internal sealed class CamlConst
     {
+        public const string Values = "Values";
+        public const string In = "In";
         public const string FieldRef = "FieldRef";
         public const string Name = "Name";
         public const string Geq = "Geq";

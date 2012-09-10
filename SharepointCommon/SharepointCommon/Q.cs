@@ -34,6 +34,8 @@ using System.Text;
 
 namespace SharepointCommon
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using Common;
 
     /// <summary>
@@ -83,10 +85,12 @@ namespace SharepointCommon
             }
             return builder.ToString();
         }
+
         /// <summary>
         /// Use this enumeration to specify sorting of field elements.
         /// </summary>
-        public enum SortType {
+        public enum SortType 
+        {
             /// <summary>
             /// Items are sorted in ascending order.
             /// </summary>
@@ -99,7 +103,8 @@ namespace SharepointCommon
         /// <summary>
         /// Use this enumeration to specify membership types.
         /// </summary>
-        public enum MembershipType {
+        public enum MembershipType 
+        {
             /// <summary>
             /// Returns all users who are either members of the site or who have browsed to the site as authenticated members of a domain group in the site.
             /// </summary>
@@ -125,7 +130,8 @@ namespace SharepointCommon
         /// <summary>
         /// Use this enumeration to specify the base list type for cross site queries.
         /// </summary>
-        public enum BaseType {
+        public enum BaseType 
+        {
             /// <summary>
             /// A generic list.
             /// </summary>
@@ -151,6 +157,7 @@ namespace SharepointCommon
         /// <summary>
         /// Use this enumeration to specify the scope of a site data query.
         /// </summary>
+        /// 
         public enum QueryScope
         {
             /// <summary>
@@ -166,6 +173,7 @@ namespace SharepointCommon
             /// </summary>
             SiteCollection
         }
+
         /// <summary>
         /// Specifies the logical conjunction of two CAML clauses.
         /// </summary>
@@ -173,6 +181,7 @@ namespace SharepointCommon
         /// <param name="rightPart">the right part of the join</param>
         /// <returns>a new CAML And element</returns>
         public static string And(string leftPart, string rightPart) { return Tag(CamlConst.And, null, null, leftPart + rightPart); }
+
         /// <summary>
         /// Specifies that the value of a given field begins with the specified value.
         /// </summary>
@@ -180,6 +189,7 @@ namespace SharepointCommon
         /// <param name="valueElement">a CAML Value element</param>
         /// <returns>a new CAML BeginsWith element</returns>
         public static string BeginsWith(string fieldRefElement, string valueElement) { return Tag(CamlConst.BeginsWith, null, null, fieldRefElement + valueElement); }
+
         /// <summary>
         /// Specifies that the value of a given field contains the specified value.
         /// </summary>
@@ -187,6 +197,7 @@ namespace SharepointCommon
         /// <param name="valueElement">a CAML Value element</param>
         /// <returns>a new CAML Contains element</returns>
         public static string Contains(string fieldRefElement, string valueElement) { return Tag(CamlConst.Contains, null, null, fieldRefElement + valueElement); }
+
         /// <summary>
         /// Tests whether the dates in a recurring event overlap a specified DateTime value.
         /// </summary>
@@ -194,6 +205,7 @@ namespace SharepointCommon
         /// <param name="valueElement">a CAML Value element containing the date to be tested</param>
         /// <returns>a new CAML DateRangesOverlap element</returns>
         public static string DateRangesOverlap(string fieldRefElement, string valueElement) { return Tag(CamlConst.DateRangesOverlap, null, null, fieldRefElement + FieldRef("EndDate") + FieldRef("RecurrenceID") + valueElement); }
+
         /// <summary>
         /// Tests the equality of two CAML clauses.
         /// </summary>
@@ -201,12 +213,14 @@ namespace SharepointCommon
         /// <param name="rightPart">the right part of expression</param>
         /// <returns>a new CAML EQ element</returns>
         public static string Eq(string leftPart, string rightPart){ return Tag(CamlConst.Eq, null, null, leftPart + rightPart); }
+
         /// <summary>
         /// Identifies a CAML field by reference.
         /// </summary>
         /// <param name="fieldName">the name of the referenced field</param>
         /// <returns>a new CAML FieldRef element</returns>
         public static string FieldRef(string fieldName) { return Tag(CamlConst.FieldRef, CamlConst.Name, SafeIdentifier(fieldName), null); }
+
         /// <summary>
         /// Identifies a CAML field and specifies a sorting.
         /// </summary>
@@ -214,6 +228,15 @@ namespace SharepointCommon
         /// <param name="sortType">indicates how the resulting field instances shall be sorted</param>
         /// <returns>a new CAML FieldRef element with sorting</returns>
         public static string FieldRef(string fieldName, SortType sortType) { return Tag(CamlConst.FieldRef, null, new object[]{"Ascending", sortType == SortType.Ascending ? "TRUE" : "FALSE", CamlConst.Name, SafeIdentifier(fieldName) }); }
+
+        /// <summary>
+        /// Identifies a CAML field and specifies LookupId attribute if needed.
+        /// </summary>
+        /// <param name="fieldName">the name of the referenced field</param>
+        /// <param name="lookupId">indicates whether to add LookupId attribute to FieldRef clause</param>
+        /// <returns>a new CAML FieldRef element </returns>
+        public static string FieldRef(string fieldName, bool lookupId) { return !lookupId ? FieldRef(fieldName) : Tag(CamlConst.FieldRef, null, new object[] { "LookupId", "TRUE", CamlConst.Name, SafeIdentifier(fieldName) }); }
+
         /// <summary>
         /// Tests whether the left expression is greater than or equal to the right.
         /// </summary>
@@ -221,12 +244,14 @@ namespace SharepointCommon
         /// <param name="rightPart">the right expression</param>
         /// <returns>a new CAML GEQ element</returns>
         public static string Geq(string leftPart, string rightPart) { return Tag(CamlConst.Geq, null, null, leftPart + rightPart); }
+
         /// <summary>
         /// Identifies a field reference for grouping.
         /// </summary>
         /// <param name="fieldRefElement">a CAML FieldRef element</param>
         /// <returns>a new CAML GroupBy element</returns>
         public static string GroupBy(string fieldRefElement) { return GroupBy(fieldRefElement, false); }
+
         /// <summary>
         /// Identifies a field reference for grouping and specifies whether to collapse the group.
         /// </summary>
@@ -234,6 +259,21 @@ namespace SharepointCommon
         /// <param name="bCollapse">whether to collapse the group</param>
         /// <returns>a new CAML GroupBy element</returns>
         public static string GroupBy(string fieldRefElement, bool bCollapse) { return Tag(CamlConst.GroupBy, CamlConst.Collapse, bCollapse ? "TRUE" : "FALSE", fieldRefElement); }
+
+        /// <summary>
+        /// Builds an In element from a fieldRef element and array of values.
+        /// </summary>
+        /// <param name="fieldRefElement">a CAML FieldRef element</param>
+        /// <param name="valueType">a string describing the data type</param>
+        /// <param name="fieldValues">an IEnumerable of values each formatted as a string</param>
+        /// <returns>a new CAML In element</returns>
+        public static string In(string fieldRefElement, string valueType, IEnumerable<string> fieldValues)
+        {
+            var valuesTags = string.Join(string.Empty, fieldValues.Select(v => Value(valueType, v)).ToArray());
+
+            return Tag(CamlConst.In, null, null, string.Format("{0}{1}", fieldRefElement, Tag(CamlConst.Values, null, null, valuesTags)));
+        }
+
         /// <summary>
         /// Tests whether the left expression is greater than the right.
         /// </summary>
@@ -241,12 +281,14 @@ namespace SharepointCommon
         /// <param name="rightPart">the right expression</param>
         /// <returns>a new CAML GT element</returns>
         public static string Gt(string leftPart, string rightPart) { return Tag(CamlConst.Gt, null, null, leftPart + rightPart); }
+
         /// <summary>
         /// Determines whether a given field contains a value.
         /// </summary>
         /// <param name="fieldRefElement">a CAML FieldRef element</param>
         /// <returns>a new CAML IsNotNull element</returns>
         public static string IsNotNull(string fieldRefElement) { return Tag(CamlConst.IsNotNull, null, null, fieldRefElement); }
+
         /// <summary>
         /// Determines whether a given field is null.
         /// </summary>
@@ -254,6 +296,7 @@ namespace SharepointCommon
         /// <param name="fieldRefElement">a CAML FieldRef element</param>
         /// <returns>a new CAML IsNull element</returns>
         public static string IsNull(string fieldRefElement) { return Tag(CamlConst.IsNull, null, null, fieldRefElement); }
+
         /// <summary>
         /// Tests whether the left expression is less than or equal to the right.
         /// </summary>
@@ -261,6 +304,7 @@ namespace SharepointCommon
         /// <param name="rightPart">the right expression</param>
         /// <returns>a new CAML LEQ element</returns>
         public static string Leq(string leftPart, string rightPart) { return Tag(CamlConst.Leq, null, null, leftPart + rightPart); }
+
         /// <summary>
         /// Creates a "safe" identifier for use in CAML expressions.
         /// </summary>
@@ -279,23 +323,27 @@ namespace SharepointCommon
         {
             return Tag(CamlConst.List, "ID", listId.ToString().Replace("{", "").Replace("}", ""),null);
         }
+
         /// <summary>
         /// Specifies which lists to include in a query.
         /// </summary>
         /// <param name="listElements">an XML string containing individual list elements</param>
         public static string Lists(string listElements) { return Lists(BaseType.GenericList, listElements, null, false, 0); }
+
         /// <summary>
         /// Specifies which lists to include in a query.
         /// </summary>
         /// <param name="listElements">an XML string containing individual list elements</param>
         /// <param name="includeHiddenLists">determines whether the query will include hidden lists</param>
         public static string Lists(string listElements, bool includeHiddenLists) { return Lists(BaseType.GenericList, listElements, null, includeHiddenLists); }
+
         /// <summary>
         /// Specifies which lists to include in a query.
         /// </summary>
         /// <param name="listElements">an XML string containing individual list elements</param>
         /// <param name="maxListLimit">limits the query to the total number of lists specified.  By default, the limit is 1000.</param>
         public static string Lists(string listElements, int maxListLimit) { return Lists(BaseType.GenericList, listElements, null, false, maxListLimit); }
+
         /// <summary>
         /// Specifies which lists to include in a query.
         /// </summary>
@@ -303,12 +351,14 @@ namespace SharepointCommon
         /// <param name="serverTemplate">limits the query to lists of the specified server template, specified as a number - for example '101'</param>
         /// <param name="includeHiddenLists">determines whether the query will include hidden lists</param>
         public static string Lists(string listElements, string serverTemplate, bool includeHiddenLists) { return Lists(BaseType.GenericList, listElements, serverTemplate, includeHiddenLists); }
+
         /// <summary>
         /// Specifies which lists to include in a query.
         /// </summary>
         /// <param name="baseType">limits the query to lists of the specified base type</param>
         /// <param name="listElements">an XML string containing individual list elements</param>
         public static string Lists(BaseType baseType, string listElements) { return Lists(baseType, listElements, null, false, 0); }
+
         /// <summary>
         /// Specifies which lists to include in a query.
         /// </summary>
@@ -316,6 +366,7 @@ namespace SharepointCommon
         /// <param name="listElements">an XML string containing individual list elements</param>
         /// <param name="serverTemplate">limits the query to lists of the specified server template, specified as a number - for example '101'</param>
         public static string Lists(BaseType baseType, string listElements, string serverTemplate) { return Lists(baseType, listElements, serverTemplate, false, 0); }
+
         /// <summary>
         /// Specifies which lists to include in a query.
         /// </summary>
@@ -324,6 +375,7 @@ namespace SharepointCommon
         /// <param name="serverTemplate">limits the query to lists of the specified server template, specified as a number - for example '101'</param>
         /// <param name="includeHiddenLists">determines whether the query will include hidden lists</param>
         public static string Lists(BaseType baseType, string listElements, string serverTemplate, bool includeHiddenLists) { return Lists(baseType, listElements, serverTemplate, includeHiddenLists, 0); }
+
         /// <summary>
         /// Specifies which lists to include in a query.
         /// </summary>
@@ -345,6 +397,7 @@ namespace SharepointCommon
             sb.AppendFormat(">{0}</Lists>",listElements);
             return sb.ToString();
         }
+
         /// <summary>
         /// Special optional child of the Lists element.
         /// </summary>
@@ -365,12 +418,14 @@ namespace SharepointCommon
         /// <param name="rightPart">the right expression</param>
         /// <returns>a new CAML LT element</returns>
         public static string Lt(string leftPart, string rightPart) { return Tag(CamlConst.Lt, null, null, leftPart + rightPart); }
+
         /// <summary>
         /// Specifies the membership for a query <see cref="Q.MembershipType"/>.
         /// </summary>
         /// <param name="type">specifies the membership type</param>
         /// <returns>a new CAML Membership element</returns>
         public static string Membership(MembershipType type) { return Membership(type, null); }
+
         /// <summary>
         /// Specifies the membership for a query <see cref="Q.MembershipType"/>
         /// </summary>
@@ -401,6 +456,7 @@ namespace SharepointCommon
         /// <param name="rightPart">the right expression</param>
         /// <returns>a new CAML NEQ element</returns>
         public static string Neq(string leftPart, string rightPart) { return Tag(CamlConst.Neq, null, null, leftPart + rightPart); }
+
         /// <summary>
         /// Specifies the logical disjunction of two CAML expressions.
         /// </summary>
@@ -408,12 +464,14 @@ namespace SharepointCommon
         /// <param name="rightPart">the right part of the logical join</param>
         /// <returns>a new CAML OR element</returns>
         public static string Or(string leftPart, string rightPart) { return Tag(CamlConst.Or, null, null, leftPart + rightPart); }
+
         /// <summary>
         /// Specifies the names of fields to be used for ordering the result set.
         /// </summary>
         /// <param name="fieldRefElements">a CAML string containing a list of CAML FieldRef elements</param>
         /// <returns>a new CAML OrderBy element</returns>
         public static string OrderBy(string fieldRefElements) { return Tag(CamlConst.OrderBy, null, null, fieldRefElements); }
+
         /// <summary>
         /// Builds an OrderBy element from an array of FieldRef elements.
         /// </summary>
@@ -425,34 +483,35 @@ namespace SharepointCommon
             foreach (object o in args) { fieldRefElements += o.ToString(); }
             return Tag(CamlConst.OrderBy, null, null, fieldRefElements);
         }
+
         /// <summary>
         /// Specifies a string value
         /// </summary>
         /// <param name="fieldValue">the string value to be expressed in CAML</param>
         /// <returns>a new CAML Value element</returns>
         public static string Value(string fieldValue) { return Tag(CamlConst.Value, CamlConst.Type, CamlConst.Text, fieldValue); }
+
         /// <summary>
         /// Specifies an integer value
         /// </summary>
         /// <param name="fieldValue">the integer value to be expressed in CAML</param>
         /// <returns>a new CAML Value element</returns>
-        public static string Value(int fieldValue) { return Tag(CamlConst.Value, CamlConst.Type, CamlConst.Integer,
-            fieldValue.ToString(CultureInfo.InvariantCulture)); }
+        public static string Value(int fieldValue) { return Tag(CamlConst.Value, CamlConst.Type, CamlConst.Integer, fieldValue.ToString(CultureInfo.InvariantCulture)); }
+
         /// <summary>
         /// Specifies a DateTime value
         /// </summary>
         /// <param name="fieldValue">the DateTime value to be expressed in CAML</param>
         /// <returns>a new CAML Value element</returns>
-        public static string Value(DateTime fieldValue) { return Tag(CamlConst.Value, CamlConst.Type, CamlConst.DateTime, 
-            fieldValue.ToString(CultureInfo.InvariantCulture)); }
+        public static string Value(DateTime fieldValue) { return Tag(CamlConst.Value, CamlConst.Type, CamlConst.DateTime, fieldValue.ToString(CultureInfo.InvariantCulture)); }
+
         /// <summary>
         /// Specifies a boolean value
         /// </summary>
         /// <param name="fieldValue">the boolean value to be expressed in CAML</param>
         /// <returns>a new CAML Value element</returns>
-        public static string Value(bool fieldValue) { return Tag(CamlConst.Value, CamlConst.Type, CamlConst.Boolean,
-            fieldValue.ToString(CultureInfo.InvariantCulture));
-        }
+        public static string Value(bool fieldValue) { return Tag(CamlConst.Value, CamlConst.Type, CamlConst.Boolean, fieldValue.ToString(CultureInfo.InvariantCulture)); }
+
         /// <summary>
         /// Specifies a value of a given type
         /// </summary>
@@ -460,6 +519,7 @@ namespace SharepointCommon
         /// <param name="fieldValue">the value formatted as a string</param>
         /// <returns>a new CAML Value element</returns>
         public static string Value(string valueType, string fieldValue) { return Tag(CamlConst.Value, CamlConst.Type, valueType, fieldValue); }
+
         /// <summary>
         /// Specifies which fields to include in the query result set.
         /// </summary>
@@ -471,6 +531,7 @@ namespace SharepointCommon
             foreach (object field in fields) { fieldRefElements += field.ToString(); }
             return Tag(CamlConst.ViewFields, null, null, fieldRefElements);
         }
+
         /// <summary>
         /// Specifies which Web sites to include in the query as specified by the Scope attribute.
         /// </summary>
@@ -554,9 +615,7 @@ namespace SharepointCommon
         /// <param name="stripWhiteSpace">TRUE to remove white space from the beginning and end of the value returned by the element.</param>
         /// <param name="urlEncodingType">specifies how to handle URL encoding <see cref="Q.UrlEncodingType"/></param>
         /// <returns></returns>
-        public static string ProjectProperty(string propertyName, string defaultValue,
-            AutoHyperlinkType autoHyperlinkType, bool autoNewLine, bool expandXML, bool htmlEncode,
-            bool stripWhiteSpace, UrlEncodingType urlEncodingType)
+        public static string ProjectProperty(string propertyName, string defaultValue, AutoHyperlinkType autoHyperlinkType, bool autoNewLine, bool expandXML, bool htmlEncode, bool stripWhiteSpace, UrlEncodingType urlEncodingType)
         {
             return Tag(CamlConst.ProjectProperty, null,
                 new [] { 
@@ -571,7 +630,7 @@ namespace SharepointCommon
                         urlEncodingType==UrlEncodingType.None ? "FALSE" : "TRUE"
                 });
         }
-
+        
         /// <summary>
         /// Specifies the WHERE part of a query.
         /// </summary>
