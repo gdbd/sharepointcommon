@@ -9,7 +9,7 @@
     {
         public virtual string CustomField1 { get; set; }
 
-        [Field(IsMultilineText = true)]
+        [Field(IsMultilineText = true, DisplayName = "Многостр.текст")]
         public virtual string CustomField2 { get; set; }
 
         public virtual double CustomFieldNumber { get; set; }

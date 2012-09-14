@@ -216,6 +216,9 @@
                 }
             }
 
+            if (propType == typeof(Person))
+                throw new SharepointCommonException("Cannot use [Person] as mapped property. Use [User] instead.");
+
             throw new SharepointCommonException("no field type mapping found");
         }
         
