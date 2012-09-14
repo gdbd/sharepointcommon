@@ -1270,6 +1270,8 @@
         #endregion
 
         #region Misc methods
+        
+
         [Test]
         public void FormUrlTest()
         {
@@ -1364,6 +1366,60 @@
             Assert.Throws<SharepointCommonException>(test);
         }
 
+        [Test]
+        public void DisplayName_Applies_Test()
+        {
+            IQueryList<CustomItem> list = null;
+
+            try
+            {
+                list = _queryWeb.Create<CustomItem>("List785");
+
+                var field = list.GetField(ci => ci.CustomField2);
+
+                Assert.That(field.DisplayName, Is.EqualTo("Многостр.текст"));
+            }
+            finally
+            {
+                if (list != null) list.DeleteList(false);
+            }
+
+        }
+
+        [Test]
+        public void GetField_Returns_Field_Test()
+        {
+            var field = _list.GetField(i => i.Title);
+
+            Assert.That(field, Is.Not.Null);
+            Assert.That(field.Name, Is.EqualTo("Title"));
+            Assert.That(field.Type, Is.EqualTo(Microsoft.SharePoint.SPFieldType.Text));
+        }
+
+        [Test]
+        public void GetFields_Returns_Fields_Test()
+        {
+            IQueryList<CustomItem> list = null;
+            try
+            {
+                list = _queryWeb.Create<CustomItem>("GetFields_Returns_Fields_Test");
+                var fields = list.GetFields(true).ToList();
+
+                Assert.That(fields, Is.Not.Null);
+                CollectionAssert.IsNotEmpty(fields);
+                Assert.That(fields.Any(f => f.Name.Equals("CustomField1")), Is.True);
+                Assert.That(fields.Any(f => f.Name.Equals("HTML_x0020_File_x0020_Type")), Is.False);
+                Assert.That(fields.All(field => field.Id != default(Guid)));
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
+
         #endregion
 
         [Test]
@@ -1396,40 +1452,6 @@
         }
 
         [Test]
-        public void GetField_Returns_Field_Test()
-        {
-            var field = _list.GetField(i => i.Title);
-
-            Assert.That(field, Is.Not.Null);
-            Assert.That(field.Name, Is.EqualTo("Title"));
-            Assert.That(field.Type, Is.EqualTo(Microsoft.SharePoint.SPFieldType.Text));            
-        }
-
-        [Test]
-        public void GetFields_Returns_Fields_Test()
-        {
-            IQueryList<CustomItem> list = null;
-            try
-            {
-                list = _queryWeb.Create<CustomItem>("GetFields_Returns_Fields_Test");
-                var fields = list.GetFields(true).ToList();
-
-                Assert.That(fields, Is.Not.Null);
-                CollectionAssert.IsNotEmpty(fields);
-                Assert.That(fields.Any(f => f.Name.Equals("CustomField1")), Is.True);
-                Assert.That(fields.Any(f => f.Name.Equals("HTML_x0020_File_x0020_Type")), Is.False);
-                Assert.That(fields.All(field => field.Id != default(Guid)));
-            }
-            finally
-            {
-                if (list != null)
-                {
-                    list.DeleteList(false);
-                }
-            }
-        }
-
-        [Test]
         public void Item_ParentList_Contains_Reference_To_ParentList()
         {
             var itm = new Item { Title = "Item_ParentList_Contains_Reference_To_ParentList" };
@@ -1439,6 +1461,34 @@
 
             Assert.That(itm2.ParentList, Is.Not.Null);
             Assert.That(itm2.ParentList.Id, Is.EqualTo(_list.Id));
+        }
+
+        [Test]
+        public void Use_Person_As_Property_Throws_Test()
+        {
+            IQueryList<OneMoreField<Person>> list = null;
+            try
+            {
+                TestDelegate test = () =>
+                {
+                    list = _queryWeb.Create<OneMoreField<Person>>("Use_Person_As_Property_Throws_Test");
+               
+                    var customItem = new OneMoreField<Person>
+                    {
+                        Title = "Items_ReturnsColectionOfCustomItemsTest",
+                        AdditionalField = new Person("test@test.com")
+                    };
+                    list.Add(customItem);
+                };
+                Assert.Throws<SharepointCommonException>(test);
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
         }
 
         /*

@@ -395,6 +395,9 @@
                     continue;
                 }
 
+                if (prop.PropertyType == typeof(Person))
+                    throw new SharepointCommonException("Cannot use [Person] as mapped property. Use [User] instead.");
+
                 listItem[spName] = propValue;
             }
         }
