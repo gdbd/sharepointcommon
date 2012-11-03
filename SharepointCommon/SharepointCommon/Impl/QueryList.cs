@@ -529,14 +529,13 @@ namespace SharepointCommon.Impl
                 var choiceProp = typeof(T).GetProperty(fieldInfo.PropName);
 
                 var choices = fieldInfo.Choices.ToArray();
-                choices = EnumMapper.GetEnumMemberTitles(choiceProp.PropertyType).ToArray();
                 
                 field.Choices.AddRange(choices);
                 field.DefaultValue = field.Choices[0];
 
-                FieldMapper.RenameToDisplay(field, fieldInfo);
+                if (FieldMapper.RenameToDisplay(field, fieldInfo) == false)
+                    field.Update();
 
-                field.Update();
                 return;
             }
 

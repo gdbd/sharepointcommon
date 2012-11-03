@@ -30,6 +30,9 @@
 
         public virtual TheChoice CustomChoice { get; set; }
 
+        [Field(DisplayName = "The CustomChoice 2")]
+        public virtual TheChoice CustomChoice2 { get; set; }
+
         [Field(Name = "_x0422__x044b__x0434__x044b__x04", DisplayName = "Тыдыщ видимое")]
         public virtual string Тыдыщ { get; set; }
     }

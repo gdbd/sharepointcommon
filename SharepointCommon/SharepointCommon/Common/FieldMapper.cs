@@ -258,12 +258,13 @@
             return fields.Contains(spName) == false;
         }
 
-        internal static void RenameToDisplay(SPField field, Field fieldInfo)
+        internal static bool RenameToDisplay(SPField field, Field fieldInfo)
         {
-            if (fieldInfo.DisplayName == null) return;
+            if (fieldInfo.DisplayName == null) return false;
 
             field.Title = fieldInfo.DisplayName;
             field.Update();
+            return true;
         }
 
         private static bool IsDefaultField(SPField field)
