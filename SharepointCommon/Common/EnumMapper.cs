@@ -1,4 +1,6 @@
-﻿namespace SharepointCommon.Common
+﻿using System.Collections.Generic;
+
+namespace SharepointCommon.Common
 {
     using System;
     using System.Linq;
@@ -45,6 +47,25 @@
             }
 
             return value.ToString();
+        }
+
+        internal static IEnumerable<string> GetEnumMemberTitles(Type enumType)
+        {
+            var members = enumType.GetMembers(BindingFlags.Public | BindingFlags.Static);
+
+            foreach (var member in members)
+            {
+                var attrs = member.GetCustomAttributes(typeof(FieldAttribute), false);
+                if (attrs.Length != 0)
+                {
+                    var name = ((FieldAttribute)attrs[0]).Name;
+                    if (name == null) yield return member.Name;
+                    yield return name;
+                    continue;
+                }
+
+                yield return member.Name;
+            }
         }
     }
 }

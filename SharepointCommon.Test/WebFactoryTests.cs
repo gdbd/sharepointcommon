@@ -95,6 +95,8 @@
                     var choiceField = list.GetField(ci => ci.CustomChoice);
                     Assert.NotNull(choiceField.Choices);
                     Assert.That(choiceField.Choices.Count(), Is.EqualTo(3));
+                    var choiceWithName = choiceField.Choices.Skip(1).First();
+                    Assert.That(choiceWithName, Is.EqualTo("The Choice Number Two"));
                 }
                 finally
                 {

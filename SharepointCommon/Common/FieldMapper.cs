@@ -196,7 +196,7 @@
             if (propType.IsEnum)
             {
                 field.Type = SPFieldType.Choice;
-                field.Choices = Enum.GetNames(propType);
+                field.Choices = EnumMapper.GetEnumMemberTitles(propType);
                 if (field.Choices.Any() == false)
                     throw new SharepointCommonException("enum must have at least one field");
                 return field;
