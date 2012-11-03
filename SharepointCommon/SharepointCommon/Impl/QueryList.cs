@@ -525,8 +525,13 @@ namespace SharepointCommon.Impl
             {
                 _list.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
                 var field = (SPFieldChoice)_list.Fields.GetFieldByInternalName(fieldInfo.Name);
+
+                var choiceProp = typeof(T).GetProperty(fieldInfo.PropName);
+
+                var choices = fieldInfo.Choices.ToArray();
+                choices = EnumMapper.GetEnumMemberTitles(choiceProp.PropertyType).ToArray();
                 
-                field.Choices.AddRange(fieldInfo.Choices.ToArray());
+                field.Choices.AddRange(choices);
                 field.DefaultValue = field.Choices[0];
 
                 FieldMapper.RenameToDisplay(field, fieldInfo);
