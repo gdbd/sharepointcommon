@@ -50,5 +50,13 @@ namespace SharepointCommon.Attributes
         /// <c>true</c> if this instance is multiline text; otherwise, <c>false</c>.
         /// </value>
         public bool IsMultilineText { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether field is required
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this field is required; otherwise, <c>false</c>.
+        /// </value>
+        public bool Required { get; set; }
     }
 }

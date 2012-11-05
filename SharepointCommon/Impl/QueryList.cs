@@ -506,7 +506,7 @@ namespace SharepointCommon.Impl
                 
                 var field = (SPFieldLookup)_list.Fields.GetFieldByInternalName(fieldInfo.Name);
 
-                FieldMapper.RenameToDisplay(field, fieldInfo);
+                FieldMapper.SetFieldAdditionalInfo(field, fieldInfo);
 
                 if (!string.IsNullOrEmpty(fieldInfo.LookupField) && fieldInfo.LookupField != "Title")
                 {
@@ -526,15 +526,13 @@ namespace SharepointCommon.Impl
                 _list.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
                 var field = (SPFieldChoice)_list.Fields.GetFieldByInternalName(fieldInfo.Name);
 
-                var choiceProp = typeof(T).GetProperty(fieldInfo.PropName);
-
                 var choices = fieldInfo.Choices.ToArray();
                 
                 field.Choices.AddRange(choices);
                 field.DefaultValue = field.Choices[0];
 
-                if (FieldMapper.RenameToDisplay(field, fieldInfo) == false)
-                    field.Update();
+                FieldMapper.SetFieldAdditionalInfo(field, fieldInfo);
+                field.Update();
 
                 return;
             }
@@ -543,15 +541,16 @@ namespace SharepointCommon.Impl
 
             var field2 = _list.Fields.GetFieldByInternalName(fieldInfo.Name);
 
-            FieldMapper.RenameToDisplay(field2, fieldInfo);
+            FieldMapper.SetFieldAdditionalInfo(field2, fieldInfo);
 
             if (fieldInfo.Type == SPFieldType.User && fieldInfo.IsMultiValue)
             {
-                var f = field2 as SPFieldLookup;
+                var f = (SPFieldLookup)field2;
                 Assert.NotNull(f);
                 f.AllowMultipleValues = true;
-                f.Update();
             }
+
+            field2.Update();
         }
 
         private SPListItem GetItemByEntity(T entity)
