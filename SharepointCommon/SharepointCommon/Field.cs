@@ -67,12 +67,12 @@
         public string LookupField { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="Field"/> is requered.
+        /// Gets or sets a value indicating whether this <see cref="Field"/> is required.
         /// </summary>
         /// <value>
         ///   <c>true</c> if required; otherwise, <c>false</c>.
         /// </value>
-        public bool Requered { get; set; }
+        public bool Required { get; set; }
 
         /// <summary>
         /// Gets or sets the choices used to represent 'Choice' field.

@@ -60,7 +60,7 @@
                         Id = field.Id,
                         DisplayName = field.Title,
                         Name = field.InternalName,
-                        Requered = field.Required,
+                        Required = field.Required,
                         Type = field.Type,
                         LookupListName = lookupList != null ? lookupList.Title : string.Empty,
                     });
@@ -91,6 +91,7 @@
             var fieldAttrs = propertyInfo.GetCustomAttributes(typeof(FieldAttribute), true);
             string dispName = null;
             bool isMultilineText = false;
+            bool required = false;
 
             if (fieldAttrs.Length != 0)
             {
@@ -99,9 +100,10 @@
                 if (spPropName != null) spName = spPropName;
                 dispName = attr.DisplayName;
                 isMultilineText = attr.IsMultilineText;
+                required = attr.Required;
             }
 
-            var field = new Field { Name = spName, PropName = propertyInfo.Name, DisplayName = dispName, };
+            var field = new Field { Name = spName, PropName = propertyInfo.Name, DisplayName = dispName, Required = required, };
 
             if (propType == typeof(string))
             {
@@ -258,11 +260,24 @@
             return fields.Contains(spName) == false;
         }
 
-        internal static bool RenameToDisplay(SPField field, Field fieldInfo)
+        internal static void SetFieldAdditionalInfo(SPField field, Field fieldInfo)
         {
-            if (fieldInfo.DisplayName == null) return false;
+            if (fieldInfo.DisplayName != null)
+            {
+                field.Title = fieldInfo.DisplayName;
+            }
 
-            field.Title = fieldInfo.DisplayName;
+            if (fieldInfo.Required)
+            {
+                field.Title = fieldInfo.DisplayName;
+            }
+        }
+
+        internal static bool SetRequired(SPField field, Field fieldInfo)
+        {
+            if (fieldInfo.Required == false) return false;
+
+            field.Required = true;
             field.Update();
             return true;
         }

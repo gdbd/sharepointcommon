@@ -7,6 +7,7 @@
 
     public class CustomItem : Item
     {
+        [Field(Required = true)]
         public virtual string CustomField1 { get; set; }
 
         [Field(IsMultilineText = true, DisplayName = "Многостр.текст")]

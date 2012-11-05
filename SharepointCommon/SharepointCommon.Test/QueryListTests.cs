@@ -1383,7 +1383,25 @@
             {
                 if (list != null) list.DeleteList(false);
             }
+        }
 
+        [Test]
+        public void Reqired_Applies_Test()
+        {
+            IQueryList<CustomItem> list = null;
+
+            try
+            {
+                list = _queryWeb.Create<CustomItem>("List786");
+
+                var field = list.GetField(ci => ci.CustomField1);
+
+                Assert.That(field.Required, Is.True);
+            }
+            finally
+            {
+                if (list != null) list.DeleteList(false);
+            }
         }
 
         [Test]
