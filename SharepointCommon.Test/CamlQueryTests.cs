@@ -1,4 +1,6 @@
-﻿namespace SharepointCommon.Test
+﻿using SharepointCommon.Test.Entity;
+
+namespace SharepointCommon.Test
 {
     using NUnit.Framework;
 
@@ -44,10 +46,23 @@
         public void CamlOptionQueryTest()
         {
             var query = new CamlQuery().Recursive()
-                .Query(Q.Where(Q.Eq(Q.FieldRef("Title"),Q.Value("test"))));
+                .Query(Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Title), Q.Value("test"))));
 
             Assert.IsNotNull(query);
             Assert.That(query.CamlStore, Is.EqualTo(@"<Where><Eq><FieldRef Name=""Title"" /><Value Type=""Text"">test</Value></Eq></Where>"));
+        }
+
+        [Test]
+        public void Typed_FieldRef_Creates_Correct_Caml_Test()
+        {
+            var fref = Q.FieldRef<Item>(i => i.Title);
+            Assert.That(fref, Is.EqualTo("<FieldRef Name=\"Title\" />"));
+
+            fref = Q.FieldRef<CustomItem>(ci => ci.CustomFieldNumber);
+            Assert.That(fref, Is.EqualTo("<FieldRef Name=\"CustomFieldNumber\" />"));
+
+            fref = Q.FieldRef<CustomItem>(ci => ci.Тыдыщ);
+            Assert.That(fref, Is.EqualTo("<FieldRef Name=\"_x0422__x044b__x0434__x044b__x04\" />"));
         }
     }
 }

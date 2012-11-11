@@ -30,7 +30,10 @@
 
 using System;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Text;
+using SharepointCommon.Attributes;
+using SharepointCommon.Expressions;
 
 namespace SharepointCommon
 {
@@ -219,6 +222,7 @@ namespace SharepointCommon
         /// </summary>
         /// <param name="fieldName">the name of the referenced field</param>
         /// <returns>a new CAML FieldRef element</returns>
+        [Obsolete("Use strong-typed version FieldRef<T> instead.")]
         public static string FieldRef(string fieldName) { return Tag(CamlConst.FieldRef, CamlConst.Name, SafeIdentifier(fieldName), null); }
 
         /// <summary>
@@ -236,6 +240,49 @@ namespace SharepointCommon
         /// <param name="lookupId">indicates whether to add LookupId attribute to FieldRef clause</param>
         /// <returns>a new CAML FieldRef element </returns>
         public static string FieldRef(string fieldName, bool lookupId) { return !lookupId ? FieldRef(fieldName) : Tag(CamlConst.FieldRef, null, new object[] { "LookupId", "TRUE", CamlConst.Name, SafeIdentifier(fieldName) }); }
+
+        /// <summary>
+        /// Identifies a CAML field by reference.
+        /// </summary>
+        /// <param name="selector">expression for property selection, example: i => t.Title</param>
+        /// <typeparam name="T">type of entity</typeparam>
+        /// <returns>a new CAML FieldRef element</returns>
+        public static string FieldRef<T>(Expression<Func<T, object>> selector) where T : Item
+        {
+            var propName = GetFieldName(selector);
+            return Tag(CamlConst.FieldRef, CamlConst.Name, SafeIdentifier(propName), null);
+        }
+
+        /// <summary>
+        /// Identifies a CAML field and specifies a sorting.
+        /// </summary>
+        /// <param name="selector">expression for property selection, example: i => t.Title</param>
+        /// <param name="sortType">indicates how the resulting field instances shall be sorted</param>
+        /// <typeparam name="T">type of entity</typeparam>
+        /// <returns>a new CAML FieldRef element with sorting</returns>
+        public static string FieldRef<T>(Expression<Func<T, object>> selector, SortType sortType) where T : Item
+        {
+            var propName = GetFieldName(selector);
+            return Tag(CamlConst.FieldRef, null, new object[]
+                           {
+                               "Ascending", sortType == SortType.Ascending ? "TRUE" : "FALSE",
+                               CamlConst.Name, SafeIdentifier(propName)
+                           });
+        }
+
+        /// <summary>
+        /// Identifies a CAML field and specifies LookupId attribute if needed.
+        /// </summary>
+        /// <param name="selector">expression for property selection, example: i => t.Title</param>
+        /// <param name="lookupId">indicates whether to add LookupId attribute to FieldRef clause</param>
+        /// <typeparam name="T">type of entity</typeparam>
+        /// <returns>a new CAML FieldRef element </returns>
+        public static string FieldRef<T>(Expression<Func<T, object>> selector, bool lookupId) where T : Item
+        {
+            var fieldName = GetFieldName(selector);
+            return !lookupId ? FieldRef(selector) : Tag(CamlConst.FieldRef, null, new object[] { "LookupId", "TRUE", CamlConst.Name, SafeIdentifier(fieldName) });
+        }
+
 
         /// <summary>
         /// Tests whether the left expression is greater than or equal to the right.
@@ -644,5 +691,25 @@ namespace SharepointCommon
         /// <param name="s">a CAML string to be embedded in the element</param>
         /// <returns>a new CAML XML element</returns>
         public static string XML(string s) { return Tag(CamlConst.XML, null, null, s); }
+
+
+        private static string GetFieldName<T>(Expression<Func<T, object>> selector)
+        {
+            var visitor = new MemberAccessVisitor();
+            string propName = visitor.GetMemberName(selector);
+
+            var type = typeof(T);
+            var property = type.GetProperty(propName);
+            var attrs = property.GetCustomAttributes(typeof(FieldAttribute), false);
+
+            if (attrs.Length != 0)
+            {
+                var attr = (FieldAttribute)attrs[0];
+                if (attr.Name != null)
+                    propName = attr.Name;
+            }
+
+            return propName;
+        }
     }
 }
