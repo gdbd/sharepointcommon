@@ -86,7 +86,7 @@
             Assert.That(item.Id, Is.Not.EqualTo(0));
 
             var items = _list.Items(new CamlQuery()
-                .Query(Q.Where(Q.Eq(Q.FieldRef("Title"), Q.Value("Add_AddsItemTest")))))
+                .Query(Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Title), Q.Value("Add_AddsItemTest")))))
                 .ToList();
 
             CollectionAssert.IsNotEmpty(items);
@@ -125,7 +125,7 @@
                 list.Add(customItem);
 
                 var item = list.Items(new CamlQuery()
-                .Query(Q.Where(Q.Eq(Q.FieldRef("Title"), Q.Value("Items_ReturnsColectionOfCustomItemsTest")))))
+                .Query(Q.Where(Q.Eq(Q.FieldRef<CustomItem>(i => i.Title), Q.Value("Items_ReturnsColectionOfCustomItemsTest")))))
                 .FirstOrDefault();
 
                 Assert.IsNotNull(item);
@@ -302,7 +302,7 @@
             _list.Add(announcement);
 
             var item = _list.Items<Announcement>(new CamlQuery()
-                .Query(Q.Where(Q.Eq(Q.FieldRef("Title"), Q.Value("Add_AddsItemOfContentTypeTest")))))
+                .Query(Q.Where(Q.Eq(Q.FieldRef<Announcement>(a => a.Title), Q.Value("Add_AddsItemOfContentTypeTest")))))
                 .FirstOrDefault();
 
             Assert.IsNotNull(item);
