@@ -269,7 +269,7 @@
 
             if (fieldInfo.Required)
             {
-                field.Title = fieldInfo.DisplayName;
+                field.Required = true;
             }
         }
 
