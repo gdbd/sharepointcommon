@@ -42,7 +42,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\BUILD\</OutputPath>
+    <OutputPath>..\BUILD\15\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -107,12 +107,6 @@
     <Compile Include="UserTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharepointCommon\SharepointCommon.csproj">
-      <Project>{84F70ECA-0B60-4452-ADE3-1A9ABC7B765E}</Project>
-      <Name>SharepointCommon</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
@@ -143,6 +137,12 @@
   <ItemGroup>
     <None Include="Settings.StyleCop" />
     <None Include="SharepointCommonTest.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SharepointCommon\SharepointCommon15.csproj">
+      <Project>{84f70eca-0b60-4452-ade3-1a9abc7b765e}</Project>
+      <Name>SharepointCommon15</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
