@@ -231,6 +231,7 @@ namespace SharepointCommon
         /// <param name="fieldName">the name of the referenced field</param>
         /// <param name="sortType">indicates how the resulting field instances shall be sorted</param>
         /// <returns>a new CAML FieldRef element with sorting</returns>
+        [Obsolete("Use strong-typed version FieldRef<T> instead.")]
         public static string FieldRef(string fieldName, SortType sortType) { return Tag(CamlConst.FieldRef, null, new object[]{"Ascending", sortType == SortType.Ascending ? "TRUE" : "FALSE", CamlConst.Name, SafeIdentifier(fieldName) }); }
 
         /// <summary>
@@ -239,6 +240,7 @@ namespace SharepointCommon
         /// <param name="fieldName">the name of the referenced field</param>
         /// <param name="lookupId">indicates whether to add LookupId attribute to FieldRef clause</param>
         /// <returns>a new CAML FieldRef element </returns>
+        [Obsolete("Use strong-typed version FieldRef<T> instead.")]
         public static string FieldRef(string fieldName, bool lookupId) { return !lookupId ? FieldRef(fieldName) : Tag(CamlConst.FieldRef, null, new object[] { "LookupId", "TRUE", CamlConst.Name, SafeIdentifier(fieldName) }); }
 
         /// <summary>
