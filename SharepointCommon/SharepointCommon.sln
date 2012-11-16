@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharepointCommon", "SharepointCommon\SharepointCommon.csproj", "{84F70ECA-0B60-4452-ADE3-1A9ABC7B765E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharepointCommon.Test", "SharepointCommon.Test\SharepointCommon.Test.csproj", "{862730D3-4233-46D1-B8CC-E0C828943AF8}"

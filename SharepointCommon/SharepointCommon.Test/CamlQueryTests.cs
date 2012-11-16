@@ -46,10 +46,14 @@ namespace SharepointCommon.Test
         public void CamlOptionQueryTest()
         {
             var query = new CamlQuery().Recursive()
-                .Query(Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Title), Q.Value("test"))));
+                .Query(Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Title), Q.Value("test"))))
+                .ViewFields<Item>(i => i.Id, i => i.Title);
 
             Assert.IsNotNull(query);
             Assert.That(query.CamlStore, Is.EqualTo(@"<Where><Eq><FieldRef Name=""Title"" /><Value Type=""Text"">test</Value></Eq></Where>"));
+            Assert.That(query.ViewFieldsStore.Length, Is.EqualTo(2));
+            Assert.That(query.ViewFieldsStore[0], Is.EqualTo("Id"));
+            Assert.That(query.ViewFieldsStore[1], Is.EqualTo("Title"));
         }
 
         [Test]
