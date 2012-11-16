@@ -1,3 +1,8 @@
+using System;
+using System.Linq;
+using System.Linq.Expressions;
+using SharepointCommon.Expressions;
+
 namespace SharepointCommon
 {
     using Common;
@@ -41,9 +46,24 @@ namespace SharepointCommon
         /// </summary>
         /// <param name="viewFields">The view field names (not xml tags!).</param>
         /// <returns>Fluent instance of that class</returns>
+        [Obsolete("Use typed overload of ViewFields")]
         public CamlQuery ViewFields(params string[] viewFields)
         {
+            if (viewFields.Length == 0) throw new SharepointCommonException("ViewFields must have at least one parameter");
             ViewFieldsStore = viewFields;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets ViewFields used in CAML query
+        /// </summary>
+        /// <param name="selectors">Expressions indicates properties used as view fields</param>
+        /// <returns>Fluent instance of that class</returns>
+        public CamlQuery ViewFields<T>(params Expression<Func<T, object>>[] selectors) where T : Item
+        {
+            if (selectors.Length == 0) throw new SharepointCommonException("ViewFields must have at least one parameter");
+            var memVisitor = new MemberAccessVisitor();
+            ViewFieldsStore = selectors.Select(memVisitor.GetMemberName).ToArray();
             return this;
         }
 
