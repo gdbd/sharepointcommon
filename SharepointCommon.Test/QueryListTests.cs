@@ -548,6 +548,57 @@
         #endregion
 
         #region Update Tests
+
+        [Test]
+        public void Update_Lookup_Updates_Item_Test()
+        {
+            IQueryList<CustomItem> list = null;
+            try
+            {
+                var lookupItem = new Item { Title = "lkp1" };
+                _listForLookup.Add(lookupItem);
+
+                var lookupItem2 = new Item { Title = "lkp2" };
+                _listForLookup.Add(lookupItem2);
+
+                if (_queryWeb.ExistsByName("Update_Lookup_Updates_Item_Test"))
+                    _queryWeb.Web.Lists["Update_Lookup_Updates_Item_Test"].Delete();
+
+                list = _queryWeb.Create<CustomItem>("Update_Lookup_Updates_Item_Test");
+                
+
+                var customItem = new CustomItem
+                {
+                    Title = "val1",
+                    CustomField1 = "val2",
+                    CustomField2 = "val3",
+                    CustomFieldNumber = 123.5,
+                    CustomBoolean = true,
+                    CustomUser = new Person(_firstUser.LoginName),
+                    CustomUsers = new List<User> { new Person(_firstUser.LoginName), },
+                    CustomLookup = lookupItem,
+                    CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
+                    CustomDate = DateTime.Now,
+                    Тыдыщ = "тест",
+                };
+                list.Add(customItem);
+
+                customItem = list.ById(customItem.Id);
+
+                customItem.CustomLookup.Title = "test";
+
+                var title = customItem.CustomLookup.Title;
+
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
+
         [Test]
         public void Update_By_Field_Selector_Updates_Item_Test()
         {
@@ -572,6 +623,94 @@
             Assert.That(item3, Is.Not.Null);
             Assert.That(item3.Id, Is.EqualTo(item.Id));
             Assert.That(item3.Title, Is.EqualTo("Update_By_Field_Selector_Updates_Item_Test_Updated"));
+        }
+
+        [Test]
+        public void Update_By_Field_Selector_Updates_CustomItem_Test()
+        {
+            IQueryList<CustomItem> list = null;
+            try
+            {
+                var lookupItem = new Item { Title = "lkp1" };
+                _listForLookup.Add(lookupItem);
+
+                var lookupItem2 = new Item { Title = "lkp2" };
+                _listForLookup.Add(lookupItem2);
+
+                list = _queryWeb.Create<CustomItem>("Update_By_Field_Selector_Updates_CustomItem_Test");
+                var customItem = new CustomItem
+                {
+                    Title = "val1",
+                    CustomField1 = "val2",
+                    CustomField2 = "val3",
+                    CustomFieldNumber = 123.5,
+                    CustomBoolean = true,
+                    CustomUser = new Person(_firstUser.LoginName),
+                    CustomUsers = new List<User> { new Person(_firstUser.LoginName), },
+                    CustomLookup = lookupItem,
+                    CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
+                    CustomDate = DateTime.Now,
+                    Тыдыщ = "тест",
+                };
+                list.Add(customItem);
+
+                customItem.Title = "val1_";
+                customItem.CustomField1 = "val2_";
+                customItem.CustomField2 = "val3_";
+                customItem.CustomFieldNumber = 235;
+                customItem.CustomBoolean = false;
+                customItem.CustomUser = new Person(_secondUser.LoginName);
+                customItem.CustomUsers = new List<User>
+                    {
+                        new Person(_firstUser.LoginName),
+                        new Person(_secondUser.LoginName)
+                    };
+                customItem.CustomLookup = lookupItem2;
+                customItem.CustomMultiLookup = new List<Item> { lookupItem2 };
+                customItem.Тыдыщ = "обновлено";
+
+                list.Update(customItem, 
+                    true, 
+                    c => c.Title, 
+                    c => c.CustomField1, 
+                    c => c.CustomField2,
+                    c => c.CustomFieldNumber,
+                    c => c.CustomBoolean,
+                    c => c.CustomUser,
+                    c => c.CustomUsers,
+                    c => c.CustomLookup,
+                    c => c.CustomMultiLookup,
+                    c => c.Тыдыщ);
+
+                var item = list.Items(new CamlQuery()
+                .Query(Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Title), Q.Value("val1_")))))
+                .FirstOrDefault();
+
+                Assert.IsNotNull(item);
+                Assert.That(item.Id, Is.EqualTo(customItem.Id));
+                Assert.That(item.Title, Is.EqualTo(customItem.Title));
+                Assert.That(item.CustomField1, Is.EqualTo(customItem.CustomField1));
+                Assert.That(item.Тыдыщ, Is.EqualTo(customItem.Тыдыщ));
+                Assert.That(item.CustomField2, Is.EqualTo(customItem.CustomField2));
+                Assert.That(item.CustomFieldNumber, Is.EqualTo(customItem.CustomFieldNumber));
+                Assert.That(item.CustomBoolean, Is.EqualTo(customItem.CustomBoolean));
+                Assert.That(item.CustomUser, Is.Not.Null);
+                Assert.That(item.CustomUser.Id, Is.Not.EqualTo(0));
+                Assert.That(item.CustomUsers.Count(), Is.EqualTo(2));
+                Assert.That(item.CustomUsers.First().Id, Is.EqualTo(_firstUser.ID));
+                Assert.That(item.CustomLookup, Is.Not.Null);
+                Assert.That(item.CustomLookup.Id, Is.EqualTo(lookupItem2.Id));
+                Assert.That(item.CustomMultiLookup, Is.Not.Null);
+                Assert.That(item.CustomMultiLookup.Count(), Is.EqualTo(1));
+                Assert.That(item.CustomMultiLookup.First().Title, Is.EqualTo(lookupItem2.Title));
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
         }
 
         [Test]
@@ -1474,6 +1613,8 @@
         {
             var itm = new Item { Title = "Item_ParentList_Contains_Reference_To_ParentList" };
             _list.Add(itm);
+
+            Assert.That(itm.ParentList, Is.Not.Null);
 
             var itm2 = _list.ById(itm.Id);
 

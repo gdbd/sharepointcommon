@@ -140,7 +140,7 @@ namespace SharepointCommon.Impl
 
         public void Add(T entity)
         {
-            if (entity == null) throw new ArgumentNullException("item");
+            if (entity == null) throw new ArgumentNullException("entity");
 
             SPListItem newitem = null;
 
@@ -176,12 +176,13 @@ namespace SharepointCommon.Impl
             if (ct == null) ctId = SPBuiltInContentTypeId.Item;
             else ctId = ct.Id;
 
-            // GetType() prefered because T might be child of 'Item'
             newitem[SPBuiltInFieldId.ContentTypeId] = ctId;
 
             newitem.Update();
             entity.Id = newitem.ID;
             entity.Guid = new Guid(newitem[SPBuiltInFieldId.GUID].ToString());
+
+            entity.ParentList = new QueryList<Item>(_list);
         }
 
         public void Update(T entity, bool incrementVersion)
