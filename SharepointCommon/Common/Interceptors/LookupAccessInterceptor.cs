@@ -86,12 +86,15 @@
                 try
                 {
                     var list = wf.Web.Lists[lookupList];
+
+                    // Lookup with picker (ilovesharepoint) returns SPFieldLookupValue
                     var lkpValue = fieldValue as SPFieldLookupValue ?? new SPFieldLookupValue((string)fieldValue ?? string.Empty);
                     if (lkpValue.LookupId == 0) return null;
                     return list.GetItemById(lkpValue.LookupId);
                 }
                 catch
                 {
+#warning empty catch
                     return null;
                 }
             }
