@@ -74,6 +74,11 @@ namespace SharepointCommon
         string RelativeUrl { get; }
 
         /// <summary>
+        /// Allows to register and un-register list item event receiver
+        /// </summary>
+        IQueryListEvent Events { get; }
+
+        /// <summary>
         /// Gets the url of specific list form
         /// </summary>
         /// <param name="pageType">Type of the page.</param>
@@ -237,6 +242,6 @@ namespace SharepointCommon
         /// Removes the specified content type from list.
         /// </summary>
         /// <typeparam name="TCt">Type of entity, represents content type (marked with [ContentType])</typeparam>
-        void RemoveContentType<TCt>() where TCt : Item, new();   
+        void RemoveContentType<TCt>() where TCt : Item, new();
     }
 }

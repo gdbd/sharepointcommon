@@ -30,6 +30,7 @@ namespace SharepointCommon.Impl
             _list = list;
             _web = list.ParentWeb;
             List = _list;
+            Events = new QueryListEvent(list);
         }
 
         public SPList List { get; private set; }
@@ -123,6 +124,7 @@ namespace SharepointCommon.Impl
         }
         public string Url { get { return _web.Url + "/" + _list.RootFolder.Url; } }
         public string RelativeUrl { get { return _list.RootFolder.Url; } }
+        public IQueryListEvent Events { get; private set; }
 
         public string FormUrl(PageType pageType, int id)
         {
