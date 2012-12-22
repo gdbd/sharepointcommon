@@ -29,8 +29,10 @@ namespace SharepointCommon.Impl
         {
             _list = list;
             _web = list.ParentWeb;
+            List = _list;
         }
 
+        public SPList List { get; private set; }
         public Guid Id { get { return _list.ID; } }
         public Guid WebId { get { return _list.ParentWeb.ID; } }
         public Guid SiteId { get { return _list.ParentWeb.Site.ID; } }
@@ -586,6 +588,7 @@ namespace SharepointCommon.Impl
             var wf = WebFactory.Open(_web.Url);
             _web = wf.Web;
             _list = wf.Web.Lists[_list.ID];
+            List = _list;
         }
 
         private SPFolder EnsureFolder(string folderurl)

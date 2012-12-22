@@ -3,6 +3,7 @@ namespace SharepointCommon
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
+    using Microsoft.SharePoint;
 
     /// <summary>
     /// Represents wrapper on a SharePoint list or library
@@ -10,6 +11,11 @@ namespace SharepointCommon
     /// <typeparam name="T">Item or ContentType of list item</typeparam>
     public interface IQueryList<T> where T : Item, new()
     {
+        /// <summary>
+        /// Gets underlying list instance
+        /// </summary>
+        SPList List { get; }
+
         /// <summary>
         /// Gets the SPList id.
         /// </summary>
