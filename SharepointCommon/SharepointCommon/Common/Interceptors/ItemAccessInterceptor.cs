@@ -45,6 +45,12 @@
                     return;
                 }
 
+                if (propName.Equals("ListItem"))
+                {
+                    invocation.ReturnValue = _listItem;
+                    return;
+                }
+
                 var nomapAttrs = prop.GetCustomAttributes(typeof(NotFieldAttribute), false);
                 if (nomapAttrs.Length != 0)
                 {

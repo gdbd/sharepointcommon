@@ -1,10 +1,10 @@
-﻿namespace SharepointCommon
+﻿using System;
+using System.Diagnostics;
+using Microsoft.SharePoint;
+using SharepointCommon.Attributes;
+
+namespace SharepointCommon
 {
-    using System;
-    using System.Diagnostics;
-
-    using Attributes;
-
     /// <summary>
     /// Base entity for present SPList item of content type 'Item'
     /// Used as root of inheritance for all custom entities and content types
@@ -27,5 +27,11 @@
         /// </summary>
         [NotField]
         public virtual IQueryList<Item> ParentList { get; internal set; }
+
+        /// <summary>
+        /// Gets the reference to underlying list item
+        /// </summary>
+        [NotField]
+        public virtual SPListItem ListItem { get; internal set; }
     }
 }
