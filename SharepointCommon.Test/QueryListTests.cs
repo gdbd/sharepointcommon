@@ -1408,9 +1408,7 @@
 
         #endregion
 
-        #region Misc methods
-        
-
+        #region Misc Tests
         [Test]
         public void FormUrlTest()
         {
@@ -1445,7 +1443,27 @@
             Assert.That(
                 _list.RelativeUrl.ToLower(),
                 Is.EqualTo(string.Format("lists/{0}", ListName1).ToLower()));
-        } 
+        }
+
+        [Test]
+        public void ListItem_Returns_SPListItem_Test()
+        {
+            var item = new Item { Title = "ListItem_Returns_SPListItem_Test" };
+            _list.Add(item);
+            Assert.That(item.Id, Is.Not.EqualTo(0));
+
+            var items = _list.Items(new CamlQuery()
+                .Query(Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Title), Q.Value("ListItem_Returns_SPListItem_Test")))))
+                .ToList();
+
+            CollectionAssert.IsNotEmpty(items);
+            var first = items.First();
+            Assert.That(first.Id, Is.EqualTo(item.Id));
+            Assert.That(first.Title, Is.EqualTo("ListItem_Returns_SPListItem_Test"));
+
+            var spListItem = first.ListItem;
+            Assert.NotNull(spListItem);
+        }
         #endregion
 
         #region Fields Tests
