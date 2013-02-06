@@ -500,6 +500,9 @@ namespace SharepointCommon.Impl
             
             if (fieldInfo.Type == SPFieldType.Lookup)
             {
+                if (string.IsNullOrEmpty(fieldInfo.LookupListName))
+                    throw new SharepointCommonException(string.Format("LookupListName must be set for lookup fields. ({0})", fieldInfo.Name));
+
                 var lookupList = _web.Lists.TryGetList(fieldInfo.LookupListName);
 
                 if (lookupList == null)
