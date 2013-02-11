@@ -12,6 +12,11 @@ namespace SharepointCommon
     public interface IQueryList<T> where T : Item, new()
     {
         /// <summary>
+        /// Gets reference of parent <see cref="IQueryWeb" object />
+        /// </summary>
+        IQueryWeb ParentWeb { get; }
+
+        /// <summary>
         /// Gets underlying list instance
         /// </summary>
         SPList List { get; }
@@ -78,8 +83,8 @@ namespace SharepointCommon
         /// </summary>
         /// <param name="pageType">Type of the page.</param>
         /// <param name="id">The id of item</param>
-        /// <returns>Url of list form with item id and 'IsDlg=1'</returns>
-        string FormUrl(PageType pageType, int id);
+        /// <returns>Url of list form with item id</returns>
+        string FormUrl(PageType pageType, int id = 0);
 
         /// <summary>
         /// Adds new list item to the list

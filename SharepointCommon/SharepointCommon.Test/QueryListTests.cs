@@ -1412,29 +1412,25 @@
         [Test]
         public void FormUrlTest()
         {
-            string newUrl = _list.FormUrl(PageType.New, 1);
+            string newUrl = _list.FormUrl(PageType.New);
             string dispUrl = _list.FormUrl(PageType.Display, 2);
             string editUrl = _list.FormUrl(PageType.Edit, 3);
 
-            Assert.That(
-                newUrl.ToLower(),
-                Is.EqualTo(string.Format("/Lists/{0}/NewForm.aspx?ID=1&IsDlg=1", ListName1).ToLower()));
+            Assert.That(newUrl.ToLower(),
+                Is.EqualTo(string.Format("{1}/Lists/{0}/NewForm.aspx", ListName1, _list.ParentWeb.Web.ServerRelativeUrl).ToLower()));
 
-            Assert.That(
-                dispUrl.ToLower(),
-                Is.EqualTo(string.Format("/Lists/{0}/DispForm.aspx?ID=2&IsDlg=1", ListName1).ToLower()));
+            Assert.That(dispUrl.ToLower(),
+                Is.EqualTo(string.Format("{1}/Lists/{0}/DispForm.aspx?ID=2", ListName1, _list.ParentWeb.Web.ServerRelativeUrl).ToLower()));
 
-            Assert.That(
-                editUrl.ToLower(),
-                Is.EqualTo(string.Format("/Lists/{0}/EditForm.aspx?ID=3&IsDlg=1", ListName1).ToLower()));
+            Assert.That(editUrl.ToLower(),
+                Is.EqualTo(string.Format("{1}/Lists/{0}/EditForm.aspx?ID=3", ListName1, _list.ParentWeb.Web.ServerRelativeUrl).ToLower()));
         }
 
         [Test]
         public void UrlTest()
         {
-            Assert.That(
-                _list.Url.ToLower(),
-                Is.EqualTo(string.Format("{0}lists/{1}", _webUrl, ListName1).ToLower()));
+            Assert.That(_list.Url.ToLower(),
+                Is.EqualTo(string.Format("{0}/lists/{1}", _list.ParentWeb.Web.Url, ListName1).ToLower()));
         }
 
         [Test]
@@ -1464,6 +1460,14 @@
             var spListItem = first.ListItem;
             Assert.NotNull(spListItem);
         }
+
+        [Test]
+        public void ParentWeb_Not_Null_Test()
+        {
+            var pw = _list.ParentWeb;
+            Assert.NotNull(pw);
+        }
+
         #endregion
 
         #region Fields Tests

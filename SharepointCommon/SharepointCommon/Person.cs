@@ -1,7 +1,7 @@
 namespace SharepointCommon
 {
     /// <summary>
-    /// Presents value for a 'User or Group' listitem field
+    /// Presents value for a 'User or Group' list item field
     /// Used for domain user or group returns 'Person' object, but entity mapping should use only 'User' type
     /// </summary>
     public class Person : User
