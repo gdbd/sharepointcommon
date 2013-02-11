@@ -76,7 +76,7 @@ namespace SharepointCommon
         /// <summary>
         /// Allows to register and un-register list item event receiver
         /// </summary>
-        IQueryListEvent Events { get; }
+        Events.IQueryListEvent Events { get; }
 
         /// <summary>
         /// Gets the url of specific list form

@@ -124,7 +124,7 @@ namespace SharepointCommon.Impl
         }
         public string Url { get { return _web.Url + "/" + _list.RootFolder.Url; } }
         public string RelativeUrl { get { return _list.RootFolder.Url; } }
-        public IQueryListEvent Events { get; private set; }
+        public Events.IQueryListEvent Events { get; private set; }
 
         public string FormUrl(PageType pageType, int id)
         {

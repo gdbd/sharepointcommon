@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using SharepointCommon.Attributes;
 
 namespace SharepointCommon.Test
 {
@@ -16,11 +17,15 @@ namespace SharepointCommon.Test
                 try
                 {
                     list = wf.Create<Item>("Add_EventReceiver_Works_Test");
-                    list.Events.Add += TestEventReceiver.Added;
 
+                    list.Events.Add<TestEventReceiver>(er => er.ItemAdded, er => er.ItemDeleted);
                     list.Add(new Item { Title = "Add_EventReceiver_Works_Test" });
-
                     Assert.That(TestEventReceiver.IsAddedCalled);
+
+                    list.Events.Remove<TestEventReceiver>(er => er.ItemAdded, er => er.ItemDeleted);
+                    TestEventReceiver.IsAddedCalled = false;
+                    list.Add(new Item { Title = "Add_EventReceiver_Works_Test2" });
+                    Assert.That(!TestEventReceiver.IsAddedCalled);
                 }
                 finally
                 {
@@ -30,15 +35,18 @@ namespace SharepointCommon.Test
         }
     }
 
-    public class TestEventReceiver
+    public class TestEventReceiver : Events.ListEventHandler
     {
-        public static bool IsAddedCalled { get; private set; }
+        public static bool IsAddedCalled { get; set; }
 
-        public static void Added(Item item)
+        [Sequence(10000)]
+        public override void ItemAdded(Item addedItem)
         {
             IsAddedCalled = true;
-            Assert.That(item, Is.Not.Null);
-            Assert.That(item.Title, Is.EqualTo("Add_EventReceiver_Works_Test"));
+        }
+
+        public override void ItemDeleted(Item deletedItem)
+        {
         }
     }
 }

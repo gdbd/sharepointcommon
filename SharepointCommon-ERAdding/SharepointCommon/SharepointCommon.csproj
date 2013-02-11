@@ -71,6 +71,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\SequenceAttribute.cs" />
     <Compile Include="CamlQuery.cs" />
     <Compile Include="Castle\Core\Internal\AttributesUtil.cs" />
     <Compile Include="Castle\Core\Internal\CollectionExtensions.cs" />
@@ -279,22 +280,24 @@
     <Compile Include="Common\CamlConst.cs" />
     <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Common\CommonHelper.cs" />
-    <Compile Include="Common\Configuration.cs" />
+    <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Common\EnumMapper.cs" />
     <Compile Include="Common\Interceptors\DocumentAccessInterceptor.cs" />
     <Compile Include="Common\Interceptors\ItemAccessInterceptor.cs" />
-    <Compile Include="Common\ListItemEventReceiver.cs" />
+    <Compile Include="Events\ListItemEventReceiver.cs" />
     <Compile Include="Common\XmlSerializator.cs" />
     <Compile Include="Entities\Category.cs" />
     <Compile Include="Entities\Form.cs" />
+    <Compile Include="Events\ListEventHandler.cs" />
+    <Compile Include="Events\ListEventType.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="Common\Interceptors\LookupAccessInterceptor.cs" />
     <Compile Include="Common\LookupIterator.cs" />
     <Compile Include="Common\Interceptors\UserAccessInterceptor.cs" />
     <Compile Include="Common\UserIterator.cs" />
     <Compile Include="Entities\Holiday.cs" />
-    <Compile Include="Impl\QueryEvent.cs" />
-    <Compile Include="IQueryListEvent.cs" />
+    <Compile Include="Impl\QueryListEvent.cs" />
+    <Compile Include="Events\IQueryListEvent.cs" />
     <Compile Include="SharepointCommonException.cs" />
     <Compile Include="Expressions\ExpressionVisitor.cs" />
     <Compile Include="Common\FieldMapper.cs" />

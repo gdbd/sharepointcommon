@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.SharePoint;
 
-namespace SharepointCommon.Common
+namespace SharepointCommon.Events
 {
     internal class ListItemEventReceiver : SPItemEventReceiver
     {
