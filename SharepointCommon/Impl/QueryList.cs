@@ -1,37 +1,33 @@
-﻿using System.Globalization;
-using System.Threading;
-using Microsoft.SharePoint.Utilities;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Xml.Linq;
+using Microsoft.SharePoint;
+using SharepointCommon.Attributes;
+using SharepointCommon.Common;
+using SharepointCommon.Entities;
+using SharepointCommon.Expressions;
 
 namespace SharepointCommon.Impl
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using System.Text;
-    using System.Xml.Linq;
-
-    using Microsoft.SharePoint;
-
-    using Attributes;
-    using Common;
-    using Entities;
-    using Expressions;
-
     [DebuggerDisplay("Title = {Title}, Url= {Url}")]
     internal sealed class QueryList<T> : IQueryList<T> where T : Item, new()
     {
         private SPWeb _web;
         private SPList _list;
 
-        internal QueryList(SPList list)
+        internal QueryList(SPList list, IQueryWeb parentWeb)
         {
             _list = list;
             _web = list.ParentWeb;
             List = _list;
+            ParentWeb = parentWeb;
         }
 
+        public IQueryWeb ParentWeb { get; private set; }
         public SPList List { get; private set; }
         public Guid Id { get { return _list.ID; } }
         public Guid WebId { get { return _list.ParentWeb.ID; } }
@@ -124,16 +120,32 @@ namespace SharepointCommon.Impl
         public string Url { get { return _web.Url + "/" + _list.RootFolder.Url; } }
         public string RelativeUrl { get { return _list.RootFolder.Url; } }
 
-        public string FormUrl(PageType pageType, int id)
+        public string FormUrl(PageType pageType, int id = 0)
         {
+            if (id == 0)
+            {
+                switch (pageType)
+                {
+                    case PageType.Display:
+                        return string.Format("{0}", _list.DefaultDisplayFormUrl);
+                    case PageType.Edit:
+                        return string.Format("{0}", _list.DefaultEditFormUrl);
+                    case PageType.New:
+                        return string.Format("{0}", _list.DefaultNewFormUrl);
+
+                    default:
+                        throw new ArgumentOutOfRangeException("pageType");
+                }
+            }
+
             switch (pageType)
             {
                 case PageType.Display:
-                    return string.Format("{0}?ID={1}&IsDlg=1", _list.DefaultDisplayFormUrl, id);
+                    return string.Format("{0}?ID={1}", _list.DefaultDisplayFormUrl, id);
                 case PageType.Edit:
-                    return string.Format("{0}?ID={1}&IsDlg=1", _list.DefaultEditFormUrl, id);
+                    return string.Format("{0}?ID={1}", _list.DefaultEditFormUrl, id);
                 case PageType.New:
-                    return string.Format("{0}?ID={1}&IsDlg=1", _list.DefaultNewFormUrl, id);
+                    return string.Format("{0}", _list.DefaultNewFormUrl);
 
                 default:
                     throw new ArgumentOutOfRangeException("pageType");
@@ -184,7 +196,7 @@ namespace SharepointCommon.Impl
             entity.Id = newitem.ID;
             entity.Guid = new Guid(newitem[SPBuiltInFieldId.GUID].ToString());
 
-            entity.ParentList = new QueryList<Item>(_list);
+            entity.ParentList = new QueryList<Item>(_list, ParentWeb);
         }
 
         public void Update(T entity, bool incrementVersion)

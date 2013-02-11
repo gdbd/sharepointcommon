@@ -96,25 +96,25 @@ namespace SharepointCommon.Impl
         public IQueryList<T> GetByUrl<T>(string listUrl) where T : Item, new()
         {
             var list = Web.GetList(listUrl);
-            return new QueryList<T>(list);
+            return new QueryList<T>(list, this);
         }
 
         public IQueryList<T> GetByName<T>(string listName) where T : Item, new()
         {
             var list = Web.Lists[listName];
-            return new QueryList<T>(list);
+            return new QueryList<T>(list, this);
         }
 
         public IQueryList<T> GetById<T>(Guid id) where T : Item, new()
         {
             var list = Web.Lists[id];
-            return new QueryList<T>(list);
+            return new QueryList<T>(list, this);
         }
 
         public IQueryList<T> CurrentList<T>() where T : Item, new()
         {
             Assert.CurrentContextAvailable();
-            return new QueryList<T>(SPContext.Current.List);
+            return new QueryList<T>(SPContext.Current.List, this);
         }
 
         public IQueryList<T> Create<T>(string listName) where T : Item, new()
