@@ -56,7 +56,7 @@
         public virtual string Folder { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether file need be rename (ex. should have index "report(1).docx" )
+        /// Gets or sets a value indicating whether file need be rename (ex. should have index "report(1).doc" )
         /// if file with same name already exists in specified folder.
         /// </summary>
         /// <value>
