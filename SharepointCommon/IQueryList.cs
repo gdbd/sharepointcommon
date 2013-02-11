@@ -93,13 +93,6 @@ namespace SharepointCommon
         void Add(T entity);
 
         /// <summary>
-        /// Updates all fields of existing item by data of entity
-        /// </summary>
-        /// <param name="entity">instance of entity</param>
-        /// <param name="incrementVersion">if set to <c>true</c>increments item version</param>
-        void Update(T entity, bool incrementVersion);
-
-        /// <summary>
         /// Updates specified field of existing item by data of entity
         /// </summary>
         /// <param name="entity">The entity instance.</param>

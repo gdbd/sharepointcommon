@@ -175,6 +175,11 @@ namespace SharepointCommon.Impl
                     folder = EnsureFolder(doc.Folder);
                 }
 
+                if (doc.RenameIfExists)
+                {
+                    doc.Name = FilenameOrganizer.AppendSuffix(doc.Name, newName => !FileExists(newName), 500);
+                }
+
                 var file = folder.Files.Add(doc.Name, doc.Content, true);
                 newitem = file.Item;
             }
@@ -192,39 +197,26 @@ namespace SharepointCommon.Impl
 
             newitem[SPBuiltInFieldId.ContentTypeId] = ctId;
 
-            newitem.Update();
+            newitem.SystemUpdate(false);
             entity.Id = newitem.ID;
             entity.Guid = new Guid(newitem[SPBuiltInFieldId.GUID].ToString());
 
             entity.ParentList = new QueryList<Item>(_list, ParentWeb);
         }
-
-        public void Update(T entity, bool incrementVersion)
-        {
-            if (entity == null) throw new ArgumentNullException("entity");
-
-            var forUpdate = GetItemByEntity(entity);
-
-            if (entity == null) 
-                throw new SharepointCommonException(string.Format("cant found item with ID={0} in List={1}", entity.Id, _list.Title));
-
-            EntityMapper.ToItem(entity, forUpdate);
-
-            if (incrementVersion) forUpdate.Update();
-            else forUpdate.SystemUpdate(false);
-        }
-
+        
         public void Update(T entity, bool incrementVersion, params Expression<Func<T, object>>[] selectors)
         {
             if (entity == null) throw new ArgumentNullException("entity");
 
+            var forUpdate = GetItemByEntity(entity);
+
             if (selectors == null || selectors.Length == 0)
             {
-                Update(entity, true);
+                EntityMapper.ToItem(entity, forUpdate);
+                if (incrementVersion) forUpdate.Update();
+                else forUpdate.SystemUpdate(false);
                 return;
             }
-
-            var forUpdate = GetItemByEntity(entity);
 
             if (entity == null)
                 throw new SharepointCommonException(
@@ -585,8 +577,12 @@ namespace SharepointCommon.Impl
             var fields = new StringBuilder();
 
             if (viewFields != null)
+            {
                 foreach (string viewField in viewFields)
+                {
                     fields.Append(Q.FieldRef(viewField));
+                }
+            }
 
             return _list.GetItems(new SPQuery
             {
@@ -658,6 +654,12 @@ namespace SharepointCommon.Impl
             var ctAttr = (ContentTypeAttribute)ctAttrs[0];
             var bm = _list.ParentWeb.AvailableContentTypes.Cast<SPContentType>().FirstOrDefault(c => c.Id.ToString().StartsWith(ctAttr.ContentTypeId));
             return bm;
+        }
+
+        private bool FileExists(string name)
+        {
+            var q = Q.Where(Q.Eq(Q.FieldRef<Document>(d => d.Name), Q.Value(name)));
+            return ByCaml(q).Count > 0;
         }
     }
 }

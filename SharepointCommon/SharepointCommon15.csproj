@@ -283,6 +283,7 @@
     <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Common\CommonHelper.cs" />
     <Compile Include="Common\EnumMapper.cs" />
+    <Compile Include="Common\FilenameOrganizer.cs" />
     <Compile Include="Common\Interceptors\DocumentAccessInterceptor.cs" />
     <Compile Include="Common\Interceptors\ItemAccessInterceptor.cs" />
     <Compile Include="Entities\Category.cs" />

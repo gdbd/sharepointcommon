@@ -1,4 +1,5 @@
-﻿using SharepointCommon.Test.Entity;
+﻿using SharepointCommon.Entities;
+using SharepointCommon.Test.Entity;
 
 namespace SharepointCommon.Test
 {
@@ -67,6 +68,13 @@ namespace SharepointCommon.Test
 
             fref = Q.FieldRef<CustomItem>(ci => ci.Тыдыщ);
             Assert.That(fref, Is.EqualTo("<FieldRef Name=\"_x0422__x044b__x0434__x044b__x04\" />"));
+
+
+            fref = Q.FieldRef<Item>(i => i.Guid);
+            Assert.That(fref, Is.EqualTo("<FieldRef Name=\"GUID\" />"));
+
+            fref = Q.FieldRef<Document>(i => i.Name);
+            Assert.That(fref, Is.EqualTo("<FieldRef Name=\"LinkFilename\" />"));
         }
     }
 }
