@@ -95,9 +95,10 @@
     <Compile Include="Entity\CustomDocument.cs" />
     <Compile Include="Entity\OneMoreField.cs" />
     <Compile Include="Entity\TheChoice.cs" />
-    <Compile Include="EventReceiversTest.cs" />
+    <Compile Include="Events\ListEventsTest.cs" />
     <Compile Include="MoqableTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />
+    <Compile Include="Events\ListEventReceiver.cs" />
     <Compile Include="WebFactoryTests.cs" />
     <Compile Include="EntityMapperTests.cs" />
     <Compile Include="Entity\CustomItem.cs" />

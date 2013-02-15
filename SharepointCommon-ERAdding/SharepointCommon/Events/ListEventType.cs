@@ -1,8 +1,8 @@
 ﻿namespace SharepointCommon.Events
 {
-    public class ListEventType
+    public sealed class ListEventType
     {
-        public object ItemAdded { get; private set; }
-        public object ItemDeleted { get; private set; }
+        public object ItemAdded;
+        public object ItemDeleted;
     }
 }

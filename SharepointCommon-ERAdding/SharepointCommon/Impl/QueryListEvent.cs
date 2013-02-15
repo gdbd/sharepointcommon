@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using Microsoft.SharePoint;
 using SharepointCommon.Events;
 
 namespace SharepointCommon.Impl
 {
-    internal class QueryListEvent : Events.IQueryListEvent
+    internal class QueryListEvent : IQueryListEvent
     {
         private readonly SPList _list;
+        private readonly IQueryWeb _queryWeb;
 
-        public QueryListEvent(SPList list)
+        public QueryListEvent(SPList list/*, IQueryWeb queryWeb*/)
         {
             _list = list;
+            //_queryWeb = queryWeb;
         }
 
         public void Add<T>(params Expression<Func<ListEventType, object>>[] eventsToStartHandle) where T : ListEventHandler
