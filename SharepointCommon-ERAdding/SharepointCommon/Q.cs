@@ -33,6 +33,7 @@ using System.Globalization;
 using System.Linq.Expressions;
 using System.Text;
 using SharepointCommon.Attributes;
+using SharepointCommon.Entities;
 using SharepointCommon.Expressions;
 
 namespace SharepointCommon
@@ -700,6 +701,8 @@ namespace SharepointCommon
             var visitor = new MemberAccessVisitor();
             string propName = visitor.GetMemberName(selector);
 
+            var fieldName = FieldMapper.TranslateToFieldName(propName);
+
             var type = typeof(T);
             var property = type.GetProperty(propName);
             var attrs = property.GetCustomAttributes(typeof(FieldAttribute), false);
@@ -708,10 +711,20 @@ namespace SharepointCommon
             {
                 var attr = (FieldAttribute)attrs[0];
                 if (attr.Name != null)
-                    propName = attr.Name;
+                    fieldName = attr.Name;
             }
 
-            return propName;
+            var attrsNf = property.GetCustomAttributes(typeof(NotFieldAttribute), false);
+            if (attrsNf.Length != 0)
+            {
+                // allow to use FieldRef<Document>(d => d.Name)
+                if (propName != "Name")
+                {
+                    throw new SharepointCommonException("Cannot use FieldRef<> with property marked as 'NotField'");
+                }
+            }
+
+            return fieldName;
         }
     }
 }

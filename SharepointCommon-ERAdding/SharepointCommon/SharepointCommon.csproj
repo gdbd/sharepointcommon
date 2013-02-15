@@ -281,10 +281,12 @@
     <Compile Include="Common\CamlConst.cs" />
     <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Common\CommonHelper.cs" />
-    <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Configuration\ConfigMgr.cs" />
     <Compile Include="Common\EnumMapper.cs" />
+    <Compile Include="Common\FilenameOrganizer.cs" />
     <Compile Include="Common\Interceptors\DocumentAccessInterceptor.cs" />
     <Compile Include="Common\Interceptors\ItemAccessInterceptor.cs" />
+    <Compile Include="Configuration\Settings.cs" />
     <Compile Include="Events\ListItemEventReceiver.cs" />
     <Compile Include="Common\XmlSerializator.cs" />
     <Compile Include="Entities\Category.cs" />

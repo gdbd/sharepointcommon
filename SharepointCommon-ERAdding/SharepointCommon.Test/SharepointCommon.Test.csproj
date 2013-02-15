@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="CamlQueryTests.cs" />
     <Compile Include="CastleTests.cs" />
+    <Compile Include="DocumentTests.cs" />
     <Compile Include="Entity\NullableItem.cs" />
     <Compile Include="Entity\CustomDocument.cs" />
     <Compile Include="Entity\OneMoreField.cs" />

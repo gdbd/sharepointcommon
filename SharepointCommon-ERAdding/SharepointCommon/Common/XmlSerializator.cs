@@ -1,11 +1,10 @@
-﻿namespace SharepointCommon.Common
-{
-    using System;
-    using System.IO;
-    using System.Text;
-    using System.Xml;
-    using System.Xml.Serialization;
+﻿using System.IO;
+using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 
+namespace SharepointCommon.Common
+{
     internal class XmlSerializator
     {
         internal static string Serialize<T>(T obj) where T : class
@@ -41,17 +40,17 @@
             }
         }
 
-        private static string Utf8ByteArrayToString(Byte[] characters)
+        private static string Utf8ByteArrayToString(byte[] characters)
         {
-            UTF8Encoding encoding = new UTF8Encoding();
-            String constructedString = encoding.GetString(characters);
-            return (constructedString);
+            var encoding = new UTF8Encoding();
+            var constructedString = encoding.GetString(characters);
+            return constructedString;
         }
 
-        private static Byte[] StringToUtf8ByteArray(String pXmlString)
+        private static byte[] StringToUtf8ByteArray(string pXmlString)
         {
-            UTF8Encoding encoding = new UTF8Encoding();
-            Byte[] byteArray = encoding.GetBytes(pXmlString);
+            var encoding = new UTF8Encoding();
+            var byteArray = encoding.GetBytes(pXmlString);
             return byteArray;
         }
     }

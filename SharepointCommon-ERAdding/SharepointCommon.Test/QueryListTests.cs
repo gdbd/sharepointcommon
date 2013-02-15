@@ -400,153 +400,6 @@
 
         #endregion
 
-        #region Add Document Tests
-        [Test]
-        public void Add_Uploads_Document_Test()
-        {
-            IQueryList<Document> lib = null;
-            try
-            {
-                lib = _queryWeb.Create<Document>("Add_AddsCustomItem");
-                var document = new Document
-                {
-                    Name = "Add_AddsCustomItem.dat",
-                    Content = new byte[] { 5, 10, 15, 25 },
-                };
-                lib.Add(document);
-
-                var item = lib.Items(new CamlQuery()
-                    .Query(Q.Where(Q.Eq(Q.FieldRef("LinkFilename"), Q.Value("Add_AddsCustomItem.dat")))))
-                    .FirstOrDefault();
-
-                Assert.IsNotNull(item);
-                Assert.That(item.Id, Is.EqualTo(document.Id));
-                Assert.That(item.Name, Is.EqualTo(document.Name));
-                Assert.That(item.Content, Is.Not.Null);
-                Assert.That(item.Content.Length, Is.EqualTo(document.Content.Length));
-                Assert.That(item.Size, Is.EqualTo(4));
-                Assert.That(item.Icon, Is.EqualTo("/_layouts/images/icgen.gif"));
-                Assert.That(item.Folder, Is.EqualTo(document.Folder));
-                //// Assert.That(item.Title, Is.EqualTo(document.Title));
-            }
-            finally
-            {
-                if (lib != null)
-                {
-                    lib.DeleteList(false);
-                }
-            }
-        }
-
-        [Test]
-        public void Add_Uploads_Document_To_Folder_Test()
-        {
-            IQueryList<Document> lib = null;
-            try
-            {
-                lib = _queryWeb.Create<Document>("Add_Uploads_Document_To_Folder_Test");
-                var document = new Document
-                {
-                    Name = "Add_Uploads_Document_To_Folder_Test.dat",
-                    Content = new byte[] { 5, 10, 15, 25 },
-                    Folder = "Folder1/Folder2/Folder3",
-                };
-                lib.Add(document);
-
-                var item = lib.Items(new CamlQuery()
-                    .Recursive()
-                  //  .Folder(document.Url)
-                    .Query(Q.Where(Q.Eq(Q.FieldRef("LinkFilename"), Q.Value("Add_Uploads_Document_To_Folder_Test.dat")))))
-                    .FirstOrDefault();
-
-                Assert.IsNotNull(item);
-                Assert.That(item.Id, Is.EqualTo(document.Id));
-                Assert.That(item.Name, Is.EqualTo(document.Name));
-                Assert.That(item.Content, Is.Not.Null);
-                Assert.That(item.Content.Length, Is.EqualTo(document.Content.Length));
-                Assert.That(item.Size, Is.EqualTo(4));
-                Assert.That(item.Icon, Is.EqualTo("/_layouts/images/icgen.gif"));
-                Assert.That(item.Folder, Is.EqualTo(document.Folder));
-                //// Assert.That(item.Title, Is.EqualTo(document.Title));
-            }
-            finally
-            {
-                if (lib != null)
-                {
-                    lib.DeleteList(false);
-                }
-            }
-        }
-
-        [Test]
-        public void Add_Uploads_CustomDocument_Test()
-        {
-            IQueryList<CustomDocument> list = null;
-            try
-            {
-                var lookupItem = new Item { Title = "Add_Adds_CustomItem_Test_Lookup" };
-                _listForLookup.Add(lookupItem);
-
-                var lookupItem2 = new Item { Title = "Add_Adds_CustomItem_Test_Lookup_2" };
-                _listForLookup.Add(lookupItem2);
-
-                list = _queryWeb.Create<CustomDocument>("Add_Uploads_CustomDocument_Test");
-                var customDoc = new CustomDocument
-                {
-                    Title = "Add_Uploads_CustomDocument_Test",
-                    Name = "Add_Uploads_CustomDocument_Test",
-                    Content = new byte[] { 5, 10, 15, 25 },
-                    CustomField1 = "Add_Uploads_CustomDocument_Test1",
-                    CustomField2 = "Add_Uploads_CustomDocument_Test2",
-                    CustomFieldNumber = 123.5,
-                    CustomBoolean = true,
-                    CustomUser = new Person(_firstUser.LoginName),
-                    CustomUsers = new List<User> { new Person(_firstUser.LoginName) },
-                    CustomLookup = lookupItem,
-                    CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
-                    CustomDate = DateTime.Now,
-                };
-                list.Add(customDoc);
-
-                var item = list.Items(new CamlQuery()
-                .Query(Q.Where(Q.Eq(Q.FieldRef("LinkFilename"), Q.Value("Add_Uploads_CustomDocument_Test")))))
-                .FirstOrDefault();
-
-                Assert.IsNotNull(item);
-                Assert.That(item.Id, Is.EqualTo(customDoc.Id));
-
-                Assert.That(item.Name, Is.EqualTo(customDoc.Name));
-                Assert.That(item.Content, Is.Not.Null);
-                Assert.That(item.Content.Length, Is.EqualTo(customDoc.Content.Length));
-                Assert.That(item.Size, Is.EqualTo(4));
-                Assert.That(item.Icon, Is.EqualTo("/_layouts/images/icgen.gif"));
-                Assert.That(item.Folder, Is.EqualTo(customDoc.Folder));
-
-                Assert.That(item.Title, Is.EqualTo(customDoc.Title));
-                Assert.That(item.CustomField1, Is.EqualTo(customDoc.CustomField1));
-                Assert.That(item.CustomField2, Is.EqualTo(customDoc.CustomField2));
-                Assert.That(item.CustomFieldNumber, Is.EqualTo(customDoc.CustomFieldNumber));
-                Assert.That(item.CustomBoolean, Is.EqualTo(customDoc.CustomBoolean));
-                Assert.That(item.CustomUser.Id, Is.Not.EqualTo(0));
-                Assert.That(item.CustomUsers.Count(), Is.EqualTo(1));
-                Assert.That(item.CustomUsers.First().Id, Is.EqualTo(_firstUser.ID));
-                Assert.That(item.CustomLookup, Is.Not.Null);
-                Assert.That(item.CustomLookup.Id, Is.EqualTo(lookupItem.Id));
-                Assert.That(item.CustomMultiLookup, Is.Not.Null);
-                Assert.That(item.CustomMultiLookup.Count(), Is.EqualTo(2));
-                Assert.That(item.CustomMultiLookup.First().Title, Is.EqualTo(lookupItem.Title));
-            }
-            finally
-            {
-                if (list != null)
-                {
-                    list.DeleteList(false);
-                }
-            }
-        }
-
-        #endregion
-
         #region Update Tests
 
         [Test]
@@ -1408,35 +1261,31 @@
 
         #endregion
 
-        #region Misc methods
-        
-
+        #region Misc Tests
         [Test]
         public void FormUrlTest()
         {
-            string newUrl = _list.FormUrl(PageType.New, 1);
+            string newUrl = _list.FormUrl(PageType.New);
             string dispUrl = _list.FormUrl(PageType.Display, 2);
             string editUrl = _list.FormUrl(PageType.Edit, 3);
 
-            Assert.That(
-                newUrl.ToLower(),
-                Is.EqualTo(string.Format("/Lists/{0}/NewForm.aspx?ID=1&IsDlg=1", ListName1).ToLower()));
+            var listsPath = System.IO.Path.Combine(_list.ParentWeb.Web.ServerRelativeUrl, "lists");
 
-            Assert.That(
-                dispUrl.ToLower(),
-                Is.EqualTo(string.Format("/Lists/{0}/DispForm.aspx?ID=2&IsDlg=1", ListName1).ToLower()));
+            Assert.That(newUrl.ToLower(),
+                Is.EqualTo(string.Format("{1}/{0}/NewForm.aspx", ListName1, listsPath).ToLower()));
 
-            Assert.That(
-                editUrl.ToLower(),
-                Is.EqualTo(string.Format("/Lists/{0}/EditForm.aspx?ID=3&IsDlg=1", ListName1).ToLower()));
+            Assert.That(dispUrl.ToLower(),
+                Is.EqualTo(string.Format("{1}/{0}/DispForm.aspx?ID=2", ListName1, listsPath).ToLower()));
+
+            Assert.That(editUrl.ToLower(),
+                Is.EqualTo(string.Format("{1}/{0}/EditForm.aspx?ID=3", ListName1, listsPath).ToLower()));
         }
 
         [Test]
         public void UrlTest()
         {
-            Assert.That(
-                _list.Url.ToLower(),
-                Is.EqualTo(string.Format("{0}lists/{1}", _webUrl, ListName1).ToLower()));
+            Assert.That(_list.Url.ToLower(),
+                Is.EqualTo(string.Format("{0}/lists/{1}", _list.ParentWeb.Web.Url, ListName1).ToLower()));
         }
 
         [Test]
@@ -1445,7 +1294,35 @@
             Assert.That(
                 _list.RelativeUrl.ToLower(),
                 Is.EqualTo(string.Format("lists/{0}", ListName1).ToLower()));
-        } 
+        }
+
+        [Test]
+        public void ListItem_Returns_SPListItem_Test()
+        {
+            var item = new Item { Title = "ListItem_Returns_SPListItem_Test" };
+            _list.Add(item);
+            Assert.That(item.Id, Is.Not.EqualTo(0));
+
+            var items = _list.Items(new CamlQuery()
+                .Query(Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Title), Q.Value("ListItem_Returns_SPListItem_Test")))))
+                .ToList();
+
+            CollectionAssert.IsNotEmpty(items);
+            var first = items.First();
+            Assert.That(first.Id, Is.EqualTo(item.Id));
+            Assert.That(first.Title, Is.EqualTo("ListItem_Returns_SPListItem_Test"));
+
+            var spListItem = first.ListItem;
+            Assert.NotNull(spListItem);
+        }
+
+        [Test]
+        public void ParentWeb_Not_Null_Test()
+        {
+            var pw = _list.ParentWeb;
+            Assert.NotNull(pw);
+        }
+
         #endregion
 
         #region Fields Tests

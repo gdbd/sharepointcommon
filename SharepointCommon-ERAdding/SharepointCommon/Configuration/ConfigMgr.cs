@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.SharePoint;
 
 namespace SharepointCommon.Configuration
 {
-    internal class Configuration : IDisposable
+    internal class ConfigMgr : IDisposable
     {
+        private const string ConfigFileName = "SharepointCommon.xml";
         private readonly IQueryWeb _queryWeb;
-
-        internal Configuration(Guid site, Guid web)
+        
+        internal ConfigMgr(Guid site, Guid web)
         {
             _queryWeb = WebFactory.Elevated(site, web);
         }
@@ -20,7 +20,13 @@ namespace SharepointCommon.Configuration
             _queryWeb.Dispose();
         }
 
-        internal void EnsureEventReceiver(SPList list, Type receiver)
+        internal void AddEventReceiver(Settings.EventReceiver eventReceiver)
+        {
+            EnsureConfigStore();
+            // todo: write er to config
+        }
+
+        internal void RemoveEventReceiver(Settings.EventReceiver eventReceiver)
         {
             EnsureConfigStore();
             // todo: write er to config
@@ -72,17 +78,6 @@ namespace SharepointCommon.Configuration
                     file.SaveBinary(ms);
                 }
             }
-        }
-
-        internal class ConfigurationModel
-        {
-            public IEnumerable<EventReceiver> EventReceivers { get; set; }
-
-            internal class EventReceiver
-            {
-                public string List { get; set; }
-                public string Receicer { get; set; }
-            }
-        }
+        }  
     }
 }

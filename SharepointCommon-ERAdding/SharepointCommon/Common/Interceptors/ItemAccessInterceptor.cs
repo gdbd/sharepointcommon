@@ -28,6 +28,7 @@
                 invocation.Proceed();
                 return;
             }
+
             if (invocation.Method.Name.StartsWith("get_"))
             {
                 if (_changedFields.Contains(invocation.Method.Name.Substring(4)))
@@ -41,7 +42,14 @@
 
                 if (propName.Equals("ParentList"))
                 {
-                    invocation.ReturnValue = new QueryList<Item>(_listItem.ParentList);
+                    var qWeb = new QueryWeb(_listItem.ParentList.ParentWeb);
+                    invocation.ReturnValue = qWeb.GetById<Item>(_listItem.ParentList.ID);
+                    return;
+                }
+
+                if (propName.Equals("ListItem"))
+                {
+                    invocation.ReturnValue = _listItem;
                     return;
                 }
 

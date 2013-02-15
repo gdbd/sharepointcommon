@@ -1,38 +1,34 @@
-﻿using System.Globalization;
-using System.Threading;
-using Microsoft.SharePoint.Utilities;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Xml.Linq;
+using Microsoft.SharePoint;
+using SharepointCommon.Attributes;
+using SharepointCommon.Common;
+using SharepointCommon.Entities;
+using SharepointCommon.Expressions;
 
 namespace SharepointCommon.Impl
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using System.Text;
-    using System.Xml.Linq;
-
-    using Microsoft.SharePoint;
-
-    using Attributes;
-    using Common;
-    using Entities;
-    using Expressions;
-
     [DebuggerDisplay("Title = {Title}, Url= {Url}")]
     internal sealed class QueryList<T> : IQueryList<T> where T : Item, new()
     {
         private SPWeb _web;
         private SPList _list;
 
-        internal QueryList(SPList list)
+        internal QueryList(SPList list, IQueryWeb parentWeb)
         {
             _list = list;
             _web = list.ParentWeb;
             List = _list;
+            ParentWeb = parentWeb;
             Events = new QueryListEvent(list);
         }
 
+        public IQueryWeb ParentWeb { get; private set; }
         public SPList List { get; private set; }
         public Guid Id { get { return _list.ID; } }
         public Guid WebId { get { return _list.ParentWeb.ID; } }
@@ -126,16 +122,32 @@ namespace SharepointCommon.Impl
         public string RelativeUrl { get { return _list.RootFolder.Url; } }
         public Events.IQueryListEvent Events { get; private set; }
 
-        public string FormUrl(PageType pageType, int id)
+        public string FormUrl(PageType pageType, int id = 0)
         {
+            if (id == 0)
+            {
+                switch (pageType)
+        {
+                    case PageType.Display:
+                        return string.Format("{0}", _list.DefaultDisplayFormUrl);
+                    case PageType.Edit:
+                        return string.Format("{0}", _list.DefaultEditFormUrl);
+                    case PageType.New:
+                        return string.Format("{0}", _list.DefaultNewFormUrl);
+
+                    default:
+                        throw new ArgumentOutOfRangeException("pageType");
+                }
+            }
+
             switch (pageType)
             {
                 case PageType.Display:
-                    return string.Format("{0}?ID={1}&IsDlg=1", _list.DefaultDisplayFormUrl, id);
+                    return string.Format("{0}?ID={1}", _list.DefaultDisplayFormUrl, id);
                 case PageType.Edit:
-                    return string.Format("{0}?ID={1}&IsDlg=1", _list.DefaultEditFormUrl, id);
+                    return string.Format("{0}?ID={1}", _list.DefaultEditFormUrl, id);
                 case PageType.New:
-                    return string.Format("{0}?ID={1}&IsDlg=1", _list.DefaultNewFormUrl, id);
+                    return string.Format("{0}", _list.DefaultNewFormUrl);
 
                 default:
                     throw new ArgumentOutOfRangeException("pageType");
@@ -165,6 +177,11 @@ namespace SharepointCommon.Impl
                     folder = EnsureFolder(doc.Folder);
                 }
 
+                if (doc.RenameIfExists)
+                {
+                    doc.Name = FilenameOrganizer.AppendSuffix(doc.Name, newName => !FileExists(newName), 500);
+                }
+
                 var file = folder.Files.Add(doc.Name, doc.Content, true);
                 newitem = file.Item;
             }
@@ -182,39 +199,26 @@ namespace SharepointCommon.Impl
 
             newitem[SPBuiltInFieldId.ContentTypeId] = ctId;
 
-            newitem.Update();
+            newitem.SystemUpdate(false);
             entity.Id = newitem.ID;
             entity.Guid = new Guid(newitem[SPBuiltInFieldId.GUID].ToString());
 
-            entity.ParentList = new QueryList<Item>(_list);
-        }
-
-        public void Update(T entity, bool incrementVersion)
-        {
-            if (entity == null) throw new ArgumentNullException("entity");
-
-            var forUpdate = GetItemByEntity(entity);
-
-            if (entity == null) 
-                throw new SharepointCommonException(string.Format("cant found item with ID={0} in List={1}", entity.Id, _list.Title));
-
-            EntityMapper.ToItem(entity, forUpdate);
-
-            if (incrementVersion) forUpdate.Update();
-            else forUpdate.SystemUpdate(false);
+            entity.ParentList = new QueryList<Item>(_list, ParentWeb);
         }
 
         public void Update(T entity, bool incrementVersion, params Expression<Func<T, object>>[] selectors)
         {
             if (entity == null) throw new ArgumentNullException("entity");
 
+            var forUpdate = GetItemByEntity(entity);
+
             if (selectors == null || selectors.Length == 0)
             {
-                Update(entity, true);
+            EntityMapper.ToItem(entity, forUpdate);
+            if (incrementVersion) forUpdate.Update();
+            else forUpdate.SystemUpdate(false);
                 return;
             }
-
-            var forUpdate = GetItemByEntity(entity);
 
             if (entity == null)
                 throw new SharepointCommonException(
@@ -502,6 +506,9 @@ namespace SharepointCommon.Impl
             
             if (fieldInfo.Type == SPFieldType.Lookup)
             {
+                if (string.IsNullOrEmpty(fieldInfo.LookupListName))
+                    throw new SharepointCommonException(string.Format("LookupListName must be set for lookup fields. ({0})", fieldInfo.Name));
+
                 var lookupList = _web.Lists.TryGetList(fieldInfo.LookupListName);
 
                 if (lookupList == null)
@@ -572,8 +579,12 @@ namespace SharepointCommon.Impl
             var fields = new StringBuilder();
 
             if (viewFields != null)
+            {
                 foreach (string viewField in viewFields)
+                {
                     fields.Append(Q.FieldRef(viewField));
+                }
+            }
 
             return _list.GetItems(new SPQuery
             {
@@ -645,6 +656,12 @@ namespace SharepointCommon.Impl
             var ctAttr = (ContentTypeAttribute)ctAttrs[0];
             var bm = _list.ParentWeb.AvailableContentTypes.Cast<SPContentType>().FirstOrDefault(c => c.Id.ToString().StartsWith(ctAttr.ContentTypeId));
             return bm;
+        }
+
+        private bool FileExists(string name)
+        {
+            var q = Q.Where(Q.Eq(Q.FieldRef<Document>(d => d.Name), Q.Value(name)));
+            return ByCaml(q).Count > 0;
         }
     }
 }

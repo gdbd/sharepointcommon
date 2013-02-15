@@ -235,14 +235,15 @@
 
         internal static string TranslateToFieldName(string propName)
         {
-            switch (propName)
-            {
-                case "Id": return "ID";
-                case "Version": return "_UIVersionString";
-                case "Guid": return "GUID";
+            var dic = new Dictionary<string, string>
+                          {
+                              { "Id", "ID" },
+                              { "Version", "_UIVersionString" },
+                              { "Guid", "GUID" },
+                              { "Name", "LinkFilename" },
+                          };
 
-                default: return propName;
-            }
+            return dic.ContainsKey(propName) ? dic[propName] : propName;
         }
 
         internal static bool IsReadOnlyField(string spName)

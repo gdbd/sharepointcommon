@@ -7,7 +7,7 @@ namespace SharepointCommon.Attributes
     {
         public SequenceAttribute(int sequence)
         {
-            if (sequence <= 0 || sequence >= 10000)
+            if (sequence <= 0 || sequence >= 100000)
                 throw new SharepointCommonException("event receiver sequence must be in range [0-10000]");
 
             Sequence = sequence;

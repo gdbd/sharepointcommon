@@ -12,6 +12,11 @@ namespace SharepointCommon
     public interface IQueryList<T> where T : Item, new()
     {
         /// <summary>
+        /// Gets reference of parent <see cref="IQueryWeb" object />
+        /// </summary>
+        IQueryWeb ParentWeb { get; }
+
+        /// <summary>
         /// Gets underlying list instance
         /// </summary>
         SPList List { get; }
@@ -83,21 +88,14 @@ namespace SharepointCommon
         /// </summary>
         /// <param name="pageType">Type of the page.</param>
         /// <param name="id">The id of item</param>
-        /// <returns>Url of list form with item id and 'IsDlg=1'</returns>
-        string FormUrl(PageType pageType, int id);
+        /// <returns>Url of list form with item id</returns>
+        string FormUrl(PageType pageType, int id = 0);
 
         /// <summary>
         /// Adds new list item to the list
         /// </summary>
         /// <param name="entity">instance of entity that represents new item</param>
         void Add(T entity);
-
-        /// <summary>
-        /// Updates all fields of existing item by data of entity
-        /// </summary>
-        /// <param name="entity">instance of entity</param>
-        /// <param name="incrementVersion">if set to <c>true</c>increments item version</param>
-        void Update(T entity, bool incrementVersion);
 
         /// <summary>
         /// Updates specified field of existing item by data of entity
@@ -242,6 +240,6 @@ namespace SharepointCommon
         /// Removes the specified content type from list.
         /// </summary>
         /// <typeparam name="TCt">Type of entity, represents content type (marked with [ContentType])</typeparam>
-        void RemoveContentType<TCt>() where TCt : Item, new();
+        void RemoveContentType<TCt>() where TCt : Item, new();   
     }
 }
