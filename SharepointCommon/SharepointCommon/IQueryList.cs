@@ -83,8 +83,9 @@ namespace SharepointCommon
         /// </summary>
         /// <param name="pageType">Type of the page.</param>
         /// <param name="id">The id of item</param>
+        /// <param name="isDlg">Add 'isDlg=1' to form url</param>
         /// <returns>Url of list form with item id</returns>
-        string FormUrl(PageType pageType, int id = 0);
+        string FormUrl(PageType pageType, int id = 0, bool isDlg = false);
 
         /// <summary>
         /// Adds new list item to the list

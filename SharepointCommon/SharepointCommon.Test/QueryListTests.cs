@@ -1279,6 +1279,19 @@
 
             Assert.That(editUrl.ToLower(),
                 Is.EqualTo(string.Format("{1}/{0}/EditForm.aspx?ID=3", ListName1, listsPath).ToLower()));
+
+            string newUrlIsDlg = _list.FormUrl(PageType.New, isDlg: true);
+            string dispUrlIsDlg = _list.FormUrl(PageType.Display, 2, true);
+            string editUrlIsDlg = _list.FormUrl(PageType.Edit, 3, true);
+
+            Assert.That(newUrlIsDlg.ToLower(),
+                Is.EqualTo(string.Format("{1}/{0}/NewForm.aspx?isDlg=1", ListName1, listsPath).ToLower()));
+
+            Assert.That(dispUrlIsDlg.ToLower(),
+                Is.EqualTo(string.Format("{1}/{0}/DispForm.aspx?ID=2?isDlg=1", ListName1, listsPath).ToLower()));
+
+            Assert.That(editUrlIsDlg.ToLower(),
+                Is.EqualTo(string.Format("{1}/{0}/EditForm.aspx?ID=3?isDlg=1", ListName1, listsPath).ToLower()));
         }
 
         [Test]
