@@ -120,18 +120,22 @@ namespace SharepointCommon.Impl
         public string Url { get { return _web.Url + "/" + _list.RootFolder.Url; } }
         public string RelativeUrl { get { return _list.RootFolder.Url; } }
 
-        public string FormUrl(PageType pageType, int id = 0)
+        public string FormUrl(PageType pageType, int id = 0, bool isDlg = false)
         {
+            string formUrl;
             if (id == 0)
             {
                 switch (pageType)
                 {
                     case PageType.Display:
-                        return string.Format("{0}", _list.DefaultDisplayFormUrl);
+                        formUrl = string.Format("{0}", _list.DefaultDisplayFormUrl);
+                        break;
                     case PageType.Edit:
-                        return string.Format("{0}", _list.DefaultEditFormUrl);
+                        formUrl = string.Format("{0}", _list.DefaultEditFormUrl);
+                        break;
                     case PageType.New:
-                        return string.Format("{0}", _list.DefaultNewFormUrl);
+                        formUrl = string.Format("{0}", _list.DefaultNewFormUrl);
+                        break;
 
                     default:
                         throw new ArgumentOutOfRangeException("pageType");
@@ -141,15 +145,23 @@ namespace SharepointCommon.Impl
             switch (pageType)
             {
                 case PageType.Display:
-                    return string.Format("{0}?ID={1}", _list.DefaultDisplayFormUrl, id);
+                    formUrl = string.Format("{0}?ID={1}", _list.DefaultDisplayFormUrl, id);
+                    break;
                 case PageType.Edit:
-                    return string.Format("{0}?ID={1}", _list.DefaultEditFormUrl, id);
+                    formUrl = string.Format("{0}?ID={1}", _list.DefaultEditFormUrl, id);
+                    break;
                 case PageType.New:
-                    return string.Format("{0}", _list.DefaultNewFormUrl);
+                    formUrl = string.Format("{0}", _list.DefaultNewFormUrl);
+                    break;
 
                 default:
                     throw new ArgumentOutOfRangeException("pageType");
             }
+
+            if (isDlg)
+                formUrl += "?isDlg=1";
+
+            return formUrl;
         }
 
         public void Add(T entity)
@@ -576,7 +588,7 @@ namespace SharepointCommon.Impl
         {
             var fields = new StringBuilder();
 
-            if (viewFields != null)
+            if (viewFields.Length != 0)
             {
                 foreach (string viewField in viewFields)
                 {
@@ -589,7 +601,7 @@ namespace SharepointCommon.Impl
                 Query = camlString,
                 ViewFields = fields.ToString(),
                 ViewAttributes = "Scope=\"Recursive\"",
-                ViewFieldsOnly = viewFields != null,
+                ViewFieldsOnly = viewFields.Length != 0,
                 QueryThrottleMode = SPQueryThrottleOption.Override,
             });
         }
