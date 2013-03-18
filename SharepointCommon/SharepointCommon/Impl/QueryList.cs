@@ -158,8 +158,14 @@ namespace SharepointCommon.Impl
                     throw new ArgumentOutOfRangeException("pageType");
             }
 
-            if (isDlg)
+            if (isDlg && id == 0)
+            {
                 formUrl += "?isDlg=1";
+            }
+            else if (isDlg)
+            {
+                formUrl += "&isDlg=1";
+            }
 
             return formUrl;
         }

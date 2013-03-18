@@ -1288,10 +1288,10 @@
                 Is.EqualTo(string.Format("{1}/{0}/NewForm.aspx?isDlg=1", ListName1, listsPath).ToLower()));
 
             Assert.That(dispUrlIsDlg.ToLower(),
-                Is.EqualTo(string.Format("{1}/{0}/DispForm.aspx?ID=2?isDlg=1", ListName1, listsPath).ToLower()));
+                Is.EqualTo(string.Format("{1}/{0}/DispForm.aspx?ID=2&isDlg=1", ListName1, listsPath).ToLower()));
 
             Assert.That(editUrlIsDlg.ToLower(),
-                Is.EqualTo(string.Format("{1}/{0}/EditForm.aspx?ID=3?isDlg=1", ListName1, listsPath).ToLower()));
+                Is.EqualTo(string.Format("{1}/{0}/EditForm.aspx?ID=3&isDlg=1", ListName1, listsPath).ToLower()));
         }
 
         [Test]
