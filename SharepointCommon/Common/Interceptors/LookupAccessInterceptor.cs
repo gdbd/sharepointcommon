@@ -50,7 +50,12 @@
                     var listItem = GetListItem();
                     var ft = FieldMapper.ToFieldType(invocation.Method);
                     var lookupField = listItem.Fields.TryGetFieldByStaticName(ft.Name) as SPFieldLookup;
-                    Assert.That(lookupField != null);
+
+                    if (lookupField == null)
+                    {
+                        throw new SharepointCommonException(string.Format("cant find '{0}' field in list '{1}'", ft.Name, listItem.ParentList.Title));
+                    }
+
                     var lookupItem = GetLookupItem(
                         listItem.Web.Url,
                         new Guid(lookupField.LookupList),
