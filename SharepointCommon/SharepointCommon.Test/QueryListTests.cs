@@ -1336,6 +1336,42 @@
             Assert.NotNull(pw);
         }
 
+        [Test]
+        public void Throw_If_Access_Field_Not_In_ViewFields_Test()
+        {
+            IQueryList<CustomItem> list = null;
+            try
+            {
+                list = _queryWeb.Create<CustomItem>("Throw_If_Access_Field_Not_In_ViewFields_Test");
+                var customItem = new CustomItem
+                {
+                    Title = "Throw_If_Access_Field_Not_In_ViewFields_Test",
+                    CustomField1 = "Throw_If_Access_Field_Not_In_ViewFields_Test1",
+                    CustomFieldNumber = 123.5,
+                    CustomBoolean = true,
+                    CustomDate = DateTime.Now,
+                    CustomChoice = TheChoice.Choice2,
+                };
+                list.Add(customItem);
+
+                var item = list.Items(new CamlQuery()
+                .Query(Q.Where(Q.Eq(Q.FieldRef<CustomItem>(i => i.Title), Q.Value("Throw_If_Access_Field_Not_In_ViewFields_Test"))))
+                .ViewFields<CustomItem>(i => i.CustomField1))
+                .FirstOrDefault();
+
+                Assert.IsNotNull(item);
+                string ss;
+                Assert.Throws<ArgumentException>(() => ss = item.CustomField2);
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
+
         #endregion
 
         #region Fields Tests

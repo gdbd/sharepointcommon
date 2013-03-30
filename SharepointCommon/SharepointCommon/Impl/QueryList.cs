@@ -16,40 +16,35 @@ namespace SharepointCommon.Impl
     [DebuggerDisplay("Title = {Title}, Url= {Url}")]
     internal sealed class QueryList<T> : IQueryList<T> where T : Item, new()
     {
-        private SPWeb _web;
-        private SPList _list;
-
         internal QueryList(SPList list, IQueryWeb parentWeb)
         {
-            _list = list;
-            _web = list.ParentWeb;
-            List = _list;
+            List = list;
             ParentWeb = parentWeb;
         }
 
         public IQueryWeb ParentWeb { get; private set; }
         public SPList List { get; private set; }
-        public Guid Id { get { return _list.ID; } }
-        public Guid WebId { get { return _list.ParentWeb.ID; } }
-        public Guid SiteId { get { return _list.ParentWeb.Site.ID; } }
+        public Guid Id { get { return List.ID; } }
+        public Guid WebId { get { return List.ParentWeb.ID; } }
+        public Guid SiteId { get { return List.ParentWeb.Site.ID; } }
         public string Title
         {
             get
             {
-                return _list.Title;
+                return List.Title;
             }
             set
             {
                 try
                 {
-                    _list.Title = value;
-                    _list.Update();
+                    List.Title = value;
+                    List.Update();
                 }
                 catch (SPException)
                 {
                     Invalidate();
-                    _list.Title = value;
-                    _list.Update();
+                    List.Title = value;
+                    List.Update();
                 }
             }
         }
@@ -57,21 +52,21 @@ namespace SharepointCommon.Impl
         {
             get
             {
-                return _list.EnableVersioning;
+                return List.EnableVersioning;
             }
             set
             {
                 try
                 {
-                    _list.EnableVersioning = value;
-                    _list.Update();
+                    List.EnableVersioning = value;
+                    List.Update();
                 }
                 catch (SPException)
                 {
                     // save conflict, need reload SPList
                     Invalidate();
-                    _list.EnableVersioning = value;
-                    _list.Update();
+                    List.EnableVersioning = value;
+                    List.Update();
                 }
             }
         }
@@ -79,20 +74,20 @@ namespace SharepointCommon.Impl
         {
             get
             {
-                return _list.EnableFolderCreation;
+                return List.EnableFolderCreation;
             }
             set
             {
                 try
                 {
-                    _list.EnableFolderCreation = value;
-                    _list.Update();
+                    List.EnableFolderCreation = value;
+                    List.Update();
                 }
                 catch (SPException)
                 {
                     Invalidate();
-                    _list.EnableFolderCreation = value;
-                    _list.Update();
+                    List.EnableFolderCreation = value;
+                    List.Update();
                 }
             }
         }
@@ -100,25 +95,25 @@ namespace SharepointCommon.Impl
         {
             get
             {
-                return _list.ContentTypesEnabled;
+                return List.ContentTypesEnabled;
             }
             set
             {
                 try
                 {
-                    _list.ContentTypesEnabled = value;
-                    _list.Update();
+                    List.ContentTypesEnabled = value;
+                    List.Update();
                 }
                 catch (SPException)
                 {
                     Invalidate();
-                    _list.ContentTypesEnabled = value;
-                    _list.Update();
+                    List.ContentTypesEnabled = value;
+                    List.Update();
                 }
             }
         }
-        public string Url { get { return _web.Url + "/" + _list.RootFolder.Url; } }
-        public string RelativeUrl { get { return _list.RootFolder.Url; } }
+        public string Url { get { return ParentWeb.Web.Url + "/" + List.RootFolder.Url; } }
+        public string RelativeUrl { get { return List.RootFolder.Url; } }
 
         public string FormUrl(PageType pageType, int id = 0, bool isDlg = false)
         {
@@ -128,13 +123,13 @@ namespace SharepointCommon.Impl
                 switch (pageType)
                 {
                     case PageType.Display:
-                        formUrl = string.Format("{0}", _list.DefaultDisplayFormUrl);
+                        formUrl = string.Format("{0}", List.DefaultDisplayFormUrl);
                         break;
                     case PageType.Edit:
-                        formUrl = string.Format("{0}", _list.DefaultEditFormUrl);
+                        formUrl = string.Format("{0}", List.DefaultEditFormUrl);
                         break;
                     case PageType.New:
-                        formUrl = string.Format("{0}", _list.DefaultNewFormUrl);
+                        formUrl = string.Format("{0}", List.DefaultNewFormUrl);
                         break;
 
                     default:
@@ -145,13 +140,13 @@ namespace SharepointCommon.Impl
             switch (pageType)
             {
                 case PageType.Display:
-                    formUrl = string.Format("{0}?ID={1}", _list.DefaultDisplayFormUrl, id);
+                    formUrl = string.Format("{0}?ID={1}", List.DefaultDisplayFormUrl, id);
                     break;
                 case PageType.Edit:
-                    formUrl = string.Format("{0}?ID={1}", _list.DefaultEditFormUrl, id);
+                    formUrl = string.Format("{0}?ID={1}", List.DefaultEditFormUrl, id);
                     break;
                 case PageType.New:
-                    formUrl = string.Format("{0}", _list.DefaultNewFormUrl);
+                    formUrl = string.Format("{0}", List.DefaultNewFormUrl);
                     break;
 
                 default:
@@ -186,7 +181,7 @@ namespace SharepointCommon.Impl
                 SPFolder folder = null;
                 if (string.IsNullOrEmpty(doc.Folder))
                 {
-                    folder = _list.RootFolder;
+                    folder = List.RootFolder;
                 }
                 else
                 {
@@ -203,7 +198,7 @@ namespace SharepointCommon.Impl
             }
             else
             {
-                newitem = _list.AddItem();
+                newitem = List.AddItem();
             }
 
             EntityMapper.ToItem(entity, newitem);
@@ -219,7 +214,7 @@ namespace SharepointCommon.Impl
             entity.Id = newitem.ID;
             entity.Guid = new Guid(newitem[SPBuiltInFieldId.GUID].ToString());
 
-            entity.ParentList = new QueryList<Item>(_list, ParentWeb);
+            entity.ParentList = new QueryList<Item>(List, ParentWeb);
         }
         
         public void Update(T entity, bool incrementVersion, params Expression<Func<T, object>>[] selectors)
@@ -238,7 +233,7 @@ namespace SharepointCommon.Impl
 
             if (entity == null)
                 throw new SharepointCommonException(
-                    string.Format("cant found item with ID={0} in List={1}", entity.Id, _list.Title));
+                    string.Format("cant found item with ID={0} in List={1}", entity.Id, List.Title));
 
 
             var propertiesToSet = new List<string>();
@@ -262,7 +257,7 @@ namespace SharepointCommon.Impl
             var forDelete = GetItemByEntity(entity);
 
             if (entity == null)
-                throw new SharepointCommonException(string.Format("cant found item with ID={0} in List={1}", entity.Id, _list.Title));
+                throw new SharepointCommonException(string.Format("cant found item with ID={0} in List={1}", entity.Id, List.Title));
 
             if (recycle) forDelete.Recycle();
             else forDelete.Delete();
@@ -270,7 +265,7 @@ namespace SharepointCommon.Impl
 
         public void Delete(int id, bool recycle)
         {
-            var forDelete = _list.GetItemById(id);
+            var forDelete = List.GetItemById(id);
            
             if (recycle) forDelete.Recycle();
             else forDelete.Delete();
@@ -281,7 +276,7 @@ namespace SharepointCommon.Impl
             SPListItem itemById = null;
             try
             {
-                itemById = _list.GetItemById(id);
+                itemById = List.GetItemById(id);
             }
             catch
             {
@@ -298,7 +293,7 @@ namespace SharepointCommon.Impl
 
             try
             {
-                itemById = _list.GetItemById(id);
+                itemById = List.GetItemById(id);
             }
             catch
             {
@@ -343,7 +338,7 @@ namespace SharepointCommon.Impl
             string fieldName = memberAccessor.GetMemberName(selector);
 
             var fieldInfo = FieldMapper.ToFields<T>().FirstOrDefault(f => f.Name.Equals(fieldName));
-            if (fieldInfo == null) throw new SharepointCommonException(string.Format("Field '{0}' not exist in '{1}'", fieldName, _list.Title));
+            if (fieldInfo == null) throw new SharepointCommonException(string.Format("Field '{0}' not exist in '{1}'", fieldName, List.Title));
 
             string fieldType = fieldInfo.Type.ToString();
             string fieldValue = value.ToString();
@@ -356,7 +351,7 @@ namespace SharepointCommon.Impl
         {
             if (option == null) throw new ArgumentNullException("option");
 
-            SPListItemCollection itemsToMap = _list.GetItems(option.GetSpQuery(_web));
+            SPListItemCollection itemsToMap = List.GetItems(option.GetSpQuery(ParentWeb.Web));
 
             return EntityMapper.ToEntities<T>(itemsToMap);
         }
@@ -399,11 +394,11 @@ namespace SharepointCommon.Impl
         {
             if (recycle)
             {
-                _list.Recycle();
+                List.Recycle();
             }
             else
             {
-                _list.Delete();
+                List.Delete();
             }
         }
 
@@ -412,8 +407,8 @@ namespace SharepointCommon.Impl
             var fields = FieldMapper.ToFields<T>();
             foreach (var fieldInfo in fields)
             {
-                if (_list.Fields.ContainsFieldWithStaticName(fieldInfo.Name) == false)
-                    throw new SharepointCommonException(string.Format("List '{0}' does not contain field '{1}'",_list.Title,fieldInfo.Name));
+                if (List.Fields.ContainsFieldWithStaticName(fieldInfo.Name) == false)
+                    throw new SharepointCommonException(string.Format("List '{0}' does not contain field '{1}'",List.Title,fieldInfo.Name));
             }
         }
 
@@ -442,7 +437,7 @@ namespace SharepointCommon.Impl
 
         public IEnumerable<Field> GetFields(bool onlyCustom)
         {
-            return FieldMapper.ToFields(_list, onlyCustom);
+            return FieldMapper.ToFields(List, onlyCustom);
         }
 
         public void EnsureFields()
@@ -464,7 +459,7 @@ namespace SharepointCommon.Impl
             var memberAccessor = new MemberAccessVisitor();
             string propName = memberAccessor.GetMemberName(selector);
 
-            if (_list.Fields.ContainsFieldWithStaticName(propName)) return;
+            if (List.Fields.ContainsFieldWithStaticName(propName)) return;
 
             var prop = typeof(T).GetProperty(propName);
 
@@ -476,10 +471,10 @@ namespace SharepointCommon.Impl
         public void AddContentType<TCt>() where TCt : Item, new()
         {
             var contentType = GetContentTypeFromWeb(new TCt(), true);
-            if (contentType == null) throw new SharepointCommonException(string.Format("ContentType {0} not available at {1}", typeof(TCt), _web.Url));
+            if (contentType == null) throw new SharepointCommonException(string.Format("ContentType {0} not available at {1}", typeof(TCt), ParentWeb.Web.Url));
             AllowManageContentTypes = true;
-            if (_list.IsContentTypeAllowed(contentType) == false) throw new SharepointCommonException(string.Format("ContentType {0} not allowed for list {1}", typeof(TCt), _list.RootFolder));
-            _list.ContentTypes.Add(contentType);
+            if (List.IsContentTypeAllowed(contentType) == false) throw new SharepointCommonException(string.Format("ContentType {0} not allowed for list {1}", typeof(TCt), List.RootFolder));
+            List.ContentTypes.Add(contentType);
         }
 
         public bool ContainsContentType<TCt>() where TCt : Item, new()
@@ -491,9 +486,9 @@ namespace SharepointCommon.Impl
         public void RemoveContentType<TCt>() where TCt : Item, new()
         {
             var contentType = GetContentType(new TCt(), true);
-            if (contentType == null) throw new SharepointCommonException(string.Format("ContentType [{0}] not applied to list [{1}]", typeof(TCt), _list.RootFolder));
+            if (contentType == null) throw new SharepointCommonException(string.Format("ContentType [{0}] not applied to list [{1}]", typeof(TCt), List.RootFolder));
 
-            _list.ContentTypes.Delete(contentType.Id);
+            List.ContentTypes.Delete(contentType.Id);
         }
 
         private bool ContainsFieldImpl(string propName)
@@ -513,7 +508,7 @@ namespace SharepointCommon.Impl
             }
 
             // check field in list
-            return _list.Fields.ContainsFieldWithStaticName(propName);
+            return List.Fields.ContainsFieldWithStaticName(propName);
         }
 
         private void EnsureFieldImpl(Field fieldInfo)
@@ -525,14 +520,14 @@ namespace SharepointCommon.Impl
                 if (string.IsNullOrEmpty(fieldInfo.LookupListName))
                     throw new SharepointCommonException(string.Format("LookupListName must be set for lookup fields. ({0})", fieldInfo.Name));
 
-                var lookupList = _web.Lists.TryGetList(fieldInfo.LookupListName);
+                var lookupList = ParentWeb.Web.Lists.TryGetList(fieldInfo.LookupListName);
 
                 if (lookupList == null)
-                    throw new SharepointCommonException(string.Format("List {0} not found on {1}", fieldInfo.LookupListName, _web.Url));
+                    throw new SharepointCommonException(string.Format("List {0} not found on {1}", fieldInfo.LookupListName, ParentWeb.Web.Url));
 
-                _list.Fields.AddLookup(fieldInfo.Name, lookupList.ID, false);
+                List.Fields.AddLookup(fieldInfo.Name, lookupList.ID, false);
                 
-                var field = (SPFieldLookup)_list.Fields.GetFieldByInternalName(fieldInfo.Name);
+                var field = (SPFieldLookup)List.Fields.GetFieldByInternalName(fieldInfo.Name);
 
                 FieldMapper.SetFieldAdditionalInfo(field, fieldInfo);
 
@@ -551,8 +546,8 @@ namespace SharepointCommon.Impl
 
             if (fieldInfo.Type == SPFieldType.Choice)
             {
-                _list.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
-                var field = (SPFieldChoice)_list.Fields.GetFieldByInternalName(fieldInfo.Name);
+                List.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
+                var field = (SPFieldChoice)List.Fields.GetFieldByInternalName(fieldInfo.Name);
 
                 var choices = fieldInfo.Choices.ToArray();
                 
@@ -565,9 +560,9 @@ namespace SharepointCommon.Impl
                 return;
             }
 
-            _list.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
+            List.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
 
-            var field2 = _list.Fields.GetFieldByInternalName(fieldInfo.Name);
+            var field2 = List.Fields.GetFieldByInternalName(fieldInfo.Name);
 
             FieldMapper.SetFieldAdditionalInfo(field2, fieldInfo);
 
@@ -602,7 +597,7 @@ namespace SharepointCommon.Impl
                 }
             }
 
-            return _list.GetItems(new SPQuery
+            return List.GetItems(new SPQuery
             {
                 Query = camlString,
                 ViewFields = fields.ToString(),
@@ -614,26 +609,25 @@ namespace SharepointCommon.Impl
 
         private void Invalidate()
         {
-            var wf = WebFactory.Open(_web.Url);
-            _web = wf.Web;
-            _list = wf.Web.Lists[_list.ID];
-            List = _list;
+            ParentWeb = WebFactory.Open(ParentWeb.Web.Url);
+            List = ParentWeb.Web.Lists[List.ID];
+            List = List;
         }
 
         private SPFolder EnsureFolder(string folderurl)
         {
             var splitted = folderurl.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
 
-            string rootfolder = _list.RootFolder.Url;
+            string rootfolder = List.RootFolder.Url;
 
-            SPFolder folder = _list.RootFolder;
+            SPFolder folder = List.RootFolder;
 
             foreach (string newFolderName in splitted)
             {
-                folder = _list.ParentWeb.GetFolder(rootfolder + "/" + newFolderName);
+                folder = List.ParentWeb.GetFolder(rootfolder + "/" + newFolderName);
                 if (false == folder.Exists)
                 {
-                    var nf = _list.AddItem(rootfolder, SPFileSystemObjectType.Folder, newFolderName);
+                    var nf = List.AddItem(rootfolder, SPFileSystemObjectType.Folder, newFolderName);
                     nf.Update();
                     folder = nf.Folder;
                 }
@@ -653,10 +647,10 @@ namespace SharepointCommon.Impl
 
             var ctAttr = (ContentTypeAttribute)ctAttrs[0];
 
-            var bm = _list.ContentTypes.Cast<SPContentType>().FirstOrDefault(c => c.Parent.Id.ToString() == ctAttr.ContentTypeId);
+            var bm = List.ContentTypes.Cast<SPContentType>().FirstOrDefault(c => c.Parent.Id.ToString() == ctAttr.ContentTypeId);
 
             if (bm == null) return null;
-            var cct = _list.ContentTypes[bm.Id];
+            var cct = List.ContentTypes[bm.Id];
             return cct;
         }
 
@@ -670,7 +664,7 @@ namespace SharepointCommon.Impl
             }
 
             var ctAttr = (ContentTypeAttribute)ctAttrs[0];
-            var bm = _list.ParentWeb.AvailableContentTypes.Cast<SPContentType>().FirstOrDefault(c => c.Id.ToString().StartsWith(ctAttr.ContentTypeId));
+            var bm = List.ParentWeb.AvailableContentTypes.Cast<SPContentType>().FirstOrDefault(c => c.Id.ToString().StartsWith(ctAttr.ContentTypeId));
             return bm;
         }
 
