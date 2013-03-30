@@ -1,4 +1,6 @@
-﻿namespace SharepointCommon.Common.Interceptors
+﻿using Microsoft.SharePoint.Utilities;
+
+namespace SharepointCommon.Common.Interceptors
 {
     using System;
 
@@ -29,6 +31,10 @@
 
                 case "get_Size":
                     invocation.ReturnValue = _item.File.OpenBinary().LongLength;
+                    return;
+
+                case "get_Url":
+                    invocation.ReturnValue = SPUrlUtility.CombineUrl(_item.ParentList.ParentWeb.ServerRelativeUrl, _item.File.Url);
                     return;
 
                 case "get_Icon":

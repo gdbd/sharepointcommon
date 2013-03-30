@@ -1,3 +1,5 @@
+using Microsoft.SharePoint.Utilities;
+
 namespace SharepointCommon.Impl
 {
     using System;
@@ -95,7 +97,7 @@ namespace SharepointCommon.Impl
 
         public IQueryList<T> GetByUrl<T>(string listUrl) where T : Item, new()
         {
-            var list = Web.GetList(listUrl);
+            var list = Web.GetList(Combine(Web.ServerRelativeUrl, listUrl));
             return new QueryList<T>(list, this);
         }
 
@@ -162,7 +164,7 @@ namespace SharepointCommon.Impl
         {
             try
             {
-                var list = Web.GetList(listUrl);
+                var list = Web.GetList(Combine(Web.ServerRelativeUrl, listUrl));
                 return list != null;
             }
             catch (System.IO.FileNotFoundException)
@@ -211,6 +213,12 @@ namespace SharepointCommon.Impl
             }
 
             throw new SharepointCommonException("Cant determine actual list type. Do you inherited item from 'Item' or 'Document'?");
+        }
+
+        private string Combine(string left, string right)
+        {
+            if (right.StartsWith(left)) return right;
+            return SPUrlUtility.CombineUrl(left, right);
         }
     }
 }
