@@ -84,7 +84,7 @@ namespace SharepointCommon.Common.Interceptors
 
             if (listAttr.Id != null)
             {
-                return _queryWeb.Web.Lists[listAttr.Id.Value];
+                return _queryWeb.Web.Lists[new Guid(listAttr.Id)];
             }
 
             throw new SharepointCommonException(string.Format("Unable find list for property {0}", method.Name));
