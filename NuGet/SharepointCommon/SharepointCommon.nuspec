@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>SharepointCommon</id>
-    <version>1.3.4</version>
+    <version>1.4</version>
     <authors>devi_ous</authors>
     <owners>devi_ous</owners>
     <licenseUrl>http://sharepointcommon.codeplex.com/license</licenseUrl>
@@ -30,7 +30,7 @@ FEATURES:
 - typed CAML queries(Caml.NET with extentions)
 - many other features upcoming</summary>
 
-    <copyright>Copyright © devi_ous 2012</copyright>
+    <copyright>Copyright © devi_ous 2013</copyright>
     <tags>Sharepoint Framework ORM POCO UnitTest Wrapper</tags>
   </metadata>
 </package>
