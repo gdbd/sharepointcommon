@@ -16,7 +16,7 @@ namespace SharepointCommon.Impl
     [DebuggerDisplay("Title = {Title}, Url= {Url}")]
     internal sealed class QueryList<T> : IQueryList<T> where T : Item, new()
     {
-        internal QueryList(SPList list, IQueryWeb parentWeb)
+        public QueryList(SPList list, IQueryWeb parentWeb)
         {
             List = list;
             ParentWeb = parentWeb;
@@ -48,6 +48,7 @@ namespace SharepointCommon.Impl
                 }
             }
         }
+
         public bool IsVersioningEnabled
         {
             get
@@ -118,39 +119,28 @@ namespace SharepointCommon.Impl
         public string FormUrl(PageType pageType, int id = 0, bool isDlg = false)
         {
             string formUrl;
-            if (id == 0)
-            {
-                switch (pageType)
-                {
-                    case PageType.Display:
-                        formUrl = string.Format("{0}", List.DefaultDisplayFormUrl);
-                        break;
-                    case PageType.Edit:
-                        formUrl = string.Format("{0}", List.DefaultEditFormUrl);
-                        break;
-                    case PageType.New:
-                        formUrl = string.Format("{0}", List.DefaultNewFormUrl);
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException("pageType");
-                }
-            }
 
             switch (pageType)
             {
                 case PageType.Display:
-                    formUrl = string.Format("{0}?ID={1}", List.DefaultDisplayFormUrl, id);
+                    formUrl = List.DefaultDisplayFormUrl;
                     break;
+
                 case PageType.Edit:
-                    formUrl = string.Format("{0}?ID={1}", List.DefaultEditFormUrl, id);
+                    formUrl = List.DefaultEditFormUrl;
                     break;
+
                 case PageType.New:
-                    formUrl = string.Format("{0}", List.DefaultNewFormUrl);
+                    formUrl = List.DefaultNewFormUrl;
                     break;
 
                 default:
                     throw new ArgumentOutOfRangeException("pageType");
+            }
+
+            if (id != 0)
+            {
+                formUrl += "?ID=" + id;
             }
 
             if (isDlg && id == 0)
@@ -169,7 +159,7 @@ namespace SharepointCommon.Impl
         {
             if (entity == null) throw new ArgumentNullException("entity");
 
-            SPListItem newitem = null;
+            SPListItem newitem;
 
             if (entity is Document)
             {
@@ -234,8 +224,7 @@ namespace SharepointCommon.Impl
             if (entity == null)
                 throw new SharepointCommonException(
                     string.Format("cant found item with ID={0} in List={1}", entity.Id, List.Title));
-
-
+            
             var propertiesToSet = new List<string>();
             var memberAccessor = new MemberAccessVisitor();
             foreach (var selector in selectors)
@@ -273,7 +262,7 @@ namespace SharepointCommon.Impl
 
         public T ById(int id)
         {
-            SPListItem itemById = null;
+            SPListItem itemById;
             try
             {
                 itemById = List.GetItemById(id);
@@ -282,12 +271,13 @@ namespace SharepointCommon.Impl
             {
                 return null;
             }
+
             return EntityMapper.ToEntity<T>(itemById);
         }
 
         public TCt ById<TCt>(int id) where TCt : Item, new()
         {
-            SPListItem itemById = null;
+            SPListItem itemById;
 
             string typeName = typeof(TCt).Name;
 
@@ -310,8 +300,8 @@ namespace SharepointCommon.Impl
 
         public T ByGuid(Guid id)
         {
-            var camlByGuid = Q.Where(Q.Eq(Q.FieldRef("GUID"), Q.Value("GUID", id.ToString())));
-            var itemByGuid = this.ByCaml(camlByGuid).Cast<SPListItem>().FirstOrDefault();
+            var camlByGuid = Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Guid), Q.Value("GUID", id.ToString())));
+            var itemByGuid = ByCaml(camlByGuid).Cast<SPListItem>().FirstOrDefault();
             if (itemByGuid == null) return null;
             return EntityMapper.ToEntity<T>(itemByGuid);
         }
@@ -320,8 +310,8 @@ namespace SharepointCommon.Impl
         {
             string typeName = typeof(TCt).Name;
 
-            var camlByGuid = Q.Where(Q.Eq(Q.FieldRef("GUID"), Q.Value("GUID", id.ToString())));
-            var itemByGuid = this.ByCaml(camlByGuid).Cast<SPListItem>().FirstOrDefault();
+            var camlByGuid = Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Guid), Q.Value("GUID", id.ToString())));
+            var itemByGuid = ByCaml(camlByGuid).Cast<SPListItem>().FirstOrDefault();
             if (itemByGuid == null) return null;
 
             var ct = GetContentType(new TCt(), true);
@@ -342,8 +332,10 @@ namespace SharepointCommon.Impl
 
             string fieldType = fieldInfo.Type.ToString();
             string fieldValue = value.ToString();
+#pragma warning disable 612,618
             var camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName), Q.Value(fieldType, fieldValue)));
-            var itemsByField = this.ByCaml(camlByField);
+#pragma warning restore 612,618
+            var itemsByField = ByCaml(camlByField);
             return EntityMapper.ToEntities<T>(itemsByField);
         }
 
@@ -364,11 +356,13 @@ namespace SharepointCommon.Impl
             
             string ctId = ct.Id.ToString();
             
-            string noAffectFilter = Q.Neq(Q.FieldRef("ID"), Q.Value(0));
+            string noAffectFilter = Q.Neq(Q.FieldRef<Item>(i => i.Id), Q.Value(0));
 
             string camlByContentType =
                 Q.Where(
+#pragma warning disable 612,618
                     Q.And("**filter-replace**", Q.Eq(Q.FieldRef("ContentTypeId"), Q.Value(CamlConst.ContentTypeId, ctId))));
+#pragma warning restore 612,618
 
             if (option.CamlStore == null)
             {
@@ -408,7 +402,7 @@ namespace SharepointCommon.Impl
             foreach (var fieldInfo in fields)
             {
                 if (List.Fields.ContainsFieldWithStaticName(fieldInfo.Name) == false)
-                    throw new SharepointCommonException(string.Format("List '{0}' does not contain field '{1}'",List.Title,fieldInfo.Name));
+                    throw new SharepointCommonException(string.Format("List '{0}' does not contain field '{1}'", List.Title, fieldInfo.Name));
             }
         }
 
@@ -536,11 +530,13 @@ namespace SharepointCommon.Impl
                     field.LookupField = fieldInfo.LookupField;
                     field.Update();
                 }
+
                 if (fieldInfo.IsMultiValue)
                 {
                     field.AllowMultipleValues = true;
                     field.Update();
                 }
+
                 return;
             }
 
@@ -580,7 +576,7 @@ namespace SharepointCommon.Impl
         {
             if (entity.Id == default(int)) throw new SharepointCommonException("Id must be set.");
 
-            var items = ByCaml(Q.Where(Q.Eq(Q.FieldRef("ID"), Q.Value(entity.Id))))
+            var items = ByCaml(Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Id), Q.Value(entity.Id))))
                 .Cast<SPListItem>();
             return items.FirstOrDefault();
         }
@@ -593,7 +589,9 @@ namespace SharepointCommon.Impl
             {
                 foreach (string viewField in viewFields)
                 {
+#pragma warning disable 612,618
                     fields.Append(Q.FieldRef(viewField));
+#pragma warning restore 612,618
                 }
             }
 
@@ -631,6 +629,7 @@ namespace SharepointCommon.Impl
                     nf.Update();
                     folder = nf.Folder;
                 }
+
                 rootfolder += "/" + newFolderName;
             }
             return folder;
