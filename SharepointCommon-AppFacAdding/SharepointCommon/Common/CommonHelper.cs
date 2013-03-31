@@ -12,10 +12,11 @@
         {
             var userField = (SPFieldUser)item.Fields.TryGetFieldByStaticName(fieldStaticName);
             if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
+            
+            var fieldValue = (SPFieldUserValue)userField.GetFieldValue((string)item[fieldStaticName]);
 
-            if (item[fieldStaticName] == null) return null;
+            if (fieldValue == null) return null;
 
-            var fieldValue = (SPFieldUserValue)userField.GetFieldValue(item[fieldStaticName].ToString());
             return fieldValue.User;
         }
 

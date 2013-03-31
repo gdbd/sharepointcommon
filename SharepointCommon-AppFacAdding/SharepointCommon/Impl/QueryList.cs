@@ -19,7 +19,7 @@ namespace SharepointCommon.Impl
         private SPWeb _web;
         private SPList _list;
 
-        internal QueryList(SPList list, IQueryWeb parentWeb)
+        public QueryList(SPList list, IQueryWeb parentWeb)
         {
             _list = list;
             _web = list.ParentWeb;

@@ -98,6 +98,7 @@
     <Compile Include="Entity\OneMoreField.cs" />
     <Compile Include="Entity\TheChoice.cs" />
     <Compile Include="MoqLibraryTests.cs" />
+    <Compile Include="TestApp.cs" />
     <Compile Include="WebFactoryTests.cs" />
     <Compile Include="EntityMapperTests.cs" />
     <Compile Include="Entity\CustomItem.cs" />

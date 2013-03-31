@@ -75,6 +75,8 @@
   <ItemGroup>
     <Compile Include="AppBase.cs" />
     <Compile Include="Attributes\ListAttribute.cs" />
+    <Compile Include="Common\Interceptors\AppBaseAccessInterceptor.cs" />
+    <Compile Include="Entities\UserInfoList.cs" />
     <Compile Include="Impl\AppFac.cs" />
     <Compile Include="CamlQuery.cs" />
     <Compile Include="Castle\Core\Internal\AttributesUtil.cs" />

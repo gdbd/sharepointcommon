@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Linq;
+using Microsoft.SharePoint;
 using NUnit.Framework;
-using SharepointCommon.Attributes;
 
 namespace SharepointCommon.Test
 {
@@ -18,10 +19,30 @@ namespace SharepointCommon.Test
             }
         }
 
-        private class TestApp : AppBase<TestApp>
+        [Test]
+        public void AppBase_Get_UserInfoList_Test()
         {
-            [List(Name = "SiteUserInfoList")]
-            public virtual IQueryList<Item> UserInfoList { get; set; }
+            using (var app01 = TestApp.Factory.OpenNew(_webUrl))
+            {    
+                var userUnfoList = app01.UserInfoList;
+                Assert.NotNull(userUnfoList);
+
+                var user = userUnfoList.Items(CamlQuery.Default).FirstOrDefault();
+
+                Assert.NotNull(user);
+            }
+        }
+
+        [Test]
+        public void AppBase_Get_List_Twice_Returns_Cached_Test()
+        {
+            using (var app01 = TestApp.Factory.OpenNew(_webUrl))
+            {
+                var userUnfoList = app01.UserInfoList;
+                var userUnfoList2 = app01.UserInfoList;
+                
+                Assert.AreSame(userUnfoList, userUnfoList2);
+            }
         }
     }
 }

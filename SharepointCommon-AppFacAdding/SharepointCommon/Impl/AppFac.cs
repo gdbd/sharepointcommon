@@ -1,9 +1,13 @@
 ﻿using System;
+using Castle.DynamicProxy;
+using SharepointCommon.Common.Interceptors;
 
 namespace SharepointCommon.Impl
 {
     internal class AppFac<T> : IAppFac<T> where T : AppBase<T>
     {
+        private readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
+
         public T ExistingWeb(IQueryWeb queryWeb)
         {
             return CreateApp(queryWeb, false);
@@ -39,9 +43,9 @@ namespace SharepointCommon.Impl
             return CreateApp(WebFactory.Elevated(siteId, webId), true);
         }
 
-        private static T CreateApp(IQueryWeb web, bool shouldDispose)
+        private T CreateApp(IQueryWeb web, bool shouldDispose)
         {
-            var app = (T)Activator.CreateInstance(typeof(T));
+            var app = _proxyGenerator.CreateClassProxy<T>(new AppBaseAccessInterceptor(web));
             app.QueryWeb = web;
             app.ShouldDispose = shouldDispose;
             return app;
