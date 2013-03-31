@@ -1,26 +1,27 @@
 ﻿using System;
 using NUnit.Framework;
+using SharepointCommon.Attributes;
 
 namespace SharepointCommon.Test
 {
     [TestFixture]
     public class AppFacTests
     {
+        private readonly string _webUrl = string.Format("http://{0}/", Environment.MachineName);
+
         [Test]
-        public void GetCurrentTest()
+        public void AppBase_Factory_OpenByUrl_Test()
         {
-            var app = TestAppFac.Open("asd");
+            using (var app01 = TestApp.Factory.OpenNew(_webUrl))
+            {
+                Assert.NotNull(app01);
+            }
         }
-    }
 
-    public class TestAppFac : AppFac<TestApp>
-    {
-    }
-
-    public class TestApp : AppBase
-    {
-        public TestApp(IQueryWeb queryWeb) : base(queryWeb)
+        private class TestApp : AppBase<TestApp>
         {
+            [List(Name = "SiteUserInfoList")]
+            public virtual IQueryList<Item> UserInfoList { get; set; }
         }
     }
 }
