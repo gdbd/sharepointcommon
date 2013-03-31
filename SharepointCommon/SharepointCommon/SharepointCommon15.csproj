@@ -38,7 +38,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\BUILD\15\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;PHYSICALASSEMBLY DOTNET DOTNET35</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PHYSICALASSEMBLY DOTNET DOTNET40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -74,6 +74,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppBase.cs" />
+    <Compile Include="Attributes\ListAttribute.cs" />
     <Compile Include="CamlQuery.cs" />
     <Compile Include="Castle\Core\Internal\AttributesUtil.cs" />
     <Compile Include="Castle\Core\Internal\CollectionExtensions.cs" />
@@ -284,16 +286,20 @@
     <Compile Include="Common\CommonHelper.cs" />
     <Compile Include="Common\EnumMapper.cs" />
     <Compile Include="Common\FilenameOrganizer.cs" />
+    <Compile Include="Common\Interceptors\AppBaseAccessInterceptor.cs" />
     <Compile Include="Common\Interceptors\DocumentAccessInterceptor.cs" />
     <Compile Include="Common\Interceptors\ItemAccessInterceptor.cs" />
     <Compile Include="Entities\Category.cs" />
     <Compile Include="Entities\Form.cs" />
+    <Compile Include="Entities\UserInfoList.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="Common\Interceptors\LookupAccessInterceptor.cs" />
     <Compile Include="Common\LookupIterator.cs" />
     <Compile Include="Common\Interceptors\UserAccessInterceptor.cs" />
     <Compile Include="Common\UserIterator.cs" />
     <Compile Include="Entities\Holiday.cs" />
+    <Compile Include="IAppFac.cs" />
+    <Compile Include="Impl\AppFac.cs" />
     <Compile Include="SharepointCommonException.cs" />
     <Compile Include="Expressions\ExpressionVisitor.cs" />
     <Compile Include="Common\FieldMapper.cs" />
