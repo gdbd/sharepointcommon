@@ -389,9 +389,17 @@
                     continue;
                 }
 
-                if (prop.PropertyType.IsEnum == true)
+                if (prop.PropertyType.IsEnum)
                 {
                     listItem[spName] = EnumMapper.ToItem(prop.PropertyType, propValue);
+                    continue;
+                }
+
+                var innerType = Nullable.GetUnderlyingType(prop.PropertyType);
+
+                if (innerType != null && innerType.IsEnum)
+                {
+                    listItem[spName] = EnumMapper.ToItem(innerType, propValue);
                     continue;
                 }
 
