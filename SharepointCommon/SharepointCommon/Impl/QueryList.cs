@@ -16,6 +16,8 @@ namespace SharepointCommon.Impl
     [DebuggerDisplay("Title = {Title}, Url= {Url}")]
     internal sealed class QueryList<T> : IQueryList<T> where T : Item, new()
     {
+        private QueryList<T> elevatedList;
+
         public QueryList(SPList list, IQueryWeb parentWeb)
         {
             List = list;
@@ -153,6 +155,20 @@ namespace SharepointCommon.Impl
             }
 
             return formUrl;
+        }
+
+        private QueryList<T> ElevatedList
+        {
+            get
+            {
+                if (elevatedList != null) return elevatedList;
+
+                using (var elevatedWeb = WebFactory.Elevated(this.ParentWeb.Web.Url))
+                {
+                    elevatedList = (QueryList<T>)elevatedWeb.GetByUrl<T>(this.RelativeUrl);
+                    return elevatedList;
+                }
+            }
         }
 
         public void Add(T entity)
@@ -670,7 +686,7 @@ namespace SharepointCommon.Impl
         private bool FileExists(string name)
         {
             var q = Q.Where(Q.Eq(Q.FieldRef<Document>(d => d.Name), Q.Value(name)));
-            return ByCaml(q).Count > 0;
+            return ElevatedList.ByCaml(q).Count > 0;
         }
     }
 }
