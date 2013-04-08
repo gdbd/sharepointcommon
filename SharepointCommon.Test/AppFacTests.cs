@@ -50,15 +50,20 @@ namespace SharepointCommon.Test
         {
             using (var app01 = TestApp.Factory.OpenNew(_webUrl))
             {
-                var userUnfoList = app01.UserInfoList;
-
-                Assert.Throws<SharepointCommonException>(() =>
-                    {
-                        app01.UserInfoList = userUnfoList;
-                    });
-
                 Assert.Throws<SharepointCommonException>(app01.SetListThatMustThrows);
+                Assert.DoesNotThrow(app01.SetListThatMustNoThrows);
             }
+        }
+
+        [Test]
+        public void AppBase_Get_List_Throws_On_NoVirtual_Test()
+        {
+            Assert.Throws<SharepointCommonException>(() =>
+                {
+                    using (var app01 = TestAppNoVirtualProperty.Factory.OpenNew(_webUrl))
+                    {
+                    }
+                });
         }
     }
 }

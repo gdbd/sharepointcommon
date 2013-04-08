@@ -16,8 +16,6 @@ namespace SharepointCommon.Impl
     [DebuggerDisplay("Title = {Title}, Url= {Url}")]
     internal sealed class QueryList<T> : IQueryList<T> where T : Item, new()
     {
-        private QueryList<T> elevatedList;
-
         public QueryList(SPList list, IQueryWeb parentWeb)
         {
             List = list;
@@ -117,7 +115,7 @@ namespace SharepointCommon.Impl
         }
         public string Url { get { return ParentWeb.Web.Url + "/" + List.RootFolder.Url; } }
         public string RelativeUrl { get { return List.RootFolder.Url; } }
-
+        
         public string FormUrl(PageType pageType, int id = 0, bool isDlg = false)
         {
             string formUrl;
@@ -156,21 +154,7 @@ namespace SharepointCommon.Impl
 
             return formUrl;
         }
-
-        private QueryList<T> ElevatedList
-        {
-            get
-            {
-                if (elevatedList != null) return elevatedList;
-
-                using (var elevatedWeb = WebFactory.Elevated(this.ParentWeb.Web.Url))
-                {
-                    elevatedList = (QueryList<T>)elevatedWeb.GetByUrl<T>(this.RelativeUrl);
-                    return elevatedList;
-                }
-            }
-        }
-
+        
         public void Add(T entity)
         {
             if (entity == null) throw new ArgumentNullException("entity");
@@ -184,7 +168,7 @@ namespace SharepointCommon.Impl
                 if (doc.Content == null || doc.Content.Length == 0) throw new SharepointCommonException("'Content' canot be null or empty");
                 if (string.IsNullOrEmpty(doc.Name)) throw new SharepointCommonException("'Name' cannot be null or empty");
 
-                SPFolder folder = null;
+                SPFolder folder;
                 if (string.IsNullOrEmpty(doc.Folder))
                 {
                     folder = List.RootFolder;
@@ -196,7 +180,11 @@ namespace SharepointCommon.Impl
 
                 if (doc.RenameIfExists)
                 {
-                    doc.Name = FilenameOrganizer.AppendSuffix(doc.Name, newName => !FileExists(newName), 500);
+                    using (var wf = WebFactory.Elevated(SiteId, WebId))
+                    {
+                        var elevatedList = wf.Web.GetList(Url);
+                        doc.Name = FilenameOrganizer.AppendSuffix(doc.Name, newName => !FileExists(newName, elevatedList), 500);
+                    }
                 }
 
                 var file = folder.Files.Add(doc.Name, doc.Content, true);
@@ -317,7 +305,7 @@ namespace SharepointCommon.Impl
         public T ByGuid(Guid id)
         {
             var camlByGuid = Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Guid), Q.Value("GUID", id.ToString())));
-            var itemByGuid = ByCaml(camlByGuid).Cast<SPListItem>().FirstOrDefault();
+            var itemByGuid = ByCaml(List, camlByGuid).Cast<SPListItem>().FirstOrDefault();
             if (itemByGuid == null) return null;
             return EntityMapper.ToEntity<T>(itemByGuid);
         }
@@ -327,7 +315,7 @@ namespace SharepointCommon.Impl
             string typeName = typeof(TCt).Name;
 
             var camlByGuid = Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Guid), Q.Value("GUID", id.ToString())));
-            var itemByGuid = ByCaml(camlByGuid).Cast<SPListItem>().FirstOrDefault();
+            var itemByGuid = ByCaml(List, camlByGuid).Cast<SPListItem>().FirstOrDefault();
             if (itemByGuid == null) return null;
 
             var ct = GetContentType(new TCt(), true);
@@ -351,7 +339,7 @@ namespace SharepointCommon.Impl
 #pragma warning disable 612,618
             var camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName), Q.Value(fieldType, fieldValue)));
 #pragma warning restore 612,618
-            var itemsByField = ByCaml(camlByField);
+            var itemsByField = ByCaml(List, camlByField);
             return EntityMapper.ToEntities<T>(itemsByField);
         }
 
@@ -395,7 +383,7 @@ namespace SharepointCommon.Impl
                     camlByContentType = camlByContentType.Replace("**filter-replace**", filter.ToString());
             }
 
-            SPListItemCollection itemsToMap = ByCaml(camlByContentType);
+            SPListItemCollection itemsToMap = ByCaml(List, camlByContentType);
 
             return EntityMapper.ToEntities<TCt>(itemsToMap);
         }
@@ -501,6 +489,30 @@ namespace SharepointCommon.Impl
             List.ContentTypes.Delete(contentType.Id);
         }
 
+        private static SPListItemCollection ByCaml(SPList list, string camlString, params string[] viewFields)
+        {
+            var fields = new StringBuilder();
+
+            if (viewFields.Length != 0)
+            {
+                foreach (string viewField in viewFields)
+                {
+#pragma warning disable 612,618
+                    fields.Append(Q.FieldRef(viewField));
+#pragma warning restore 612,618
+                }
+            }
+
+            return list.GetItems(new SPQuery
+                {
+                    Query = camlString,
+                    ViewFields = fields.ToString(),
+                    ViewAttributes = "Scope=\"Recursive\"",
+                    ViewFieldsOnly = viewFields.Length != 0,
+                    QueryThrottleMode = SPQueryThrottleOption.Override,
+                });
+        }
+
         private bool ContainsFieldImpl(string propName)
         {
             var prop = typeof(T).GetProperty(propName);
@@ -592,33 +604,9 @@ namespace SharepointCommon.Impl
         {
             if (entity.Id == default(int)) throw new SharepointCommonException("Id must be set.");
 
-            var items = ByCaml(Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Id), Q.Value(entity.Id))))
+            var items = ByCaml(List, Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Id), Q.Value(entity.Id))))
                 .Cast<SPListItem>();
             return items.FirstOrDefault();
-        }
-
-        private SPListItemCollection ByCaml(string camlString, params string[] viewFields)
-        {
-            var fields = new StringBuilder();
-
-            if (viewFields.Length != 0)
-            {
-                foreach (string viewField in viewFields)
-                {
-#pragma warning disable 612,618
-                    fields.Append(Q.FieldRef(viewField));
-#pragma warning restore 612,618
-                }
-            }
-
-            return List.GetItems(new SPQuery
-            {
-                Query = camlString,
-                ViewFields = fields.ToString(),
-                ViewAttributes = "Scope=\"Recursive\"",
-                ViewFieldsOnly = viewFields.Length != 0,
-                QueryThrottleMode = SPQueryThrottleOption.Override,
-            });
         }
 
         private void Invalidate()
@@ -683,10 +671,10 @@ namespace SharepointCommon.Impl
             return bm;
         }
 
-        private bool FileExists(string name)
+        private bool FileExists(string name, SPList list)
         {
             var q = Q.Where(Q.Eq(Q.FieldRef<Document>(d => d.Name), Q.Value(name)));
-            return ElevatedList.ByCaml(q).Count > 0;
+            return ByCaml(list, q).Count > 0;
         }
     }
 }

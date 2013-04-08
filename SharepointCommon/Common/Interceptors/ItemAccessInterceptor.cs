@@ -1,14 +1,12 @@
-﻿namespace SharepointCommon.Common.Interceptors
+﻿using System.Collections.Generic;
+using System.Linq;
+using Castle.DynamicProxy;
+using Microsoft.SharePoint;
+using SharepointCommon.Attributes;
+using SharepointCommon.Impl;
+
+namespace SharepointCommon.Common.Interceptors
 {
-    using System.Collections.Generic;
-
-    using Castle.DynamicProxy;
-
-    using Microsoft.SharePoint;
-
-    using SharepointCommon.Attributes;
-    using SharepointCommon.Impl;
-
     internal class ItemAccessInterceptor : IInterceptor
     {
         private readonly SPListItem _listItem;
@@ -52,9 +50,8 @@
                     invocation.ReturnValue = _listItem;
                     return;
                 }
-
-                var nomapAttrs = prop.GetCustomAttributes(typeof(NotFieldAttribute), false);
-                if (nomapAttrs.Length != 0)
+                
+                if (CommonHelper.IsPropertyNotMapped(prop))
                 {
                     // skip props with [NotField] attribute
                     invocation.Proceed();

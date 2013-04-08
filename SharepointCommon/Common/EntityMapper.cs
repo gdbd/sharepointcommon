@@ -32,12 +32,10 @@
             var itemType = typeof(T);
             var props = itemType.GetProperties();
 
-            foreach (var propertyInfo in props)
+            foreach (var prop in props)
             {
-                var nomapAttrs = propertyInfo.GetCustomAttributes(typeof(NotFieldAttribute), false);
-                if (nomapAttrs.Length != 0) continue; // skip props with [NotField] attribute
-                
-                CheckThatPropertyVirtual(propertyInfo);
+                if (CommonHelper.IsPropertyNotMapped(prop)) continue;
+                Assert.IsPropertyVirtual(prop);
             }
 
             var entity = _proxyGenerator.CreateClassProxy(
@@ -207,24 +205,16 @@
         {
             var itemType = entity.GetType();
             var props = itemType.GetProperties();
-
-            foreach (var propertyInfo in props)
-            {
-                var nomapAttrs = propertyInfo.GetCustomAttributes(typeof(NotFieldAttribute), false);
-                if (nomapAttrs.Length != 0) continue; // skip props with [NotField] attribute
-
-                CheckThatPropertyVirtual(propertyInfo);
-            }
-
+            
             foreach (PropertyInfo prop in props)
             {
+                if (CommonHelper.IsPropertyNotMapped(prop)) continue;
+
+                Assert.IsPropertyVirtual(prop);
+
                 if (propertiesToSet != null && propertiesToSet.Count > 0)
                     if (propertiesToSet.Contains(prop.Name) == false) continue;
-
-               // var nomapAttrs = prop.GetCustomAttributes(typeof(NotFieldAttribute), false);
-                var nomapAttrs = Attribute.GetCustomAttributes(prop, typeof(NotFieldAttribute));
-                if (nomapAttrs.Length != 0) continue; // skip props with [NoMap] attribute
-
+                
                 string spName;
 
                 // var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), false);
@@ -265,7 +255,7 @@
                 if (prop.PropertyType == typeof(User))
                 {
                     // domain user or group
-                    CheckThatPropertyVirtual(prop);
+                    Assert.IsPropertyVirtual(prop);
 
                     var user = (User)propValue;
 
@@ -310,7 +300,7 @@
                 // handle lookup fields
                 if (typeof(Item).IsAssignableFrom(prop.PropertyType))
                 {
-                    CheckThatPropertyVirtual(prop);
+                    Assert.IsPropertyVirtual(prop);
 
                     var lookup = new SPFieldLookupValue(((Item)propValue).Id, string.Empty);
                     listItem[spName] = lookup;
@@ -320,7 +310,7 @@
                 //// handle multivalue fields
                 if (CommonHelper.ImplementsOpenGenericInterface(prop.PropertyType, typeof(IEnumerable<>)))
                 {
-                    CheckThatPropertyVirtual(prop);
+                    Assert.IsPropertyVirtual(prop);
 
                     Type argumentType = prop.PropertyType.GetGenericArguments()[0];
 
@@ -408,18 +398,6 @@
 
                 listItem[spName] = propValue;
             }
-        }
-
-        internal static void CheckThatPropertyVirtual(PropertyInfo prop)
-        {
-            var methodGet = prop.GetGetMethod();
-            var methodSet = prop.GetSetMethod();
-
-            bool isVirtual = methodGet != null && methodGet.IsVirtual;
-
-            isVirtual = (methodSet != null && methodSet.IsVirtual) || isVirtual;
-           
-            if (isVirtual == false) throw new SharepointCommonException(string.Format("Property {0} must be virtual to work correctly.", prop.Name));
         }
     }
 }

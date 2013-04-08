@@ -15,7 +15,7 @@
         /// <value>
         /// The name of file.
         /// </value>
-        [NotField]
+        [NotMapped]
         public virtual string Name { get; set; }
 
         /// <summary>
@@ -24,25 +24,25 @@
         /// <value>
         /// The content of file.
         /// </value>
-        [NotField]
+        [NotMapped]
         public virtual byte[] Content { get; set; }
 
         /// <summary>
         /// Gets the size of file in document library.
         /// </summary>
-        [NotField]
+        [NotMapped]
         public virtual long Size { get; internal set; }
 
         /// <summary>
         /// Gets the url, represents image used as icon for file in document library.
         /// </summary>
-        [NotField]
+        [NotMapped]
         public virtual string Icon { get; internal set; }
 
         /// <summary>
         /// Gets the URL of file in document library.
         /// </summary>
-        [NotField]
+        [NotMapped]
         public virtual string Url { get; internal set; }
 
         /// <summary>
@@ -52,7 +52,7 @@
         /// <value>
         /// The relative folder URL. Ex: folder1/folder2/folder3
         /// </value>
-        [NotField]
+        [NotMapped]
         public virtual string Folder { get; set; }
 
         /// <summary>
@@ -62,7 +62,7 @@
         /// <value>
         /// <c>true</c> if [rename if exists]; otherwise, <c>false</c>.
         /// </value>
-        [NotField]
+        [NotMapped]
         public bool RenameIfExists { get; set; }
     }
 }

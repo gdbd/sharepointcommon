@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using SharepointCommon.Attributes;
+using SharepointCommon.Common;
 using SharepointCommon.Entities;
 using SharepointCommon.Impl;
 
@@ -38,11 +38,13 @@ namespace SharepointCommon
         /// Gets factory instance for creating
         /// <see cref="AppBase"/> derived objects
         /// </summary>
+        [NotMapped]
         public static IAppFac<T> Factory { get; internal set; }
 
         /// <summary>
         /// Gets underlying <see cref="IQueryWeb"/> object
         /// </summary>
+        [NotMapped]
         public IQueryWeb QueryWeb { get; internal set; }
 
         /// <summary>
