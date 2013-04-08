@@ -1,5 +1,7 @@
 ﻿using System;
 using Castle.DynamicProxy;
+using SharepointCommon.Attributes;
+using SharepointCommon.Common;
 using SharepointCommon.Common.Interceptors;
 
 namespace SharepointCommon.Impl
@@ -45,6 +47,20 @@ namespace SharepointCommon.Impl
 
         private T CreateApp(IQueryWeb web, bool shouldDispose)
         {
+            // check that all public properties are virtual
+            var appType = typeof(T);
+            var props = appType.GetProperties();
+
+            foreach (var propertyInfo in props)
+            {
+                // skip props with [NotMapped] attribute
+                var nomapAttrs = propertyInfo.GetCustomAttributes(typeof(NotMappedAttribute), false);
+                if (nomapAttrs.Length != 0) continue;
+
+                Assert.IsPropertyVirtual(propertyInfo);
+            }
+
+            // create 'Application' proxy and init
             var app = _proxyGenerator.CreateClassProxy<T>(new AppBaseAccessInterceptor(web));
             app.QueryWeb = web;
             app.ShouldDispose = shouldDispose;

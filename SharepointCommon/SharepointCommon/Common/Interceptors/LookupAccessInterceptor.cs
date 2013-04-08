@@ -99,7 +99,6 @@
                 }
                 catch
                 {
-#warning empty catch
                     return null;
                 }
             }

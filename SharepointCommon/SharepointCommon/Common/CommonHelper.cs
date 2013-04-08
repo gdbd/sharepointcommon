@@ -1,4 +1,7 @@
-﻿namespace SharepointCommon.Common
+﻿using System.Reflection;
+using SharepointCommon.Attributes;
+
+namespace SharepointCommon.Common
 {
     using System;
     using System.Linq;
@@ -24,10 +27,21 @@
         {
             var userField = (SPFieldUser)item.Fields.TryGetFieldByStaticName(fieldStaticName);
             if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
+            
+            return (SPFieldUserValueCollection)item[fieldStaticName];
+        }
 
-            if (item[fieldStaticName] == null) return null;
+        internal static bool IsPropertyNotMapped(PropertyInfo prop)
+        {
+            // NotFieldAttribute is obsolete but old code can still use it
+#pragma warning disable 612,618
+            var notFieldAttrs = prop.GetCustomAttributes(typeof(NotFieldAttribute), false);
+#pragma warning restore 612,618
+            var nomapAttrs = prop.GetCustomAttributes(typeof(NotMappedAttribute), false);
 
-            return (SPFieldUserValueCollection)userField.GetFieldValue(item[fieldStaticName].ToString());
+            var attrs = notFieldAttrs.Union(nomapAttrs);
+
+            return attrs.Any();
         }
 
         /// <summary>Determines whether a type, like IList&lt;int&gt;, implements an open generic interface, like

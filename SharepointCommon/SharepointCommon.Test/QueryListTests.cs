@@ -1503,6 +1503,39 @@
             }
         }
 
+        [Test]
+        public void Item_With_Not_Mapped_Props_Test()
+        {
+            IQueryList<ItemWithNoMappedProperty> list = null;
+            try
+            {
+                list = _queryWeb.Create<ItemWithNoMappedProperty>("Item_With_Not_Mapped_Props_Test");
+
+                Assert.IsFalse(list.ContainsField(i => i.NotField));
+                Assert.IsFalse(list.ContainsField(i => i.NotMapped));
+
+
+                var item = new ItemWithNoMappedProperty
+                    {
+                        NotField = "asd",
+                        NotMapped = "zxc",
+                    };
+                list.Add(item);
+
+                var item2 = list.ById(item.Id);
+
+                Assert.IsNull(item2.NotField);
+                Assert.IsNull(item2.NotMapped);
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
+
         #endregion
 
         [Test]
@@ -1575,32 +1608,5 @@
                 }
             }
         }
-
-        /*
-        [Test, Timeout(20000)]
-        public void Get_Many_Items_Test()
-        {
-           // var splist = _queryWeb.Web.Lists["TestList1"];
-           // var spitems = splist.Items.Cast<SPListItem>().ToList();
-
-            // list with 50K items
-            var list = _queryWeb.GetByName<TestList1>("TestList1");
-            list.CheckFields();
-
-            var items = list.Items(CamlQuery.Default);
-
-            items = items.ToList();
-
-            Assert.NotNull(items);
-            CollectionAssert.IsNotEmpty(items);
-            var first = items.First();
-
-            Assert.That(first.Id, Is.Not.EqualTo(default(int)));
-            Assert.That(first.Title, Is.Not.Null);
-            Assert.That(first.TheText, Is.Not.Null);
-            Assert.That(first.TheDate, Is.Not.EqualTo(default(DateTime)));
-            Assert.That(first.TheMan, Is.Not.Null);
-            Assert.That(first.TheLookup, Is.Not.Null);
-        }*/
     }
 }

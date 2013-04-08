@@ -25,13 +25,13 @@ namespace SharepointCommon
         /// <summary>
         /// Gets the reference to item's parent list.
         /// </summary>
-        [NotField]
+        [NotMapped]
         public virtual IQueryList<Item> ParentList { get; internal set; }
 
         /// <summary>
         /// Gets the reference to underlying list item
         /// </summary>
-        [NotField]
+        [NotMapped]
         public virtual SPListItem ListItem { get; internal set; }
     }
 }

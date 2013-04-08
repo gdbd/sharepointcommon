@@ -43,6 +43,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>
     </DocumentationFile>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -75,6 +76,7 @@
   <ItemGroup>
     <Compile Include="AppBase.cs" />
     <Compile Include="Attributes\ListAttribute.cs" />
+    <Compile Include="Attributes\NotMappedAttribute.cs" />
     <Compile Include="Common\Interceptors\AppBaseAccessInterceptor.cs" />
     <Compile Include="Entities\UserInfoList.cs" />
     <Compile Include="Impl\AppFac.cs" />

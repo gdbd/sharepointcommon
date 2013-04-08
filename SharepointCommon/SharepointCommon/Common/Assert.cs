@@ -1,4 +1,6 @@
-﻿namespace SharepointCommon.Common
+﻿using System.Reflection;
+
+namespace SharepointCommon.Common
 {
     using System;
     using Microsoft.SharePoint;
@@ -25,6 +27,18 @@
         internal static void CurrentContextAvailable()
         {
             if (SPContext.Current == null) throw new SharepointCommonException("SPContext.Current not available");
+        }
+
+        internal static void IsPropertyVirtual(PropertyInfo prop)
+        {
+            var methodGet = prop.GetGetMethod();
+            var methodSet = prop.GetSetMethod();
+
+            bool isVirtual = methodGet != null && methodGet.IsVirtual;
+
+            isVirtual = (methodSet != null && methodSet.IsVirtual) || isVirtual;
+
+            if (isVirtual == false) throw new SharepointCommonException(string.Format("Property {0} must be virtual to work correctly.", prop.Name));
         }
     }
 }

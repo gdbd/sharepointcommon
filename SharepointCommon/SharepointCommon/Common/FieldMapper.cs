@@ -20,9 +20,8 @@
 
             foreach (PropertyInfo prop in props)
             {
-                var nomapAttrs = prop.GetCustomAttributes(typeof(NotFieldAttribute), false);
-                if (nomapAttrs.Length != 0) continue; // skip props with [NoMap] attribute
-
+                if (CommonHelper.IsPropertyNotMapped(prop)) continue;
+                
                 var ft = ToFieldType(prop);
                 result.Add(ft);
             }

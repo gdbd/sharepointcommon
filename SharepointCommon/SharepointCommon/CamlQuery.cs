@@ -120,7 +120,9 @@ namespace SharepointCommon
                 var sb = new System.Text.StringBuilder();
                 foreach (string field in ViewFieldsStore)
                 {
+#pragma warning disable 612,618
                     sb.Append(Q.FieldRef(field));
+#pragma warning restore 612,618
                 }
                 query.ViewFields = sb.ToString();
                 query.ViewFieldsOnly = true;
