@@ -50,8 +50,9 @@ namespace SharepointCommon.Test
         {
             using (var app01 = TestApp.Factory.OpenNew(_webUrl))
             {
-                Assert.Throws<SharepointCommonException>(app01.SetListThatMustThrows);
-                Assert.DoesNotThrow(app01.SetListThatMustNoThrows);
+                Assert.Throws<SharepointCommonException>(() => app01.UserInfoList = null);
+                Assert.DoesNotThrow(() => app01.Test2 = null);
+                Assert.DoesNotThrow(() => app01.Test3 = null);
             }
         }
 
@@ -64,6 +65,16 @@ namespace SharepointCommon.Test
                     {
                     }
                 });
+        }
+
+        [Test]
+        public void AppBase_List_With_NotMapped_Test()
+        {
+            using (var app01 = TestAppNotMappedList.Factory.OpenNew(_webUrl))
+            {
+                var userlist = app01.UserInfoList;
+                app01.Test = userlist;
+            }
         }
     }
 }

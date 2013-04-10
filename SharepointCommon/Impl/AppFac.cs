@@ -54,8 +54,12 @@ namespace SharepointCommon.Impl
             foreach (var propertyInfo in props)
             {
                 // skip props with [NotMapped] attribute
-                var nomapAttrs = propertyInfo.GetCustomAttributes(typeof(NotMappedAttribute), false);
-                if (nomapAttrs.Length != 0) continue;
+                var hasNomapAttrs = propertyInfo.GetCustomAttributes(typeof(NotMappedAttribute), false).Length != 0;
+                if (hasNomapAttrs) continue;
+
+                // not check properties of not IQueryList<>
+                var isQueryList = CommonHelper.ImplementsOpenGenericInterface(propertyInfo.PropertyType, typeof(IQueryList<>));
+                if (!isQueryList) continue;
 
                 Assert.IsPropertyVirtual(propertyInfo);
             }
