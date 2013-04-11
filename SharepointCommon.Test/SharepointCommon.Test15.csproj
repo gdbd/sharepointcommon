@@ -92,9 +92,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppFacTests.cs" />
+    <Compile Include="AssertTests.cs" />
     <Compile Include="CamlQueryTests.cs" />
     <Compile Include="CastleTests.cs" />
     <Compile Include="DocumentTests.cs" />
+    <Compile Include="Entity\ItemWithNoMappedProperty.cs" />
     <Compile Include="Entity\NullableItem.cs" />
     <Compile Include="Entity\CustomDocument.cs" />
     <Compile Include="Entity\OneMoreField.cs" />
@@ -102,7 +104,6 @@
     <Compile Include="MoqLibraryTests.cs" />
     <Compile Include="TestApp.cs" />
     <Compile Include="WebFactoryTests.cs" />
-    <Compile Include="EntityMapperTests.cs" />
     <Compile Include="Entity\CustomItem.cs" />
     <Compile Include="Entity\CustomItemNoProperty.cs" />
     <Compile Include="QueryListTests.cs" />
