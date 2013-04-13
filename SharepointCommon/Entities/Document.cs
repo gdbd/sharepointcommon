@@ -31,19 +31,19 @@
         /// Gets the size of file in document library.
         /// </summary>
         [NotMapped]
-        public virtual long Size { get; internal set; }
+        public virtual long Size { get; protected internal set; }
 
         /// <summary>
         /// Gets the url, represents image used as icon for file in document library.
         /// </summary>
         [NotMapped]
-        public virtual string Icon { get; internal set; }
+        public virtual string Icon { get; protected internal set; }
 
         /// <summary>
         /// Gets the URL of file in document library.
         /// </summary>
         [NotMapped]
-        public virtual string Url { get; internal set; }
+        public virtual string Url { get; protected internal set; }
 
         /// <summary>
         /// Gets or sets the folder of file in document library.

@@ -16,6 +16,8 @@ namespace SharepointCommon.Impl
     [DebuggerDisplay("Title = {Title}, Url= {Url}")]
     internal sealed class QueryList<T> : IQueryList<T> where T : Item, new()
     {
+        private T _currentItemCache;
+
         public QueryList(SPList list, IQueryWeb parentWeb)
         {
             List = list;
@@ -115,7 +117,22 @@ namespace SharepointCommon.Impl
         }
         public string Url { get { return ParentWeb.Web.Url + "/" + List.RootFolder.Url; } }
         public string RelativeUrl { get { return List.RootFolder.Url; } }
-        
+        public T CurrentItem
+        {
+            get
+            {
+                Assert.CurrentContextAvailable();
+
+                if (SPContext.Current.ItemId == 0)
+                {
+                    return null;
+                }
+
+                if (_currentItemCache != null) return _currentItemCache;
+                return _currentItemCache = EntityMapper.ToEntity<T>(SPContext.Current.ListItem);
+            }
+        }
+
         public string FormUrl(PageType pageType, int id = 0, bool isDlg = false)
         {
             string formUrl;
@@ -209,6 +226,7 @@ namespace SharepointCommon.Impl
             entity.Guid = new Guid(newitem[SPBuiltInFieldId.GUID].ToString());
 
             entity.ParentList = new QueryList<Item>(List, ParentWeb);
+            entity.ConcreteParentList = CommonHelper.MakeParentList(typeof(T), ParentWeb, List.ID);
         }
         
         public void Update(T entity, bool incrementVersion, params Expression<Func<T, object>>[] selectors)

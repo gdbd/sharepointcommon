@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using SharepointCommon.Attributes;
+using SharepointCommon.Impl;
 
 namespace SharepointCommon.Common
 {
@@ -44,8 +45,8 @@ namespace SharepointCommon.Common
             return attrs.Any();
         }
 
-        /// <summary>Determines whether a type, like IList&lt;int&gt;, implements an open generic interface, like
-        /// IEnumerable&lt;&gt;. Note that this only checks against *interfaces*.</summary>
+        /// <summary>Determines whether a type, like IList<int>, implements an open generic interface, like
+        /// IEnumerable<>. Note that this only checks against *interfaces*.</summary>
         /// <param name="candidateType">The type to check.</param>
         /// <param name="openGenericInterfaceType">The open generic type which it may impelement</param>
         /// <returns>Whether the candidate type implements the open interface.</returns>
@@ -58,6 +59,15 @@ namespace SharepointCommon.Common
                 candidateType.Equals(openGenericInterfaceType) ||
                 (candidateType.IsGenericType && candidateType.GetGenericTypeDefinition().Equals(openGenericInterfaceType)) ||
                 candidateType.GetInterfaces().Any(i => i.IsGenericType && ImplementsOpenGenericInterface(i, openGenericInterfaceType));
+        }
+
+        internal static object MakeParentList(Type entityType, IQueryWeb queryWeb, Guid listId)
+        {
+            var method = typeof(QueryWeb).GetMethod("GetById").MakeGenericMethod(entityType);
+
+            return method.Invoke(queryWeb, new object[] { listId });
+            //var list = new QueryList<Item>()
+            return queryWeb.GetById<Item>(listId);
         }
     }
 }
