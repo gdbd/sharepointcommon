@@ -97,12 +97,12 @@
 
             if (field.Type == SPFieldType.Lookup)
             {
-                var fieldLookup = (SPFieldLookup)field;
+                //var fieldLookup = (SPFieldLookup)field;
 
                 if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(IEnumerable<>)) == false)
                 {
                     var lookup = _proxyGenerator.CreateClassProxy(
-                        propType, new LookupAccessInterceptor(listItem.Web.Url, fieldLookup, fieldValue));
+                        propType, new LookupAccessInterceptor(listItem));
                     return lookup;
                 }
                 else
