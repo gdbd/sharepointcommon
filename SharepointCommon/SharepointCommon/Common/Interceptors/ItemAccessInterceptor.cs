@@ -45,6 +45,13 @@ namespace SharepointCommon.Common.Interceptors
                     return;
                 }
 
+                if (propName.Equals("ConcreteParentList"))
+                {
+                    var qWeb = new QueryWeb(_listItem.ParentList.ParentWeb);
+                    invocation.ReturnValue = CommonHelper.MakeParentList(invocation.TargetType, qWeb, _listItem.ParentList.ID);
+                    return;
+                }
+
                 if (propName.Equals("ListItem"))
                 {
                     invocation.ReturnValue = _listItem;

@@ -1,4 +1,6 @@
-﻿namespace SharepointCommon.Test
+﻿using SharepointCommon.Impl;
+
+namespace SharepointCommon.Test
 {
     using System;
     using System.Collections.Generic;
@@ -1579,6 +1581,35 @@
 
             Assert.That(itm2.ParentList, Is.Not.Null);
             Assert.That(itm2.ParentList.Id, Is.EqualTo(_list.Id));
+        }
+
+        [Test]
+        public void Item_ConcreteParentList_Contains_Reference_To_ParentList()
+        {
+            IQueryList<CustomItem> list = null;
+            try
+            {
+                list = _queryWeb.Create<CustomItem>("Item_ConcreteParentList_Contains_Reference_To_ParentList");
+                var itm = new CustomItem { Title = "Item_ConcreteParentList_Contains_Reference_To_ParentList" };
+                list.Add(itm);
+
+                Assert.That(itm.ConcreteParentList, Is.Not.Null);
+                Assert.IsInstanceOf<QueryList<CustomItem>>(itm.ConcreteParentList);
+                Assert.That(((IQueryList<CustomItem>)itm.ConcreteParentList).Id, Is.EqualTo(list.Id));
+
+                var itm2 = list.ById(itm.Id);
+
+                Assert.That(itm2.ConcreteParentList, Is.Not.Null);
+                Assert.IsInstanceOf<QueryList<CustomItem>>(itm2.ConcreteParentList);
+                Assert.That(((IQueryList<CustomItem>)itm2.ConcreteParentList).Id, Is.EqualTo(list.Id));
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
         }
 
         [Test]
