@@ -40,6 +40,6 @@ namespace SharepointCommon
         /// Gets the reference to underlying list item
         /// </summary>
         [NotMapped]
-        public virtual SPListItem ListItem { get; internal set; }
+        public virtual SPListItem ListItem { get; protected internal set; }
     }
 }
