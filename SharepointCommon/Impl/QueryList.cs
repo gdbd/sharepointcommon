@@ -117,22 +117,7 @@ namespace SharepointCommon.Impl
         }
         public string Url { get { return ParentWeb.Web.Url + "/" + List.RootFolder.Url; } }
         public string RelativeUrl { get { return List.RootFolder.Url; } }
-        public T CurrentItem
-        {
-            get
-            {
-                Assert.CurrentContextAvailable();
-
-                if (SPContext.Current.ItemId == 0)
-                {
-                    return null;
-                }
-
-                if (_currentItemCache != null) return _currentItemCache;
-                return _currentItemCache = EntityMapper.ToEntity<T>(SPContext.Current.ListItem);
-            }
-        }
-
+    
         public string FormUrl(PageType pageType, int id = 0, bool isDlg = false)
         {
             string formUrl;

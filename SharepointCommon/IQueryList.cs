@@ -77,12 +77,7 @@ namespace SharepointCommon
         /// Gets the relative url of list. Ex: /lists/list1
         /// </summary>
         string RelativeUrl { get; }
-
-        /// <summary>
-        /// Gets item by SPContext.Current.Item
-        /// </summary>
-        T CurrentItem { get;  }
-
+        
         /// <summary>
         /// Gets the url of specific list form
         /// </summary>
