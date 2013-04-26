@@ -37,7 +37,7 @@ namespace SharepointCommon.Impl
 
         public T ElevatedNew(string webUrl)
         {
-            return CreateApp(WebFactory.Open(webUrl), true);
+            return CreateApp(WebFactory.Elevated(webUrl), true);
         }
 
         public T ElevatedNew(Guid siteId, Guid webId)
