@@ -9,6 +9,8 @@ namespace SharepointCommon.Common.Interceptors
 
     using Microsoft.SharePoint;
 
+    using SharepointCommon.Impl;
+
     internal sealed class LookupAccessInterceptor : IInterceptor
     {
         private readonly SPListItem _listItem;
@@ -47,31 +49,29 @@ namespace SharepointCommon.Common.Interceptors
 
         private object GetLookupItem(MethodInfo memberInfo)
         {
-            using (var wf = WebFactory.Open(_listItem.Web.Url))
-            {
-                var list = wf.Web.Lists[_listItem.ParentList.ID];
-                var listItem = list.GetItemById(_listItem.ID);
+            var wf = new QueryWeb(_listItem.ParentList.ParentWeb);
+            var list = wf.Web.Lists[_listItem.ParentList.ID];
+            var listItem = list.GetItemById(_listItem.ID);
                 
-                var ft = FieldMapper.ToFieldType(memberInfo);
-                var lookupField = listItem.Fields.TryGetFieldByStaticName(ft.Name) as SPFieldLookup;
+            var ft = FieldMapper.ToFieldType(memberInfo);
+            var lookupField = listItem.Fields.TryGetFieldByStaticName(ft.Name) as SPFieldLookup;
 
-                if (lookupField == null)
-                {
-                    throw new SharepointCommonException(string.Format("cant find '{0}' field in list '{1}'", ft.Name, listItem.ParentList.Title));
-                }
-
-                var lookupList = wf.Web.Lists[new Guid(lookupField.LookupList)];
-
-                // Lookup with picker (ilovesharepoint) returns SPFieldLookupValue
-                var fieldValue = listItem[ft.Name];
-                var lkpValue = fieldValue as SPFieldLookupValue ?? new SPFieldLookupValue((string)fieldValue ?? string.Empty);
-                if (lkpValue.LookupId == 0) return null;
-                var lookupItem = lookupList.GetItemById(lkpValue.LookupId);
-               
-                return lookupItem == null
-                    ? null
-                    : EntityMapper.ToEntity(memberInfo.ReturnType, lookupItem);
+            if (lookupField == null)
+            {
+                throw new SharepointCommonException(string.Format("cant find '{0}' field in list '{1}'", ft.Name, listItem.ParentList.Title));
             }
+
+            var lookupList = wf.Web.Lists[new Guid(lookupField.LookupList)];
+
+            // Lookup with picker (ilovesharepoint) returns SPFieldLookupValue
+            var fieldValue = listItem[ft.Name];
+            var lkpValue = fieldValue as SPFieldLookupValue ?? new SPFieldLookupValue((string)fieldValue ?? string.Empty);
+            if (lkpValue.LookupId == 0) return null;
+            var lookupItem = lookupList.GetItemById(lkpValue.LookupId);
+               
+            return lookupItem == null
+                ? null
+                : EntityMapper.ToEntity(memberInfo.ReturnType, lookupItem);
         }
     }
 }
