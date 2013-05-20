@@ -4,7 +4,7 @@ namespace SharepointCommon.Test.Entity
 {
     public class ItemWithNoMappedProperty : Item
     {
-        [NotField]
+        [NotMapped]
         public string NotField { get; set; }
 
         [NotMapped]

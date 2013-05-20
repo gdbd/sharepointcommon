@@ -64,10 +64,7 @@ namespace SharepointCommon.Common
         internal static object MakeParentList(Type entityType, IQueryWeb queryWeb, Guid listId)
         {
             var method = typeof(QueryWeb).GetMethod("GetById").MakeGenericMethod(entityType);
-
             return method.Invoke(queryWeb, new object[] { listId });
-            //var list = new QueryList<Item>()
-            return queryWeb.GetById<Item>(listId);
         }
     }
 }

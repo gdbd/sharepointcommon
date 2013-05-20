@@ -16,8 +16,6 @@ namespace SharepointCommon.Impl
     [DebuggerDisplay("Title = {Title}, Url= {Url}")]
     internal sealed class QueryList<T> : IQueryList<T> where T : Item, new()
     {
-        private T _currentItemCache;
-
         public QueryList(SPList list, IQueryWeb parentWeb)
         {
             List = list;
