@@ -217,6 +217,8 @@ namespace SharepointCommon.Impl
 
         private string Combine(string left, string right)
         {
+            if (SPUrlUtility.IsUrlFull(right)) return right;
+
             if (right.StartsWith(left)) return right;
             return SPUrlUtility.CombineUrl(left, right);
         }
