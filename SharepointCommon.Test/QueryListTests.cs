@@ -900,6 +900,40 @@ namespace SharepointCommon.Test
         }
 
         [Test]
+        public void Items_Grouping_By_User_Field_Test()
+        {
+            IQueryList<Item> list = null;
+            try
+            {
+                list = _queryWeb.Create<Item>("Items_Grouping_By_User_Field_Test");
+
+                var item = new Item { Title = "Items_Returns_Items_By_CamlQuery_Test" };
+                var item2 = new Item { Title = "Items_Returns_Items_By_CamlQuery_Test_2" };
+                list.Add(item);
+                list.Add(item2);
+                Assert.That(item.Id, Is.Not.EqualTo(0));
+
+                var items = list.Items(CamlQuery.Default).ToList();
+
+                var grouped = items.GroupBy(i => i.Author,
+                    (key, g) =>
+                                new
+                                {
+                                    User = key,
+                                    items = g.ToList()
+                                }
+                                ).ToArray();
+
+                Assert.True(grouped.FirstOrDefault() != null);
+                Assert.That(grouped.FirstOrDefault().items.Count, Is.EqualTo(2));
+            }
+            finally
+            {
+                if (list != null) list.DeleteList(false);
+            }
+        }
+
+        [Test]
         public void Items_Returns_Collection_Of_All_Content_Types_Test()
         {
             IQueryList<Item> list = null;
