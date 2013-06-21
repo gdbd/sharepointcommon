@@ -21,6 +21,16 @@ namespace SharepointCommon
         }
 
         /// <summary>
+        /// Create wrapper based on existing SPWeb object
+        /// </summary>
+        /// <param name="spWeb">SPWeb object.Will not disposed internally!</param>
+        /// <returns>abstract wrapper for SPWeb and SPSite objects</returns>
+        public static IQueryWeb Open(SPWeb spWeb)
+        {
+            return new QueryWeb(spWeb);
+        }
+
+        /// <summary>
         /// Opens wrapper for SPWeb and SPSite by SPSite ID
         /// </summary>
         /// <param name="site">SPSite ID</param>

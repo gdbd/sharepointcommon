@@ -20,6 +20,24 @@ namespace SharepointCommon.Test
         }
 
         [Test]
+        public void AppBase_Factory_OpenBySPWeb_Test()
+        {
+            using (var site = new SPSite(_webUrl))
+            {
+                using (var web = site.OpenWeb())
+                {
+                    var app = TestApp.Factory.ExistingWeb(web);
+                    Assert.NotNull(app);
+                }
+            }
+
+            using (var app01 = TestApp.Factory.OpenNew(_webUrl))
+            {
+                Assert.NotNull(app01);
+            }
+        }
+
+        [Test]
         public void AppBase_Get_UserInfoList_Test()
         {
             using (var app01 = TestApp.Factory.OpenNew(_webUrl))

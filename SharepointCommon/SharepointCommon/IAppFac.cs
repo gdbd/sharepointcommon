@@ -13,6 +13,12 @@ namespace SharepointCommon
         /// </summary>
         /// <returns>AppBase derived object of type T</returns>
         T ExistingWeb(IQueryWeb queryWeb);
+
+        /// <summary>
+        /// Create object based on existing <see cref="SPWeb"/> queryWeb
+        /// </summary>
+        /// <returns>AppBase derived object of type T</returns>
+        T ExistingWeb(Microsoft.SharePoint.SPWeb spWeb);
         
         /// <summary>
         /// Create object based on SPContext.Current

@@ -1,5 +1,6 @@
 ﻿using System;
 using Castle.DynamicProxy;
+using Microsoft.SharePoint;
 using SharepointCommon.Attributes;
 using SharepointCommon.Common;
 using SharepointCommon.Common.Interceptors;
@@ -13,6 +14,11 @@ namespace SharepointCommon.Impl
         public T ExistingWeb(IQueryWeb queryWeb)
         {
             return CreateApp(queryWeb, false);
+        }
+
+        public T ExistingWeb(SPWeb spWeb)
+        {
+            return CreateApp(WebFactory.Open(spWeb), false);
         }
 
         public T CurrentContext()
