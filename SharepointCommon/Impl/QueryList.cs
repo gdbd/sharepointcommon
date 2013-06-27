@@ -422,10 +422,7 @@ namespace SharepointCommon.Impl
 
         public Field GetField(Expression<Func<T, object>> selector)
         {
-            if (selector == null) throw new ArgumentNullException("selector");
-            
-            var memberAccessor = new MemberAccessVisitor();
-            string propName = memberAccessor.GetMemberName(selector);
+            var propName = CommonHelper.GetFieldInnerName(selector);
 
             var fieldInfo = FieldMapper.ToFields<T>().FirstOrDefault(f => f.Name.Equals(propName));
 

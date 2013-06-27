@@ -77,6 +77,7 @@
     <Compile Include="AppBase.cs" />
     <Compile Include="Attributes\ListAttribute.cs" />
     <Compile Include="Attributes\NotMappedAttribute.cs" />
+    <Compile Include="Extentions\ItemExtention.cs" />
     <Compile Include="CamlQuery.cs" />
     <Compile Include="Castle\Core\Internal\AttributesUtil.cs" />
     <Compile Include="Castle\Core\Internal\CollectionExtensions.cs" />

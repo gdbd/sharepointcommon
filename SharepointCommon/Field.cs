@@ -1,4 +1,6 @@
-﻿namespace SharepointCommon
+﻿using System.Diagnostics;
+
+namespace SharepointCommon
 {
     using System;
     using System.Collections.Generic;
@@ -8,6 +10,7 @@
     /// <summary>
     /// Represents a SharePoint field
     /// </summary>
+    [DebuggerDisplay("Name={Name}, Type={Type}, Required={Required}")]
     public class Field
     {
         /// <summary>

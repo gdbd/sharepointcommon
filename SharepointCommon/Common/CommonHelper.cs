@@ -1,5 +1,7 @@
-﻿using System.Reflection;
+﻿using System.Linq.Expressions;
+using System.Reflection;
 using SharepointCommon.Attributes;
+using SharepointCommon.Expressions;
 using SharepointCommon.Impl;
 
 namespace SharepointCommon.Common
@@ -65,6 +67,30 @@ namespace SharepointCommon.Common
         {
             var method = typeof(QueryWeb).GetMethod("GetById").MakeGenericMethod(entityType);
             return method.Invoke(queryWeb, new object[] { listId });
+        }
+
+        internal static string GetFieldInnerName<T>(Expression<Func<T, object>> fieldSelector) where T : Item, new()
+        {
+            if (fieldSelector == null) throw new ArgumentNullException("fieldSelector");
+
+            var memberAccessor = new MemberAccessVisitor();
+            string propName = memberAccessor.GetMemberName(fieldSelector);
+
+            var prop = typeof(T).GetProperty(propName);
+
+            var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), true);
+            
+            if (fieldAttrs.Length != 0)
+            {
+                var spPropName = ((FieldAttribute)fieldAttrs[0]).Name;
+                if (spPropName != null) propName = spPropName;
+            }
+            else
+            {
+                propName = FieldMapper.TranslateToFieldName(propName);
+            }
+
+            return propName;
         }
     }
 }

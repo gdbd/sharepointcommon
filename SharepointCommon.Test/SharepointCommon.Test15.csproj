@@ -101,6 +101,7 @@
     <Compile Include="Entity\CustomDocument.cs" />
     <Compile Include="Entity\OneMoreField.cs" />
     <Compile Include="Entity\TheChoice.cs" />
+    <Compile Include="ExtentionsTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />
     <Compile Include="TestApp.cs" />
     <Compile Include="WebFactoryTests.cs" />
