@@ -1529,6 +1529,10 @@ namespace SharepointCommon.Test
                 Assert.That(fields.Any(f => f.Name.Equals("CustomField1")), Is.True);
                 Assert.That(fields.Any(f => f.Name.Equals("HTML_x0020_File_x0020_Type")), Is.False);
                 Assert.That(fields.All(field => field.Id != default(Guid)));
+
+                var fieldWithAttr = list.GetField(i => i.Тыдыщ);
+                Assert.NotNull(fieldWithAttr);
+                Assert.That(fieldWithAttr.Name, Is.EqualTo("_x0422__x044b__x0434__x044b__x04"));
             }
             finally
             {
