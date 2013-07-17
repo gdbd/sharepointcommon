@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using Microsoft.SharePoint;
 using SharepointCommon.Attributes;
 
@@ -41,5 +42,16 @@ namespace SharepointCommon
         /// </summary>
         [NotMapped]
         public virtual SPListItem ListItem { get; protected internal set; }
+
+        /// <summary>
+        /// Gets inner name of underlying mapped SPField
+        /// </summary>
+        /// <typeparam name="T">type of entity property which inner name need get</typeparam>
+        /// <param name="fieldSelector">expression to select entity property which inner name need get</param>
+        /// <returns>inner name of underlying mapped SPField</returns>
+        public static string GetFieldName<T>(Expression<Func<T, object>> fieldSelector) where T : Item, new()
+        {
+            return ItemExtention.GetFieldName(new T(), fieldSelector);
+        }
     }
 }
