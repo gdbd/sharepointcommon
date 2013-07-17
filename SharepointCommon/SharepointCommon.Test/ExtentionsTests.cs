@@ -11,7 +11,9 @@ namespace SharepointCommon.Test
             var itm = new CustomItem();
 
             var fieldName = itm.GetFieldName(ci => ci.Тыдыщ);
+            Assert.That(fieldName, Is.EqualTo("_x0422__x044b__x0434__x044b__x04"));
 
+            fieldName = Item.GetFieldName<CustomItem>(c => c.Тыдыщ);
             Assert.That(fieldName, Is.EqualTo("_x0422__x044b__x0434__x044b__x04"));
         }
 

@@ -27,7 +27,7 @@ namespace SharepointCommon
         /// </summary>
         /// <typeparam name="T">type of entity</typeparam>
         /// <param name="self">instance of entity</param>
-        /// <param name="fieldSelector">expression to select entity property which inner name need get</param>
+        /// <param name="fieldSelector">expression to select entity property which text need get</param>
         /// <returns>Name property of FieldAttribute</returns>
         public static string GetChoice<T>(this T self, Expression<Func<T, object>> fieldSelector) where T : Item, new()
         {
@@ -57,7 +57,7 @@ namespace SharepointCommon
         /// </summary>
         /// <typeparam name="T">type of entity</typeparam>
         /// <param name="self">instance of entity</param>
-        /// <param name="fieldSelector">expression to select entity property which inner name need get</param>
+        /// <param name="fieldSelector">expression to select entity property which value need set</param>
         /// <param name="value">text used in FieldAttribute.Name</param>
         public static void SetChoice<T>(this T self, Expression<Func<T, object>> fieldSelector, string value) where T : Item, new()
         {
