@@ -1423,6 +1423,19 @@ namespace SharepointCommon.Test
         }
 
         [Test]
+        public void EnsureField_Sets_Default_Value_Test()
+        {
+            var list = _queryWeb.GetByName<CustomItem>(ListName1);
+            list.EnsureField(e => e.WithDefault);
+
+            Assert.That(list.ContainsField(e => e.WithDefault));
+
+            var field = list.GetField(e => e.WithDefault);
+
+            Assert.That(field.DefaultValue, Is.False);
+        }
+
+        [Test]
         public void EnsureFields_Adds_All_Fields_Test()
         {
             var list = _queryWeb.GetByName<CustomItem>(ListName1);
