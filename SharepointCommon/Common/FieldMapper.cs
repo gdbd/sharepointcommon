@@ -90,6 +90,7 @@
             var fieldAttrs = propertyInfo.GetCustomAttributes(typeof(FieldAttribute), true);
             string dispName = null;
             bool isMultilineText = false;
+            object defaultValue = null;
             bool required = false;
 
             if (fieldAttrs.Length != 0)
@@ -100,9 +101,10 @@
                 dispName = attr.DisplayName;
                 isMultilineText = attr.IsMultilineText;
                 required = attr.Required;
+                defaultValue = attr.DefaultValue;
             }
 
-            var field = new Field { Name = spName, PropName = propertyInfo.Name, DisplayName = dispName, Required = required, };
+            var field = new Field { Name = spName, PropName = propertyInfo.Name, DisplayName = dispName, Required = required, DefaultValue = defaultValue };
 
             if (propType == typeof(string))
             {
@@ -271,6 +273,11 @@
             {
                 field.Required = true;
             }
+
+            if (fieldInfo.DefaultValue != null)
+            {
+                field.DefaultValue = ToDefaultValue(fieldInfo.DefaultValue);
+            }
         }
 
         internal static bool SetRequired(SPField field, Field fieldInfo)
@@ -280,6 +287,21 @@
             field.Required = true;
             field.Update();
             return true;
+        }
+
+        private static string ToDefaultValue(object defaultValue)
+        {
+            switch (defaultValue.GetType().ToString())
+            {
+                case "System.Boolean":
+                    bool val;
+                    var parsed = bool.TryParse(defaultValue.ToString(), out val);
+                    if (!parsed) throw new SharepointCommonException("Default value for boolean field is incorrect!");
+                    return val ? "1" : "0";
+
+                default:
+                    throw new SharepointCommonException(string.Format("DefaultValue for {0} not implemented!",  defaultValue.GetType()));
+            }
         }
 
         private static bool IsDefaultField(SPField field)

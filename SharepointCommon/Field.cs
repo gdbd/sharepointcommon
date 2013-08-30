@@ -84,6 +84,11 @@ namespace SharepointCommon
         /// The choices.
         /// </value>
         public IEnumerable<string> Choices { get; set; }
+
+        /// <summary>
+        /// Gets or sets default value for field
+        /// </summary>
+        public object DefaultValue { get; set; }
         
         internal string PropName { get; set; }
     }

@@ -58,5 +58,10 @@ namespace SharepointCommon.Attributes
         /// <c>true</c> if this field is required; otherwise, <c>false</c>.
         /// </value>
         public bool Required { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value used as default for field
+        /// </summary>
+        public object DefaultValue { get; set; }
     }
 }

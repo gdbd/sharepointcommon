@@ -36,5 +36,8 @@
 
         [Field(Name = "_x0422__x044b__x0434__x044b__x04", DisplayName = "Тыдыщ видимое")]
         public virtual string Тыдыщ { get; set; }
+
+        [Field(DefaultValue = false)]
+        public virtual bool WithDefault { get; set; }
     }
 }
