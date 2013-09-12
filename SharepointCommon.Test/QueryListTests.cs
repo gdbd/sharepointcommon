@@ -1,4 +1,5 @@
-﻿using SharepointCommon.Impl;
+﻿using Moq;
+using SharepointCommon.Impl;
 
 namespace SharepointCommon.Test
 {
@@ -208,7 +209,41 @@ namespace SharepointCommon.Test
                 }
             }
         }
-        
+
+        [Test]
+        public void Add_Adds_Item_To_Folder_Test()
+        {
+            IQueryList<Item> list = null;
+            try
+            {
+                list = _queryWeb.Create<Item>("Add_Adds_Item_To_Folder_Test");
+                var itm = new Item
+                {
+                    Title = "Add_Adds_Item_To_Folder_Test",
+                    Folder = "Folder1/Folder2/Folder3",
+                };
+                list.Add(itm);
+
+                var item = list.Items(new CamlQuery()
+                    .Recursive()
+                    //  .Folder(document.Url)
+                    .Query(Q.Where(Q.Eq(Q.FieldRef<Item>(d => d.Title), Q.Value(itm.Title)))))
+                    .FirstOrDefault();
+
+                Assert.IsNotNull(item);
+                Assert.That(item.Id, Is.EqualTo(itm.Id));
+                Assert.That(item.Folder, Is.EqualTo(itm.Folder));
+                Assert.That(item.Title, Is.EqualTo(itm.Title));
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
+
         [Test]
         public void Add_Throws_On_Property_No_Virtual()
         {

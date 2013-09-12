@@ -27,51 +27,57 @@ namespace SharepointCommon.Common.Interceptors
                 return;
             }
 
-            if (invocation.Method.Name.StartsWith("get_"))
+            if (!invocation.Method.Name.StartsWith("get_"))
             {
-                if (_changedFields.Contains(invocation.Method.Name.Substring(4)))
-                {
-                    invocation.Proceed();
-                    return;
-                }
+                Assert.Inconsistent();
+            }
 
-                string propName = invocation.Method.Name.Substring(4);
-                var prop = invocation.TargetType.GetProperty(propName);
+            string propName = invocation.Method.Name.Substring(4);
 
-                if (propName.Equals("ParentList"))
-                {
+            if (_changedFields.Contains(propName))
+            {
+                invocation.Proceed();
+                return;
+            }
+
+            switch (invocation.Method.Name)
+            {
+                case "get_ParentList":
                     var qWeb = new QueryWeb(_listItem.ParentList.ParentWeb);
                     invocation.ReturnValue = qWeb.GetById<Item>(_listItem.ParentList.ID);
                     return;
-                }
 
-                if (propName.Equals("ConcreteParentList"))
-                {
-                    var qWeb = new QueryWeb(_listItem.ParentList.ParentWeb);
-                    invocation.ReturnValue = CommonHelper.MakeParentList(invocation.TargetType, qWeb, _listItem.ParentList.ID);
+                case "get_ConcreteParentList":
+                    var qWeb1 = new QueryWeb(_listItem.ParentList.ParentWeb);
+                    invocation.ReturnValue = CommonHelper.MakeParentList(invocation.TargetType, qWeb1,
+                        _listItem.ParentList.ID);
                     return;
-                }
 
-                if (propName.Equals("ListItem"))
-                {
+                case "get_ListItem":
                     invocation.ReturnValue = _listItem;
                     return;
-                }
-                
-                if (CommonHelper.IsPropertyNotMapped(prop))
-                {
-                    // skip props with [NotField] attribute
-                    invocation.Proceed();
+
+                case "get_Folder":
+                    string folderUrl = _listItem.Url;
+                    folderUrl = folderUrl.Replace(_listItem.ParentList.RootFolder.Url + "/", string.Empty);
+                    var linkFileName = (string)_listItem[SPBuiltInFieldId.LinkFilename];
+                    folderUrl = folderUrl.Replace(linkFileName, string.Empty);
+                    invocation.ReturnValue = folderUrl.TrimEnd('/');
                     return;
-                }
+            }
+           
+            var prop = invocation.TargetType.GetProperty(propName);
 
-                var value = EntityMapper.ToEntityField(prop, _listItem);
-
-                invocation.ReturnValue = value;
+            if (CommonHelper.IsPropertyNotMapped(prop))
+            {
+                // skip props with [NotField] attribute
+                invocation.Proceed();
                 return;
             }
-            
-            Assert.Inconsistent();
+
+            var value = EntityMapper.ToEntityField(prop, _listItem);
+
+            invocation.ReturnValue = value;
         }
     }
 }

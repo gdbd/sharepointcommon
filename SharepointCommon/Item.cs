@@ -23,6 +23,17 @@ namespace SharepointCommon
         public virtual Version Version { get; protected internal set; }
         public virtual Guid Guid { get; protected internal set; }
 
+
+        /// <summary>
+        /// Gets or sets the folder of file in document library.
+        /// While upload new file, it puts in specified folder.
+        /// </summary>
+        /// <value>
+        /// The relative folder URL. Ex: folder1/folder2/folder3
+        /// </value>
+        [NotMapped]
+        public virtual string Folder { get; set; }
+
         /// <summary>
         /// Gets the reference to item's parent list.
         /// </summary>

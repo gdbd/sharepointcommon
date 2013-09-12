@@ -1,4 +1,5 @@
 ﻿using Microsoft.SharePoint.Utilities;
+using SharepointCommon.Entities;
 
 namespace SharepointCommon.Common.Interceptors
 {
@@ -42,6 +43,12 @@ namespace SharepointCommon.Common.Interceptors
                     return;
 
                 case "get_Folder":
+                    // check that entity is 'Document'. if not need pass proccssing to 'ItemAccessInterceptor'
+                    if (!typeof (Document).IsAssignableFrom(invocation.TargetType))
+                    {
+                        break;
+                    }
+
                     string folderUrl = _item.Url;
                     folderUrl = folderUrl.Replace(_item.ParentList.RootFolder.Url + "/", string.Empty);
                     folderUrl = folderUrl.Replace("/" + _item.File.Name, string.Empty);

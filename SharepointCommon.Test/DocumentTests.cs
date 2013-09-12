@@ -82,6 +82,7 @@ namespace SharepointCommon.Test
             try
             {
                 lib = _queryWeb.Create<Document>("Add_Uploads_Document_To_Folder_Test");
+
                 var document = new Document
                 {
                     Name = "Add_Uploads_Document_To_Folder_Test.dat",
