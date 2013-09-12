@@ -161,22 +161,22 @@ namespace SharepointCommon.Impl
 
             SPListItem newitem;
 
+            SPFolder folder;
+            if (string.IsNullOrEmpty(entity.Folder))
+            {
+                folder = List.RootFolder;
+            }
+            else
+            {
+                folder = EnsureFolder(entity.Folder);
+            }
+
             if (entity is Document)
             {
                 var doc = entity as Document;
 
                 if (doc.Content == null || doc.Content.Length == 0) throw new SharepointCommonException("'Content' canot be null or empty");
                 if (string.IsNullOrEmpty(doc.Name)) throw new SharepointCommonException("'Name' cannot be null or empty");
-
-                SPFolder folder;
-                if (string.IsNullOrEmpty(doc.Folder))
-                {
-                    folder = List.RootFolder;
-                }
-                else
-                {
-                    folder = EnsureFolder(doc.Folder);
-                }
 
                 if (doc.RenameIfExists)
                 {
@@ -192,7 +192,9 @@ namespace SharepointCommon.Impl
             }
             else
             {
-                newitem = List.AddItem();
+                //newitem = List.AddItem();
+
+                newitem = List.AddItem(folder.Url, SPFileSystemObjectType.File, null);             
             }
 
             EntityMapper.ToItem(entity, newitem);

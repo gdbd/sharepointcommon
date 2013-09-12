@@ -46,16 +46,6 @@
         public virtual string Url { get; protected internal set; }
 
         /// <summary>
-        /// Gets or sets the folder of file in document library.
-        /// While upload new file, it puts in specified folder.
-        /// </summary>
-        /// <value>
-        /// The relative folder URL. Ex: folder1/folder2/folder3
-        /// </value>
-        [NotMapped]
-        public virtual string Folder { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether file need be rename (ex. should have index "report(1).doc" )
         /// if file with same name already exists in specified folder.
         /// </summary>

@@ -15,6 +15,23 @@ namespace SharepointCommon.Test
         {
             using (var wf = WebFactory.Open(_webUrl))
             {
+               /* IQueryList<Item> list = null;
+                try
+                {
+                    list = wf.Create<Item>("TryFolders");
+                    list.IsFolderCreationAllowed = true;
+
+                    var splist = list.List;
+
+                    var itm = splist.AddItem("/lists/TryFolders/f1", SPFileSystemObjectType.File, null);
+                    itm["Title"] = "temp";
+                    itm.Update();
+
+                }
+                finally
+                {
+                    if (list != null) list.DeleteList(false);
+                }*/
             }
         }
     }
