@@ -1,10 +1,11 @@
+using System;
+using Microsoft.SharePoint;
+using SharepointCommon.Common;
+using SharepointCommon.Impl;
+
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
-    using System;
-    using Common;
-    using Impl;
-    using Microsoft.SharePoint;
-
     /// <summary>
     /// Presents framework entry point. Allows to get instance of IQueryWeb
     /// </summary>

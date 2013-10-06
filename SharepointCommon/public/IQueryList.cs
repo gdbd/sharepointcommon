@@ -1,10 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using Microsoft.SharePoint;
+
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq.Expressions;
-    using Microsoft.SharePoint;
-    
     /// <summary>
     /// Represents wrapper on a SharePoint list or library
     /// </summary>

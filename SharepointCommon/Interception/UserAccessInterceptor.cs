@@ -1,11 +1,8 @@
-﻿namespace SharepointCommon.Common.Interceptors
+﻿using Castle.DynamicProxy;
+using Microsoft.SharePoint;
+
+namespace SharepointCommon.Interception
 {
-    using System;
-
-    using Castle.DynamicProxy;
-
-    using Microsoft.SharePoint;
-
     internal class UserAccessInterceptor : IInterceptor
     {
         private readonly SPUser _user;

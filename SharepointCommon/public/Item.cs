@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using Microsoft.SharePoint;
 using SharepointCommon.Attributes;
 
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
     /// <summary>

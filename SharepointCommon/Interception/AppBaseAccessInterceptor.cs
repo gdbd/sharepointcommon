@@ -5,9 +5,9 @@ using Castle.DynamicProxy;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Utilities;
 using SharepointCommon.Attributes;
-using SharepointCommon.Impl;
+using SharepointCommon.Common;
 
-namespace SharepointCommon.Common.Interceptors
+namespace SharepointCommon.Interception
 {
     internal class AppBaseAccessInterceptor : IInterceptor
     {
@@ -44,8 +44,20 @@ namespace SharepointCommon.Common.Interceptors
         private object GetList(IInvocation invocation)
         {
             var itemType = invocation.Method.ReturnType.GetGenericArguments();
-            var listType = typeof(QueryList<>).MakeGenericType(itemType);
-            
+
+            Type listType;
+            var isRepository = itemType.Length == 0;
+            if (isRepository)
+            {
+                // creating of a repository class inherited from ListBase<>
+                listType = invocation.Method.ReturnType;
+            }
+            else
+            {
+                // creating ListBase
+                listType = typeof (ListBase<>).MakeGenericType(itemType);
+            }
+
             var splist = GetSpList(invocation.Method);
             string cacheKey = splist.ID.ToString();
             if (_listsCache.ContainsKey(cacheKey))
@@ -53,8 +65,22 @@ namespace SharepointCommon.Common.Interceptors
                 return _listsCache[cacheKey];
             }
 
-            var list = Activator.CreateInstance(listType, splist, _queryWeb);
-            _listsCache[cacheKey] = list;
+            object list;
+            if (isRepository)
+            {
+                list = Activator.CreateInstance(listType);
+                var listProp = listType.GetProperty("List");
+                var webProp = listType.GetProperty("ParentWeb");
+                listProp.SetValue(list, splist, null);
+                webProp.SetValue(list, _queryWeb, null);
+            }
+            else
+            {
+                list = Activator.CreateInstance(listType,
+                    BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { splist, _queryWeb }, null);
+                _listsCache[cacheKey] = list;
+            }
+            
             return list;
         }
 

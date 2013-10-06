@@ -1680,13 +1680,13 @@ namespace SharepointCommon.Test
                 list.Add(itm);
 
                 Assert.That(itm.ConcreteParentList, Is.Not.Null);
-                Assert.IsInstanceOf<QueryList<CustomItem>>(itm.ConcreteParentList);
+                Assert.IsInstanceOf<ListBase<CustomItem>>(itm.ConcreteParentList);
                 Assert.That(((IQueryList<CustomItem>)itm.ConcreteParentList).Id, Is.EqualTo(list.Id));
 
                 var itm2 = list.ById(itm.Id);
 
                 Assert.That(itm2.ConcreteParentList, Is.Not.Null);
-                Assert.IsInstanceOf<QueryList<CustomItem>>(itm2.ConcreteParentList);
+                Assert.IsInstanceOf<ListBase<CustomItem>>(itm2.ConcreteParentList);
                 Assert.That(((IQueryList<CustomItem>)itm2.ConcreteParentList).Id, Is.EqualTo(list.Id));
             }
             finally

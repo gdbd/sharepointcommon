@@ -1,12 +1,11 @@
 ﻿using System.Diagnostics;
+using System;
+using System.Collections.Generic;
+using Microsoft.SharePoint;
 
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
-    using System;
-    using System.Collections.Generic;
-
-    using Microsoft.SharePoint;
-
     /// <summary>
     /// Represents a SharePoint field
     /// </summary>

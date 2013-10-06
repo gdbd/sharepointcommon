@@ -3,7 +3,7 @@ using Castle.DynamicProxy;
 using Microsoft.SharePoint;
 using SharepointCommon.Attributes;
 using SharepointCommon.Common;
-using SharepointCommon.Common.Interceptors;
+using SharepointCommon.Interception;
 
 namespace SharepointCommon.Impl
 {
