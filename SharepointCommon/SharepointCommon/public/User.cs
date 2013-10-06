@@ -1,4 +1,5 @@
-﻿namespace SharepointCommon
+﻿// ReSharper disable once CheckNamespace
+namespace SharepointCommon
 {
     /// <summary>
     /// Presents value for a 'User or Group' listitem field

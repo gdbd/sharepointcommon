@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Castle.DynamicProxy;
 using Microsoft.SharePoint;
-using SharepointCommon.Attributes;
+using SharepointCommon.Common;
 using SharepointCommon.Impl;
 
-namespace SharepointCommon.Common.Interceptors
+namespace SharepointCommon.Interception
 {
     internal class ItemAccessInterceptor : IInterceptor
     {

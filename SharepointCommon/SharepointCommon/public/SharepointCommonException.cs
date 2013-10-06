@@ -1,9 +1,8 @@
 ﻿using Microsoft.SharePoint;
 
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
-    using System;
-
     /// <summary>
     /// General exception, thrown by 'SharepointCommon' in different error situations.
     /// </summary>

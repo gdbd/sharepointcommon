@@ -1,13 +1,10 @@
 ﻿using Microsoft.SharePoint.Utilities;
-using SharepointCommon.Entities;
+using SharepointCommon.Entities; 
+using Castle.DynamicProxy;
+using Microsoft.SharePoint;
 
-namespace SharepointCommon.Common.Interceptors
+namespace SharepointCommon.Interception
 {
-    using System;
-
-    using Castle.DynamicProxy;
-
-    using Microsoft.SharePoint;
 
     internal class DocumentAccessInterceptor : IInterceptor
     {

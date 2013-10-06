@@ -90,6 +90,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppFacTests.cs" />
+    <Compile Include="Application\AppWithRepository.cs" />
+    <Compile Include="Application\TestAppNotMappedList.cs" />
+    <Compile Include="Application\TestAppNoVirtualProperty.cs" />
     <Compile Include="CamlQueryTests.cs" />
     <Compile Include="CastleTests.cs" />
     <Compile Include="DocumentTests.cs" />
@@ -100,7 +103,8 @@
     <Compile Include="Entity\TheChoice.cs" />
     <Compile Include="ExtentionsTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />
-    <Compile Include="TestApp.cs" />
+    <Compile Include="Repository\TestRepository.cs" />
+    <Compile Include="Application\TestApp.cs" />
     <Compile Include="WebFactoryTests.cs" />
     <Compile Include="AssertTests.cs" />
     <Compile Include="Entity\CustomItem.cs" />

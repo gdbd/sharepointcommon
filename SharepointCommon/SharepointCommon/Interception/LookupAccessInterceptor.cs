@@ -1,16 +1,13 @@
 ﻿using System.Reflection;
+using System;
+using System.Collections.Generic;
+using Castle.DynamicProxy;
+using Microsoft.SharePoint;
+using SharepointCommon.Common;
+using SharepointCommon.Impl;
 
-namespace SharepointCommon.Common.Interceptors
+namespace SharepointCommon.Interception
 {
-    using System;
-    using System.Collections.Generic;
-
-    using Castle.DynamicProxy;
-
-    using Microsoft.SharePoint;
-
-    using SharepointCommon.Impl;
-
     internal sealed class LookupAccessInterceptor : IInterceptor
     {
         private readonly SPListItem _listItem;

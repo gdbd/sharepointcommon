@@ -2,6 +2,9 @@
 using System.Linq;
 using Microsoft.SharePoint;
 using NUnit.Framework;
+using SharepointCommon.Test.Application;
+using SharepointCommon.Test.Entity;
+using SharepointCommon.Test.Repository;
 
 namespace SharepointCommon.Test
 {
@@ -92,6 +95,33 @@ namespace SharepointCommon.Test
             {
                 var userlist = app01.UserInfoList;
                 app01.Test = userlist;
+            }
+        }
+
+        [Test]
+        public void AppBase_ApplicationRespository_Test()
+        {
+            using (var app = AppWithRepository.Factory.OpenNew(_webUrl))
+            {
+                IQueryList<OneMoreField<string>> queryList = null;
+                try
+                {
+                    queryList = app.QueryWeb.Create<OneMoreField<string>>("CustomItems");
+
+                    var ci = app.CustomItems;
+
+                    var item = new OneMoreField<string>
+                    {
+                        Title = "Test",
+                        AdditionalField = "Test2",
+                    };
+
+                    ci.Add(item);
+                }
+                finally
+                {
+                    if (queryList != null) queryList.DeleteList(false);
+                }
             }
         }
     }

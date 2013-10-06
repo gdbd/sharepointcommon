@@ -11,19 +11,26 @@ using SharepointCommon.Common;
 using SharepointCommon.Entities;
 using SharepointCommon.Expressions;
 
-namespace SharepointCommon.Impl
+namespace SharepointCommon
 {
     [DebuggerDisplay("Title = {Title}, Url= {Url}")]
-    internal sealed class QueryList<T> : IQueryList<T> where T : Item, new()
+    public class ListBase<T> : IQueryList<T> where T : Item, new()
     {
-        public QueryList(SPList list, IQueryWeb parentWeb)
+        /// <summary>
+        /// do not use this constructor in code, it is only for create derived types
+        /// </summary>
+        public ListBase()
+        {
+        }
+
+        internal ListBase(SPList list, IQueryWeb parentWeb)
         {
             List = list;
             ParentWeb = parentWeb;
         }
 
-        public IQueryWeb ParentWeb { get; private set; }
-        public SPList List { get; private set; }
+        public IQueryWeb ParentWeb { get; internal set; }
+        public SPList List { get; internal set; }
         public Guid Id { get { return List.ID; } }
         public Guid WebId { get { return List.ParentWeb.ID; } }
         public Guid SiteId { get { return List.ParentWeb.Site.ID; } }
@@ -113,10 +120,10 @@ namespace SharepointCommon.Impl
                 }
             }
         }
-        public string Url { get { return ParentWeb.Web.Url + "/" + List.RootFolder.Url; } }
-        public string RelativeUrl { get { return List.RootFolder.Url; } }
-    
-        public string FormUrl(PageType pageType, int id = 0, bool isDlg = false)
+        public virtual string Url { get { return ParentWeb.Web.Url + "/" + List.RootFolder.Url; } }
+        public virtual string RelativeUrl { get { return List.RootFolder.Url; } }
+
+        public virtual string FormUrl(PageType pageType, int id = 0, bool isDlg = false)
         {
             string formUrl;
 
@@ -155,7 +162,7 @@ namespace SharepointCommon.Impl
             return formUrl;
         }
         
-        public void Add(T entity)
+        public virtual void Add(T entity)
         {
             if (entity == null) throw new ArgumentNullException("entity");
 
@@ -210,11 +217,11 @@ namespace SharepointCommon.Impl
             entity.Id = newitem.ID;
             entity.Guid = new Guid(newitem[SPBuiltInFieldId.GUID].ToString());
 
-            entity.ParentList = new QueryList<Item>(List, ParentWeb);
+            entity.ParentList = new ListBase<Item>(List, ParentWeb);
             entity.ConcreteParentList = CommonHelper.MakeParentList(typeof(T), ParentWeb, List.ID);
         }
         
-        public void Update(T entity, bool incrementVersion, params Expression<Func<T, object>>[] selectors)
+        public virtual void Update(T entity, bool incrementVersion, params Expression<Func<T, object>>[] selectors)
         {
             if (entity == null) throw new ArgumentNullException("entity");
 
@@ -246,7 +253,7 @@ namespace SharepointCommon.Impl
             else forUpdate.SystemUpdate(false);
         }
 
-        public void Delete(T entity, bool recycle)
+        public virtual void Delete(T entity, bool recycle)
         {
             if (entity == null) throw new ArgumentNullException("entity");
 
@@ -259,7 +266,7 @@ namespace SharepointCommon.Impl
             else forDelete.Delete();
         }
 
-        public void Delete(int id, bool recycle)
+        public virtual void Delete(int id, bool recycle)
         {
             var forDelete = List.GetItemById(id);
            
@@ -267,7 +274,7 @@ namespace SharepointCommon.Impl
             else forDelete.Delete();
         }
 
-        public T ById(int id)
+        public virtual T ById(int id)
         {
             SPListItem itemById;
             try
@@ -282,7 +289,7 @@ namespace SharepointCommon.Impl
             return EntityMapper.ToEntity<T>(itemById);
         }
 
-        public TCt ById<TCt>(int id) where TCt : Item, new()
+        public virtual TCt ById<TCt>(int id) where TCt : Item, new()
         {
             SPListItem itemById;
 
@@ -305,7 +312,7 @@ namespace SharepointCommon.Impl
             return EntityMapper.ToEntity<TCt>(itemById);
         }
 
-        public T ByGuid(Guid id)
+        public virtual T ByGuid(Guid id)
         {
             var camlByGuid = Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Guid), Q.Value("GUID", id.ToString())));
             var itemByGuid = ByCaml(List, camlByGuid).Cast<SPListItem>().FirstOrDefault();
@@ -313,7 +320,7 @@ namespace SharepointCommon.Impl
             return EntityMapper.ToEntity<T>(itemByGuid);
         }
 
-        public TCt ByGuid<TCt>(Guid id) where TCt : Item, new()
+        public virtual TCt ByGuid<TCt>(Guid id) where TCt : Item, new()
         {
             string typeName = typeof(TCt).Name;
 
@@ -329,7 +336,7 @@ namespace SharepointCommon.Impl
             return EntityMapper.ToEntity<TCt>(itemByGuid);
         }
 
-        public IEnumerable<T> ByField<TR>(Expression<Func<T, TR>> selector, TR value)
+        public virtual IEnumerable<T> ByField<TR>(Expression<Func<T, TR>> selector, TR value)
         {
             var memberAccessor = new MemberAccessVisitor();
             string fieldName = memberAccessor.GetMemberName(selector);
@@ -346,7 +353,7 @@ namespace SharepointCommon.Impl
             return EntityMapper.ToEntities<T>(itemsByField);
         }
 
-        public IEnumerable<T> Items(CamlQuery option)
+        public virtual IEnumerable<T> Items(CamlQuery option)
         {
             if (option == null) throw new ArgumentNullException("option");
 
@@ -355,7 +362,7 @@ namespace SharepointCommon.Impl
             return EntityMapper.ToEntities<T>(itemsToMap);
         }
 
-        public IEnumerable<TCt> Items<TCt>(CamlQuery option) where TCt : Item, new()
+        public virtual IEnumerable<TCt> Items<TCt>(CamlQuery option) where TCt : Item, new()
         {
             if (option == null) throw new ArgumentNullException("option");
 
@@ -391,7 +398,7 @@ namespace SharepointCommon.Impl
             return EntityMapper.ToEntities<TCt>(itemsToMap);
         }
 
-        public void DeleteList(bool recycle)
+        public virtual void DeleteList(bool recycle)
         {
             if (recycle)
             {
@@ -403,7 +410,7 @@ namespace SharepointCommon.Impl
             }
         }
 
-        public void CheckFields()
+        public virtual void CheckFields()
         {
             var fields = FieldMapper.ToFields<T>();
             foreach (var fieldInfo in fields)
@@ -413,7 +420,7 @@ namespace SharepointCommon.Impl
             }
         }
 
-        public bool ContainsField(Expression<Func<T, object>> selector)
+        public virtual bool ContainsField(Expression<Func<T, object>> selector)
         {           
             // get proprerty name
             var memberAccessor = new MemberAccessVisitor();
@@ -422,7 +429,7 @@ namespace SharepointCommon.Impl
             return ContainsFieldImpl(propName);
         }
 
-        public Field GetField(Expression<Func<T, object>> selector)
+        public virtual Field GetField(Expression<Func<T, object>> selector)
         {
             var propName = CommonHelper.GetFieldInnerName(selector);
 
@@ -433,12 +440,12 @@ namespace SharepointCommon.Impl
             return fieldInfo;
         }
 
-        public IEnumerable<Field> GetFields(bool onlyCustom)
+        public virtual IEnumerable<Field> GetFields(bool onlyCustom)
         {
             return FieldMapper.ToFields(List, onlyCustom);
         }
 
-        public void EnsureFields()
+        public virtual void EnsureFields()
         {
             var fields = FieldMapper.ToFields<T>();
             foreach (var fieldInfo in fields)
@@ -451,7 +458,7 @@ namespace SharepointCommon.Impl
             }
         }
 
-        public void EnsureField(Expression<Func<T, object>> selector)
+        public virtual void EnsureField(Expression<Func<T, object>> selector)
         {
             // get proprerty name
             var memberAccessor = new MemberAccessVisitor();
@@ -466,7 +473,7 @@ namespace SharepointCommon.Impl
             EnsureFieldImpl(fieldType);
         }
 
-        public void AddContentType<TCt>() where TCt : Item, new()
+        public virtual void AddContentType<TCt>() where TCt : Item, new()
         {
             var contentType = GetContentTypeFromWeb(new TCt(), true);
             if (contentType == null) throw new SharepointCommonException(string.Format("ContentType {0} not available at {1}", typeof(TCt), ParentWeb.Web.Url));
@@ -475,13 +482,13 @@ namespace SharepointCommon.Impl
             List.ContentTypes.Add(contentType);
         }
 
-        public bool ContainsContentType<TCt>() where TCt : Item, new()
+        public virtual bool ContainsContentType<TCt>() where TCt : Item, new()
         {
             var ct = GetContentType(new TCt(), true);
             return ct != null;
         }
 
-        public void RemoveContentType<TCt>() where TCt : Item, new()
+        public virtual void RemoveContentType<TCt>() where TCt : Item, new()
         {
             var contentType = GetContentType(new TCt(), true);
             if (contentType == null) throw new SharepointCommonException(string.Format("ContentType [{0}] not applied to list [{1}]", typeof(TCt), List.RootFolder));

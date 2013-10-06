@@ -1,9 +1,9 @@
-﻿namespace SharepointCommon
+﻿using System;
+using Microsoft.SharePoint;
+
+// ReSharper disable once CheckNamespace
+namespace SharepointCommon
 {
-    using System;
-
-    using Microsoft.SharePoint;
-
     /// <summary>
     /// Represents an abstract wrapper for SPWeb and SPSite objects
     /// </summary>

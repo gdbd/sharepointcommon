@@ -2,12 +2,11 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using SharepointCommon.Expressions;
+using Microsoft.SharePoint;
 
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
-    using Common;
-    using Microsoft.SharePoint;
-    
     /// <summary>
     /// Class used to represent query to SharePoint list, such CAML query, ViewFields and etc.
     /// </summary>

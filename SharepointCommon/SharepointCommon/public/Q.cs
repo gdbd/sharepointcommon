@@ -33,9 +33,9 @@ using System.Globalization;
 using System.Linq.Expressions;
 using System.Text;
 using SharepointCommon.Attributes;
-using SharepointCommon.Entities;
 using SharepointCommon.Expressions;
 
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
     using System.Collections.Generic;

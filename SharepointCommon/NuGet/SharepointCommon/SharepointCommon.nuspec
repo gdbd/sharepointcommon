@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>SharepointCommon</id>
-    <version>1.5</version>
+    <version>1.6</version>
     <authors>devi_ous</authors>
     <owners>devi_ous</owners>
     <licenseUrl>http://sharepointcommon.codeplex.com/license</licenseUrl>
@@ -24,6 +24,7 @@ GOALS:
 - ability to unit test
 FEATURES:
 - create wrappers on a SPSite,SPWeb,SPList
+- create repositories for lists
 - get items by typed query, Id, Guid or specified field
 - create, update, delete items by typed entity
 - lazy access to any entity property(Castle Proxy)

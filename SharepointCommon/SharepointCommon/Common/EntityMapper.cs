@@ -1,18 +1,15 @@
-﻿namespace SharepointCommon.Common
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Castle.DynamicProxy;
+using Microsoft.SharePoint;
+using SharepointCommon.Attributes;
+using SharepointCommon.Interception;
+
+namespace SharepointCommon.Common
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-
-    using Castle.DynamicProxy;
-
-    using Microsoft.SharePoint;
-
-    using Attributes;
-    using Interceptors;
-
     internal sealed class EntityMapper
     {
         private static readonly ProxyGenerator _proxyGenerator;

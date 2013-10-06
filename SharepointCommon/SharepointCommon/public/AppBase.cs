@@ -1,9 +1,9 @@
 using System;
 using SharepointCommon.Attributes;
-using SharepointCommon.Common;
 using SharepointCommon.Entities;
 using SharepointCommon.Impl;
 
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
     /// <summary>
