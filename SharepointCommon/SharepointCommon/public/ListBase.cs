@@ -657,7 +657,8 @@ namespace SharepointCommon
 
             var ctAttr = (ContentTypeAttribute)ctAttrs[0];
 
-            var bm = List.ContentTypes.Cast<SPContentType>().FirstOrDefault(c => c.Parent.Id.ToString() == ctAttr.ContentTypeId);
+            var bm = List.ContentTypes.Cast<SPContentType>().FirstOrDefault(c => c.Parent.Id.ToString()
+                .Equals(ctAttr.ContentTypeId, StringComparison.InvariantCultureIgnoreCase));
 
             if (bm == null) return null;
             var cct = List.ContentTypes[bm.Id];
@@ -674,7 +675,8 @@ namespace SharepointCommon
             }
 
             var ctAttr = (ContentTypeAttribute)ctAttrs[0];
-            var bm = List.ParentWeb.AvailableContentTypes.Cast<SPContentType>().FirstOrDefault(c => c.Id.ToString().StartsWith(ctAttr.ContentTypeId));
+            var bm = List.ParentWeb.AvailableContentTypes.Cast<SPContentType>().FirstOrDefault(c => c.Id.ToString()
+                .StartsWith(ctAttr.ContentTypeId, StringComparison.InvariantCultureIgnoreCase));
             return bm;
         }
 
