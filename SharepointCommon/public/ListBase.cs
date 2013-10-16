@@ -558,17 +558,22 @@ namespace SharepointCommon
                 
                 var field = (SPFieldLookup)List.Fields.GetFieldByInternalName(fieldInfo.Name);
 
-                FieldMapper.SetFieldAdditionalInfo(field, fieldInfo);
+                var isChanged = FieldMapper.SetFieldAdditionalInfo(field, fieldInfo);
 
                 if (!string.IsNullOrEmpty(fieldInfo.LookupField) && fieldInfo.LookupField != "Title")
                 {
                     field.LookupField = fieldInfo.LookupField;
-                    field.Update();
+                    isChanged = true;
                 }
 
                 if (fieldInfo.IsMultiValue)
                 {
                     field.AllowMultipleValues = true;
+                    isChanged = true;
+                }
+
+                if (isChanged)
+                {
                     field.Update();
                 }
 

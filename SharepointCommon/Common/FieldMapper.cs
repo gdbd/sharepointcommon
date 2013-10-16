@@ -262,22 +262,28 @@
             return fields.Contains(spName) == false;
         }
 
-        internal static void SetFieldAdditionalInfo(SPField field, Field fieldInfo)
+        internal static bool SetFieldAdditionalInfo(SPField field, Field fieldInfo)
         {
+            var isChanged = false;
             if (fieldInfo.DisplayName != null)
             {
                 field.Title = fieldInfo.DisplayName;
+                isChanged = true;
             }
 
             if (fieldInfo.Required)
             {
                 field.Required = true;
+                isChanged = true;
             }
 
             if (fieldInfo.DefaultValue != null)
             {
                 field.DefaultValue = ToDefaultValue(fieldInfo.DefaultValue);
+                isChanged = true;
             }
+
+            return isChanged;
         }
 
         internal static bool SetRequired(SPField field, Field fieldInfo)
