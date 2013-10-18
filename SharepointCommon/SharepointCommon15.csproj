@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="Attributes\ListAttribute.cs" />
     <Compile Include="Attributes\NotMappedAttribute.cs" />
+    <Compile Include="Common\InvariantCultureScope.cs" />
     <Compile Include="Extentions\ItemExtention.cs" />
     <Compile Include="Castle\Core\Internal\AttributesUtil.cs" />
     <Compile Include="Castle\Core\Internal\CollectionExtensions.cs" />

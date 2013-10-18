@@ -1,4 +1,7 @@
-﻿namespace SharepointCommon.Common
+﻿using System.Globalization;
+using System.Threading;
+
+namespace SharepointCommon.Common
 {
     using System;
     using System.Collections.Generic;
@@ -267,8 +270,11 @@
             var isChanged = false;
             if (fieldInfo.DisplayName != null)
             {
-                field.Title = fieldInfo.DisplayName;
-                isChanged = true;
+                using (new InvariantCultureScope(field.ParentList.ParentWeb))
+                {
+                    field.Title = fieldInfo.DisplayName;
+                    isChanged = true;
+                }
             }
 
             if (fieldInfo.Required)
