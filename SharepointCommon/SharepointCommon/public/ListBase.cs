@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Xml;
 using System.Xml.Linq;
 using Microsoft.SharePoint;
 using SharepointCommon.Attributes;
@@ -44,7 +45,10 @@ namespace SharepointCommon
             {
                 try
                 {
-                    List.Title = value;
+                    using (new InvariantCultureScope(List.ParentWeb))
+                    {
+                        List.Title = value;
+                    }
                     List.Update();
                 }
                 catch (SPException)
