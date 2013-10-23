@@ -1,6 +1,10 @@
 using System;
+using System.Linq.Expressions;
+using System.Reflection;
 using SharepointCommon.Attributes;
+using SharepointCommon.Common;
 using SharepointCommon.Entities;
+using SharepointCommon.Expressions;
 using SharepointCommon.Impl;
 
 // ReSharper disable once CheckNamespace
@@ -71,6 +75,58 @@ namespace SharepointCommon
         /// </summary>
         public virtual void Init()
         {
+        }
+
+        public TList EnsureList<TList>(Expression<Func<T, TList>> listSelector)
+        {
+            var visitor = new MemberAccessVisitor();
+            var selectedPropertyName = visitor.GetMemberName(listSelector);
+            var selectedProperty = typeof(T).GetProperty(selectedPropertyName);
+            if (selectedProperty == null) throw new SharepointCommonException(string.Format("property {0} not found!", selectedPropertyName));
+            var propertyType = selectedProperty.PropertyType;
+
+            var listAttribute = (ListAttribute)Attribute.GetCustomAttribute(selectedProperty, typeof(ListAttribute));
+            if (listAttribute != null && listAttribute.Id != null)
+            {
+                throw new SharepointCommonException("Cannot ensure list with ID. It may cause mapping problems.");
+            }
+
+            if (CommonHelper.ImplementsOpenGenericInterface(propertyType, typeof(IQueryList<>)))
+            {
+                var entityType = propertyType.GetGenericArguments()[0];
+                
+                if (listAttribute != null && !string.IsNullOrEmpty(listAttribute.Name))
+                {
+                    if (QueryWeb.ExistsByName(listAttribute.Name))
+                    {
+                       return (TList)((QueryWeb)QueryWeb).GetByName(entityType, listAttribute.Name);
+                    }
+
+                    var list = ((QueryWeb)QueryWeb).Create(entityType, selectedPropertyName);
+                    var titleProp = list.GetType().GetProperty("Title");
+                    titleProp.SetValue(list, listAttribute.Name, null);
+                    return (TList)list;
+                }
+                else if (listAttribute != null && !string.IsNullOrEmpty(listAttribute.Url))
+                {
+                    if (QueryWeb.ExistsByUrl(listAttribute.Url))
+                    {
+                        return (TList)((QueryWeb)QueryWeb).GetByUrl(entityType, listAttribute.Url);
+                    }
+
+                    var list = ((QueryWeb)QueryWeb).Create(entityType, selectedPropertyName);
+                    return (TList)list;
+                }
+                else
+                {
+                    throw new SharepointCommonException("default case");
+                }
+                
+            }
+            else
+            {
+                throw new SharepointCommonException("Ensure not IQueryList<> not implemented yet!");
+            }
         }
     }
 }
