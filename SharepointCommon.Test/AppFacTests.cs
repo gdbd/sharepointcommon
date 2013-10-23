@@ -124,5 +124,72 @@ namespace SharepointCommon.Test
                 }
             }
         }
+
+        [Test]
+        public void Ensure_List_By_Name_Test()
+        {
+            using (var app = TestAppEnsureLists.Factory.OpenNew(_webUrl))
+            {
+                IQueryList<OneMoreField<string>> list = null;
+                try
+                {
+                    list = app.EnsureList(a => a.EnsureByName);
+
+                    Assert.NotNull(list);
+                    Assert.That(list.Title, Is.EqualTo("List ensured by name"));
+                    Assert.That(list.RelativeUrl.ToLower(), Is.EqualTo("lists/ensurebyname"));
+
+                    IQueryList<OneMoreField<string>> list2 = null;
+                    Assert.DoesNotThrow(() =>
+                    {
+                        list2 = app.EnsureList(a => a.EnsureByName);
+                    });
+
+                    Assert.That(list.Id == list2.Id);
+                }
+                finally
+                {
+                    if (list != null) list.DeleteList(false);
+                }
+            }
+        }
+
+        [Test]
+        public void Ensure_List_By_Url_Test()
+        {
+            using (var app = TestAppEnsureLists.Factory.OpenNew(_webUrl))
+            {
+                IQueryList<Item> list = null;
+                try
+                {
+                    list = app.EnsureList(a => a.EnsureByUrl);
+
+                    Assert.NotNull(list);
+                    Assert.That(list.Title, Is.EqualTo("EnsureByUrl"));
+                    Assert.That(list.RelativeUrl.ToLower(), Is.EqualTo("lists/ensurebyurl"));
+
+                    IQueryList<Item> list2 = null;
+                    Assert.DoesNotThrow(() =>
+                    {
+                        list2 = app.EnsureList(a => a.EnsureByUrl);
+                    });
+
+                    Assert.That(list.Id == list2.Id);
+                }
+                finally
+                {
+                    if (list != null) list.DeleteList(false);
+                }
+            }
+        }
+
+        [Test]
+        public void Ensure_List_By_Id_Throws_Test()
+        {
+            using (var app = TestAppEnsureLists.Factory.OpenNew(_webUrl))
+            {
+                Assert.Throws<SharepointCommonException>(() => app.EnsureList(a => a.EnsureById));
+            }
+        }
     }
 }

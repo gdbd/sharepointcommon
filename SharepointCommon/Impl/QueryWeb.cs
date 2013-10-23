@@ -10,6 +10,7 @@ namespace SharepointCommon.Impl
     using Attributes;
     using Common;
     using Entities;
+    using System.Reflection;
 
     [DebuggerDisplay("Url = {Web.Url}")]
     internal sealed class QueryWeb : IQueryWeb
@@ -118,7 +119,7 @@ namespace SharepointCommon.Impl
             Assert.CurrentContextAvailable();
             return new ListBase<T>(SPContext.Current.List, this);
         }
-
+        
         public IQueryList<T> Create<T>(string listName) where T : Item, new()
         {
             SPListTemplateType listType = GetListType<T>();
@@ -198,6 +199,38 @@ namespace SharepointCommon.Impl
 
             if (Site != null) Site.Dispose();
             if (Web != null) Web.Dispose();
+        }
+        
+        internal object Create(Type entityType, string listName)
+        {
+            var qw = typeof(QueryWeb);
+            var toEntity = qw.GetMethod(
+                "Create", BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(string) }, null);
+            var g = toEntity.MakeGenericMethod(entityType);
+
+            return g.Invoke(this, new object[] { listName });
+        }
+
+        internal object GetByName(Type entityType, string listName)
+        {
+            var list = Web.Lists[listName];
+
+            var type = typeof(ListBase<>);
+            var typeGeneric = type.MakeGenericType(entityType);
+
+            return Activator.CreateInstance(typeGeneric, BindingFlags.NonPublic | BindingFlags.Instance, 
+                null, new object[] { list, this }, null);
+        }
+        
+        internal object GetByUrl(Type entityType, string listUrl)
+        {
+            var list = Web.GetList(Combine(Web.ServerRelativeUrl, listUrl));
+
+            var type = typeof(ListBase<>);
+            var typeGeneric = type.MakeGenericType(entityType);
+
+            return Activator.CreateInstance(typeGeneric, BindingFlags.NonPublic | BindingFlags.Instance,
+                null, new object[] { list, this }, null);
         }
 
         private SPListTemplateType GetListType<T>()

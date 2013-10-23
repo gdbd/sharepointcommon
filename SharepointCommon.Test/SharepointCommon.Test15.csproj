@@ -94,6 +94,7 @@
     <Compile Include="AppFacTests.cs" />
     <Compile Include="Application\AppWithRepository.cs" />
     <Compile Include="Application\TestApp.cs" />
+    <Compile Include="Application\TestAppEnsureLists.cs" />
     <Compile Include="Application\TestAppNotMappedList.cs" />
     <Compile Include="Application\TestAppNoVirtualProperty.cs" />
     <Compile Include="AssertTests.cs" />
