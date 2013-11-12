@@ -468,8 +468,6 @@ namespace SharepointCommon
             var memberAccessor = new MemberAccessVisitor();
             string propName = memberAccessor.GetMemberName(selector);
 
-            if (List.Fields.ContainsFieldWithStaticName(propName)) return;
-
             var prop = typeof(T).GetProperty(propName);
 
             var fieldType = FieldMapper.ToFieldType(prop);
