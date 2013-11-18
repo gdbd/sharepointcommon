@@ -11,7 +11,7 @@ namespace SharepointCommon.Test
     [TestFixture]
     public class AppFacTests
     {
-        private readonly string _webUrl = string.Format("http://{0}/", Environment.MachineName);
+        private readonly string _webUrl = Settings.GetTestSiteCollectionUrl();
 
         [Test]
         public void AppBase_Factory_OpenByUrl_Test()

@@ -11,7 +11,7 @@ namespace SharepointCommon.Test
     public class DocumentTests
     {
         private const string ListForLookup = "ListForLookup";
-        private readonly string _webUrl = string.Format("http://{0}/", Environment.MachineName);
+        private readonly string _webUrl = Settings.GetTestSiteCollectionUrl();
         private IQueryList<Item> _listForLookup;
         private IQueryWeb _queryWeb;
 

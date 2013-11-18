@@ -18,7 +18,7 @@ namespace SharepointCommon.Test
         private const string ListName1 = "SharepointCommonTestList";
         private const string ListForLookup = "ListForLookup";
 
-        private readonly string _webUrl = string.Format("http://{0}/", Environment.MachineName);
+        private readonly string _webUrl = Settings.GetTestSiteCollectionUrl();
 
         private SPUser _firstUser;
         private SPUser _secondUser;

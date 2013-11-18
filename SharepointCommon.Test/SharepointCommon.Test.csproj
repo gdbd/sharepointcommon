@@ -106,6 +106,7 @@
     <Compile Include="MoqLibraryTests.cs" />
     <Compile Include="Repository\TestRepository.cs" />
     <Compile Include="Application\TestApp.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="WebFactoryTests.cs" />
     <Compile Include="AssertTests.cs" />
     <Compile Include="Entity\CustomItem.cs" />
