@@ -109,6 +109,7 @@
     <Compile Include="ExtentionsTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />
     <Compile Include="Repository\TestRepository.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="WebFactoryTests.cs" />
     <Compile Include="Entity\CustomItem.cs" />
     <Compile Include="Entity\CustomItemNoProperty.cs" />
