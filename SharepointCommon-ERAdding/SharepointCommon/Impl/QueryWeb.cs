@@ -1,3 +1,5 @@
+using Microsoft.SharePoint.Utilities;
+
 namespace SharepointCommon.Impl
 {
     using System;
@@ -8,6 +10,7 @@ namespace SharepointCommon.Impl
     using Attributes;
     using Common;
     using Entities;
+    using System.Reflection;
 
     [DebuggerDisplay("Url = {Web.Url}")]
     internal sealed class QueryWeb : IQueryWeb
@@ -95,28 +98,28 @@ namespace SharepointCommon.Impl
 
         public IQueryList<T> GetByUrl<T>(string listUrl) where T : Item, new()
         {
-            var list = Web.GetList(listUrl);
-            return new QueryList<T>(list, this);
+            var list = Web.GetList(Combine(Web.ServerRelativeUrl, listUrl));
+            return new ListBase<T>(list, this);
         }
 
         public IQueryList<T> GetByName<T>(string listName) where T : Item, new()
         {
             var list = Web.Lists[listName];
-            return new QueryList<T>(list, this);
+            return new ListBase<T>(list, this);
         }
 
         public IQueryList<T> GetById<T>(Guid id) where T : Item, new()
         {
             var list = Web.Lists[id];
-            return new QueryList<T>(list, this);
+            return new ListBase<T>(list, this);
         }
 
         public IQueryList<T> CurrentList<T>() where T : Item, new()
         {
             Assert.CurrentContextAvailable();
-            return new QueryList<T>(SPContext.Current.List, this);
+            return new ListBase<T>(SPContext.Current.List, this);
         }
-
+        
         public IQueryList<T> Create<T>(string listName) where T : Item, new()
         {
             SPListTemplateType listType = GetListType<T>();
@@ -162,7 +165,7 @@ namespace SharepointCommon.Impl
         {
             try
             {
-                var list = Web.GetList(listUrl);
+                var list = Web.GetList(Combine(Web.ServerRelativeUrl, listUrl));
                 return list != null;
             }
             catch (System.IO.FileNotFoundException)
@@ -197,6 +200,38 @@ namespace SharepointCommon.Impl
             if (Site != null) Site.Dispose();
             if (Web != null) Web.Dispose();
         }
+        
+        internal object Create(Type entityType, string listName)
+        {
+            var qw = typeof(QueryWeb);
+            var toEntity = qw.GetMethod(
+                "Create", BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(string) }, null);
+            var g = toEntity.MakeGenericMethod(entityType);
+
+            return g.Invoke(this, new object[] { listName });
+        }
+
+        internal object GetByName(Type entityType, string listName)
+        {
+            var list = Web.Lists[listName];
+
+            var type = typeof(ListBase<>);
+            var typeGeneric = type.MakeGenericType(entityType);
+
+            return Activator.CreateInstance(typeGeneric, BindingFlags.NonPublic | BindingFlags.Instance, 
+                null, new object[] { list, this }, null);
+        }
+        
+        internal object GetByUrl(Type entityType, string listUrl)
+        {
+            var list = Web.GetList(Combine(Web.ServerRelativeUrl, listUrl));
+
+            var type = typeof(ListBase<>);
+            var typeGeneric = type.MakeGenericType(entityType);
+
+            return Activator.CreateInstance(typeGeneric, BindingFlags.NonPublic | BindingFlags.Instance,
+                null, new object[] { list, this }, null);
+        }
 
         private SPListTemplateType GetListType<T>()
         {
@@ -211,6 +246,14 @@ namespace SharepointCommon.Impl
             }
 
             throw new SharepointCommonException("Cant determine actual list type. Do you inherited item from 'Item' or 'Document'?");
+        }
+
+        private string Combine(string left, string right)
+        {
+            if (SPUrlUtility.IsUrlFull(right)) return right;
+
+            if (right.StartsWith(left)) return right;
+            return SPUrlUtility.CombineUrl(left, right);
         }
     }
 }

@@ -333,6 +333,8 @@ namespace Castle.DynamicProxy
 
 		private ModuleBuilder CreateModule(bool signStrongName)
 		{
+		    signStrongName = false;
+
 			var assemblyName = GetAssemblyName(signStrongName);
 			var moduleName = signStrongName ? StrongNamedModuleName : WeakNamedModuleName;
 #if !SILVERLIGHT
@@ -363,11 +365,11 @@ namespace Castle.DynamicProxy
 			else
 #endif
 			{
-				var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(
-					assemblyName,
-					AssemblyBuilderAccess.Run);
-
-				var module = assemblyBuilder.DefineDynamicModule(moduleName, false);
+			    var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(
+			            assemblyName,
+			            AssemblyBuilderAccess.Run);
+			    
+			    var module = assemblyBuilder.DefineDynamicModule(moduleName, false);
 				return module;
 			}
 		}

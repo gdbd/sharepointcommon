@@ -1,15 +1,12 @@
-﻿namespace SharepointCommon.Common
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Castle.DynamicProxy;
+using Microsoft.SharePoint;
+using SharepointCommon.Interception;
+
+namespace SharepointCommon.Common
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Castle.DynamicProxy;
-
-    using Microsoft.SharePoint;
-
-    using Interceptors;
-
     internal class UserIterator : IEnumerable<User>
     {
         private readonly SPFieldUserValueCollection _users;

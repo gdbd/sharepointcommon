@@ -1,10 +1,11 @@
+using System;
+using Microsoft.SharePoint;
+using SharepointCommon.Common;
+using SharepointCommon.Impl;
+
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
-    using System;
-    using Common;
-    using Impl;
-    using Microsoft.SharePoint;
-
     /// <summary>
     /// Presents framework entry point. Allows to get instance of IQueryWeb
     /// </summary>
@@ -18,6 +19,16 @@ namespace SharepointCommon
         public static IQueryWeb Open(string url)
         {
             return new QueryWeb(url, false);
+        }
+
+        /// <summary>
+        /// Create wrapper based on existing SPWeb object
+        /// </summary>
+        /// <param name="spWeb">SPWeb object.Will not disposed internally!</param>
+        /// <returns>abstract wrapper for SPWeb and SPSite objects</returns>
+        public static IQueryWeb Open(SPWeb spWeb)
+        {
+            return new QueryWeb(spWeb);
         }
 
         /// <summary>

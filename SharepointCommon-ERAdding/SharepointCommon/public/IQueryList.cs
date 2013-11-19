@@ -1,10 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using Microsoft.SharePoint;
+
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq.Expressions;
-    using Microsoft.SharePoint;
-
     /// <summary>
     /// Represents wrapper on a SharePoint list or library
     /// </summary>
@@ -77,7 +78,7 @@ namespace SharepointCommon
         /// Gets the relative url of list. Ex: /lists/list1
         /// </summary>
         string RelativeUrl { get; }
-
+        
         /// <summary>
         /// Allows to register and un-register list item event receiver
         /// </summary>
@@ -88,8 +89,9 @@ namespace SharepointCommon
         /// </summary>
         /// <param name="pageType">Type of the page.</param>
         /// <param name="id">The id of item</param>
+        /// <param name="isDlg">Add 'isDlg=1' to form url</param>
         /// <returns>Url of list form with item id</returns>
-        string FormUrl(PageType pageType, int id = 0);
+        string FormUrl(PageType pageType, int id = 0, bool isDlg = false);
 
         /// <summary>
         /// Adds new list item to the list

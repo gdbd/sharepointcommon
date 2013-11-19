@@ -1,4 +1,7 @@
-﻿namespace SharepointCommon.Test
+﻿using Moq;
+using SharepointCommon.Impl;
+
+namespace SharepointCommon.Test
 {
     using System;
     using System.Collections.Generic;
@@ -15,7 +18,7 @@
         private const string ListName1 = "SharepointCommonTestList";
         private const string ListForLookup = "ListForLookup";
 
-        private readonly string _webUrl = string.Format("http://{0}/", Environment.MachineName);
+        private readonly string _webUrl = Settings.GetTestSiteCollectionUrl();
 
         private SPUser _firstUser;
         private SPUser _secondUser;
@@ -206,7 +209,41 @@
                 }
             }
         }
-        
+
+        [Test]
+        public void Add_Adds_Item_To_Folder_Test()
+        {
+            IQueryList<Item> list = null;
+            try
+            {
+                list = _queryWeb.Create<Item>("Add_Adds_Item_To_Folder_Test");
+                var itm = new Item
+                {
+                    Title = "Add_Adds_Item_To_Folder_Test",
+                    Folder = "Folder1/Folder2/Folder3",
+                };
+                list.Add(itm);
+
+                var item = list.Items(new CamlQuery()
+                    .Recursive()
+                    //  .Folder(document.Url)
+                    .Query(Q.Where(Q.Eq(Q.FieldRef<Item>(d => d.Title), Q.Value(itm.Title)))))
+                    .FirstOrDefault();
+
+                Assert.IsNotNull(item);
+                Assert.That(item.Id, Is.EqualTo(itm.Id));
+                Assert.That(item.Folder, Is.EqualTo(itm.Folder));
+                Assert.That(item.Title, Is.EqualTo(itm.Title));
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
+
         [Test]
         public void Add_Throws_On_Property_No_Virtual()
         {
@@ -898,6 +935,40 @@
         }
 
         [Test]
+        public void Items_Grouping_By_User_Field_Test()
+        {
+            IQueryList<Item> list = null;
+            try
+            {
+                list = _queryWeb.Create<Item>("Items_Grouping_By_User_Field_Test");
+
+                var item = new Item { Title = "Items_Returns_Items_By_CamlQuery_Test" };
+                var item2 = new Item { Title = "Items_Returns_Items_By_CamlQuery_Test_2" };
+                list.Add(item);
+                list.Add(item2);
+                Assert.That(item.Id, Is.Not.EqualTo(0));
+
+                var items = list.Items(CamlQuery.Default).ToList();
+
+                var grouped = items.GroupBy(i => i.Author,
+                    (key, g) =>
+                                new
+                                {
+                                    User = key,
+                                    items = g.ToList()
+                                }
+                                ).ToArray();
+
+                Assert.True(grouped.FirstOrDefault() != null);
+                Assert.That(grouped.FirstOrDefault().items.Count, Is.EqualTo(2));
+            }
+            finally
+            {
+                if (list != null) list.DeleteList(false);
+            }
+        }
+
+        [Test]
         public void Items_Returns_Collection_Of_All_Content_Types_Test()
         {
             IQueryList<Item> list = null;
@@ -1279,6 +1350,19 @@
 
             Assert.That(editUrl.ToLower(),
                 Is.EqualTo(string.Format("{1}/{0}/EditForm.aspx?ID=3", ListName1, listsPath).ToLower()));
+
+            string newUrlIsDlg = _list.FormUrl(PageType.New, isDlg: true);
+            string dispUrlIsDlg = _list.FormUrl(PageType.Display, 2, true);
+            string editUrlIsDlg = _list.FormUrl(PageType.Edit, 3, true);
+
+            Assert.That(newUrlIsDlg.ToLower(),
+                Is.EqualTo(string.Format("{1}/{0}/NewForm.aspx?isDlg=1", ListName1, listsPath).ToLower()));
+
+            Assert.That(dispUrlIsDlg.ToLower(),
+                Is.EqualTo(string.Format("{1}/{0}/DispForm.aspx?ID=2&isDlg=1", ListName1, listsPath).ToLower()));
+
+            Assert.That(editUrlIsDlg.ToLower(),
+                Is.EqualTo(string.Format("{1}/{0}/EditForm.aspx?ID=3&isDlg=1", ListName1, listsPath).ToLower()));
         }
 
         [Test]
@@ -1323,6 +1407,42 @@
             Assert.NotNull(pw);
         }
 
+        [Test]
+        public void Throw_If_Access_Field_Not_In_ViewFields_Test()
+        {
+            IQueryList<CustomItem> list = null;
+            try
+            {
+                list = _queryWeb.Create<CustomItem>("Throw_If_Access_Field_Not_In_ViewFields_Test");
+                var customItem = new CustomItem
+                {
+                    Title = "Throw_If_Access_Field_Not_In_ViewFields_Test",
+                    CustomField1 = "Throw_If_Access_Field_Not_In_ViewFields_Test1",
+                    CustomFieldNumber = 123.5,
+                    CustomBoolean = true,
+                    CustomDate = DateTime.Now,
+                    CustomChoice = TheChoice.Choice2,
+                };
+                list.Add(customItem);
+
+                var item = list.Items(new CamlQuery()
+                .Query(Q.Where(Q.Eq(Q.FieldRef<CustomItem>(i => i.Title), Q.Value("Throw_If_Access_Field_Not_In_ViewFields_Test"))))
+                .ViewFields<CustomItem>(i => i.CustomField1))
+                .FirstOrDefault();
+
+                Assert.IsNotNull(item);
+                string ss;
+                Assert.Throws<ArgumentException>(() => ss = item.CustomField2);
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
+
         #endregion
 
         #region Fields Tests
@@ -1335,6 +1455,19 @@
 
             Assert.That(list.ContainsField(e => e.CustomField1));
             Assert.That(list.ContainsField(e => e.CustomLookup));
+        }
+
+        [Test]
+        public void EnsureField_Sets_Default_Value_Test()
+        {
+            var list = _queryWeb.GetByName<CustomItem>(ListName1);
+            list.EnsureField(e => e.WithDefault);
+
+            Assert.That(list.ContainsField(e => e.WithDefault));
+
+            var field = list.GetField(e => e.WithDefault);
+
+            Assert.That(field.DefaultValue, Is.False);
         }
 
         [Test]
@@ -1444,6 +1577,43 @@
                 Assert.That(fields.Any(f => f.Name.Equals("CustomField1")), Is.True);
                 Assert.That(fields.Any(f => f.Name.Equals("HTML_x0020_File_x0020_Type")), Is.False);
                 Assert.That(fields.All(field => field.Id != default(Guid)));
+
+                var fieldWithAttr = list.GetField(i => i.Тыдыщ);
+                Assert.NotNull(fieldWithAttr);
+                Assert.That(fieldWithAttr.Name, Is.EqualTo("_x0422__x044b__x0434__x044b__x04"));
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
+
+        [Test]
+        public void Item_With_Not_Mapped_Props_Test()
+        {
+            IQueryList<ItemWithNoMappedProperty> list = null;
+            try
+            {
+                list = _queryWeb.Create<ItemWithNoMappedProperty>("Item_With_Not_Mapped_Props_Test");
+
+                Assert.IsFalse(list.ContainsField(i => i.NotField));
+                Assert.IsFalse(list.ContainsField(i => i.NotMapped));
+
+
+                var item = new ItemWithNoMappedProperty
+                    {
+                        NotField = "asd",
+                        NotMapped = "zxc",
+                    };
+                list.Add(item);
+
+                var item2 = list.ById(item.Id);
+
+                Assert.IsNull(item2.NotField);
+                Assert.IsNull(item2.NotMapped);
             }
             finally
             {
@@ -1500,6 +1670,35 @@
         }
 
         [Test]
+        public void Item_ConcreteParentList_Contains_Reference_To_ParentList()
+        {
+            IQueryList<CustomItem> list = null;
+            try
+            {
+                list = _queryWeb.Create<CustomItem>("Item_ConcreteParentList_Contains_Reference_To_ParentList");
+                var itm = new CustomItem { Title = "Item_ConcreteParentList_Contains_Reference_To_ParentList" };
+                list.Add(itm);
+
+                Assert.That(itm.ConcreteParentList, Is.Not.Null);
+                Assert.IsInstanceOf<ListBase<CustomItem>>(itm.ConcreteParentList);
+                Assert.That(((IQueryList<CustomItem>)itm.ConcreteParentList).Id, Is.EqualTo(list.Id));
+
+                var itm2 = list.ById(itm.Id);
+
+                Assert.That(itm2.ConcreteParentList, Is.Not.Null);
+                Assert.IsInstanceOf<ListBase<CustomItem>>(itm2.ConcreteParentList);
+                Assert.That(((IQueryList<CustomItem>)itm2.ConcreteParentList).Id, Is.EqualTo(list.Id));
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
+
+        [Test]
         public void Use_Person_As_Property_Throws_Test()
         {
             IQueryList<OneMoreField<Person>> list = null;
@@ -1526,32 +1725,5 @@
                 }
             }
         }
-
-        /*
-        [Test, Timeout(20000)]
-        public void Get_Many_Items_Test()
-        {
-           // var splist = _queryWeb.Web.Lists["TestList1"];
-           // var spitems = splist.Items.Cast<SPListItem>().ToList();
-
-            // list with 50K items
-            var list = _queryWeb.GetByName<TestList1>("TestList1");
-            list.CheckFields();
-
-            var items = list.Items(CamlQuery.Default);
-
-            items = items.ToList();
-
-            Assert.NotNull(items);
-            CollectionAssert.IsNotEmpty(items);
-            var first = items.First();
-
-            Assert.That(first.Id, Is.Not.EqualTo(default(int)));
-            Assert.That(first.Title, Is.Not.Null);
-            Assert.That(first.TheText, Is.Not.Null);
-            Assert.That(first.TheDate, Is.Not.EqualTo(default(DateTime)));
-            Assert.That(first.TheMan, Is.Not.Null);
-            Assert.That(first.TheLookup, Is.Not.Null);
-        }*/
     }
 }

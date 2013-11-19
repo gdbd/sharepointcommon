@@ -91,16 +91,26 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppFacTests.cs" />
+    <Compile Include="Application\AppWithRepository.cs" />
+    <Compile Include="Application\TestApp.cs" />
+    <Compile Include="Application\TestAppEnsureLists.cs" />
+    <Compile Include="Application\TestAppNotMappedList.cs" />
+    <Compile Include="Application\TestAppNoVirtualProperty.cs" />
+    <Compile Include="AssertTests.cs" />
     <Compile Include="CamlQueryTests.cs" />
     <Compile Include="CastleTests.cs" />
     <Compile Include="DocumentTests.cs" />
+    <Compile Include="Entity\ItemWithNoMappedProperty.cs" />
     <Compile Include="Entity\NullableItem.cs" />
     <Compile Include="Entity\CustomDocument.cs" />
     <Compile Include="Entity\OneMoreField.cs" />
     <Compile Include="Entity\TheChoice.cs" />
+    <Compile Include="ExtentionsTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />
+    <Compile Include="Repository\TestRepository.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="WebFactoryTests.cs" />
-    <Compile Include="EntityMapperTests.cs" />
     <Compile Include="Entity\CustomItem.cs" />
     <Compile Include="Entity\CustomItemNoProperty.cs" />
     <Compile Include="QueryListTests.cs" />
@@ -139,6 +149,10 @@
       <Name>SharepointCommon15</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -11,7 +11,7 @@ namespace SharepointCommon.Test
     public class DocumentTests
     {
         private const string ListForLookup = "ListForLookup";
-        private readonly string _webUrl = string.Format("http://{0}/", Environment.MachineName);
+        private readonly string _webUrl = Settings.GetTestSiteCollectionUrl();
         private IQueryList<Item> _listForLookup;
         private IQueryWeb _queryWeb;
 
@@ -36,8 +36,7 @@ namespace SharepointCommon.Test
             _listForLookup.DeleteList(false);
             _queryWeb.Dispose();
         }
-
-
+        
         [Test]
         public void Add_Uploads_Document_Test()
         {
@@ -53,7 +52,7 @@ namespace SharepointCommon.Test
                 lib.Add(document);
 
                 var item = lib.Items(new CamlQuery()
-                    .Query(Q.Where(Q.Eq(Q.FieldRef("LinkFilename"), Q.Value("Add_AddsCustomItem.dat")))))
+                    .Query(Q.Where(Q.Eq(Q.FieldRef<Document>(d => d.Name), Q.Value("Add_AddsCustomItem.dat")))))
                     .FirstOrDefault();
 
                 Assert.IsNotNull(item);
@@ -64,7 +63,8 @@ namespace SharepointCommon.Test
                 Assert.That(item.Size, Is.EqualTo(4));
                 Assert.That(item.Icon, Is.EqualTo("/_layouts/images/icgen.gif"));
                 Assert.That(item.Folder, Is.EqualTo(document.Folder));
-                //// Assert.That(item.Title, Is.EqualTo(document.Title));
+                Assert.NotNull(item.Url);
+                Assert.That(item.Url, Is.EqualTo("/Add_AddsCustomItem/Add_AddsCustomItem.dat"));
             }
             finally
             {
@@ -82,6 +82,7 @@ namespace SharepointCommon.Test
             try
             {
                 lib = _queryWeb.Create<Document>("Add_Uploads_Document_To_Folder_Test");
+
                 var document = new Document
                 {
                     Name = "Add_Uploads_Document_To_Folder_Test.dat",
@@ -93,7 +94,7 @@ namespace SharepointCommon.Test
                 var item = lib.Items(new CamlQuery()
                     .Recursive()
                     //  .Folder(document.Url)
-                    .Query(Q.Where(Q.Eq(Q.FieldRef("LinkFilename"), Q.Value("Add_Uploads_Document_To_Folder_Test.dat")))))
+                    .Query(Q.Where(Q.Eq(Q.FieldRef<Document>(d => d.Name), Q.Value("Add_Uploads_Document_To_Folder_Test.dat")))))
                     .FirstOrDefault();
 
                 Assert.IsNotNull(item);
@@ -207,7 +208,6 @@ namespace SharepointCommon.Test
                 Assert.That(item.Id, Is.EqualTo(document.Id));
                 Assert.That(item.Name, Is.EqualTo(document.Name));
                 Assert.That(item.Version.Major, Is.EqualTo(1));
-
             }
             finally
             {
@@ -298,7 +298,6 @@ namespace SharepointCommon.Test
                 Assert.That(item.Id, Is.EqualTo(document.Id));
                 Assert.That(item.Name, Is.EqualTo(document.Name));
                 Assert.That(item.Version.Major, Is.EqualTo(2));
-
             }
             finally
             {

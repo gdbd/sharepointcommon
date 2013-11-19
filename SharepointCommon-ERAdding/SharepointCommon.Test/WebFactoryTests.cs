@@ -13,7 +13,7 @@
     [TestFixture]
     public class WebFactoryTests
     {
-        private readonly string _webUrl = string.Format("http://{0}/", Environment.MachineName);
+        private readonly string _webUrl = Settings.GetTestSiteCollectionUrl();
 
         [Test]
         public void Open_By_Url_Creates_QueryWeb_Test()

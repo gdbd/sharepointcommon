@@ -15,7 +15,7 @@
         /// <value>
         /// The name of file.
         /// </value>
-        [NotField]
+        [NotMapped]
         public virtual string Name { get; set; }
 
         /// <summary>
@@ -24,36 +24,26 @@
         /// <value>
         /// The content of file.
         /// </value>
-        [NotField]
+        [NotMapped]
         public virtual byte[] Content { get; set; }
 
         /// <summary>
         /// Gets the size of file in document library.
         /// </summary>
-        [NotField]
-        public virtual long Size { get; internal set; }
+        [NotMapped]
+        public virtual long Size { get; protected internal set; }
 
         /// <summary>
         /// Gets the url, represents image used as icon for file in document library.
         /// </summary>
-        [NotField]
-        public virtual string Icon { get; internal set; }
+        [NotMapped]
+        public virtual string Icon { get; protected internal set; }
 
         /// <summary>
         /// Gets the URL of file in document library.
         /// </summary>
-        [NotField]
-        public virtual string Url { get; internal set; }
-
-        /// <summary>
-        /// Gets or sets the folder of file in document library.
-        /// While upload new file, it puts in specified folder.
-        /// </summary>
-        /// <value>
-        /// The relative folder URL. Ex: folder1/folder2/folder3
-        /// </value>
-        [NotField]
-        public virtual string Folder { get; set; }
+        [NotMapped]
+        public virtual string Url { get; protected internal set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether file need be rename (ex. should have index "report(1).doc" )
@@ -62,7 +52,7 @@
         /// <value>
         /// <c>true</c> if [rename if exists]; otherwise, <c>false</c>.
         /// </value>
-        [NotField]
+        [NotMapped]
         public bool RenameIfExists { get; set; }
     }
 }

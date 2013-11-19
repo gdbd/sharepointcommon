@@ -2,12 +2,11 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using SharepointCommon.Expressions;
+using Microsoft.SharePoint;
 
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
-    using Common;
-    using Microsoft.SharePoint;
-    
     /// <summary>
     /// Class used to represent query to SharePoint list, such CAML query, ViewFields and etc.
     /// </summary>
@@ -120,7 +119,9 @@ namespace SharepointCommon
                 var sb = new System.Text.StringBuilder();
                 foreach (string field in ViewFieldsStore)
                 {
+#pragma warning disable 612,618
                     sb.Append(Q.FieldRef(field));
+#pragma warning restore 612,618
                 }
                 query.ViewFields = sb.ToString();
                 query.ViewFieldsOnly = true;

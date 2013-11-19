@@ -1,13 +1,15 @@
-﻿namespace SharepointCommon
+﻿using System.Diagnostics;
+using System;
+using System.Collections.Generic;
+using Microsoft.SharePoint;
+
+// ReSharper disable once CheckNamespace
+namespace SharepointCommon
 {
-    using System;
-    using System.Collections.Generic;
-
-    using Microsoft.SharePoint;
-
     /// <summary>
     /// Represents a SharePoint field
     /// </summary>
+    [DebuggerDisplay("Name={Name}, Type={Type}, Required={Required}")]
     public class Field
     {
         /// <summary>
@@ -81,6 +83,11 @@
         /// The choices.
         /// </value>
         public IEnumerable<string> Choices { get; set; }
+
+        /// <summary>
+        /// Gets or sets default value for field
+        /// </summary>
+        public object DefaultValue { get; set; }
         
         internal string PropName { get; set; }
     }

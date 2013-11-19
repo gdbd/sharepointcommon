@@ -41,6 +41,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>
+    </DocumentationFile>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -73,7 +76,15 @@
   <ItemGroup>
     <Compile Include="Attributes\AsyncAttribute.cs" />
     <Compile Include="Attributes\SequenceAttribute.cs" />
-    <Compile Include="CamlQuery.cs" />
+    <Compile Include="Common\InvariantCultureScope.cs" />
+    <Compile Include="public\AppBase.cs" />
+    <Compile Include="Attributes\ListAttribute.cs" />
+    <Compile Include="Attributes\NotMappedAttribute.cs" />
+    <Compile Include="Interception\AppBaseAccessInterceptor.cs" />
+    <Compile Include="Entities\UserInfoList.cs" />
+    <Compile Include="Extentions\ItemExtention.cs" />
+    <Compile Include="Impl\AppFac.cs" />
+    <Compile Include="public\CamlQuery.cs" />
     <Compile Include="Castle\Core\Internal\AttributesUtil.cs" />
     <Compile Include="Castle\Core\Internal\CollectionExtensions.cs" />
     <Compile Include="Castle\Core\Internal\ILockHolder.cs" />
@@ -284,44 +295,45 @@
     <Compile Include="Configuration\ConfigMgr.cs" />
     <Compile Include="Common\EnumMapper.cs" />
     <Compile Include="Common\FilenameOrganizer.cs" />
-    <Compile Include="Common\Interceptors\DocumentAccessInterceptor.cs" />
-    <Compile Include="Common\Interceptors\ItemAccessInterceptor.cs" />
     <Compile Include="Configuration\Settings.cs" />
     <Compile Include="Events\ListItemEventReceiver.cs" />
     <Compile Include="Common\XmlSerializator.cs" />
+    <Compile Include="Interception\DocumentAccessInterceptor.cs" />
+    <Compile Include="Interception\ItemAccessInterceptor.cs" />
     <Compile Include="Entities\Category.cs" />
     <Compile Include="Entities\Form.cs" />
     <Compile Include="Events\ListEventHandler.cs" />
     <Compile Include="Events\ListEventType.cs" />
-    <Compile Include="Field.cs" />
-    <Compile Include="Common\Interceptors\LookupAccessInterceptor.cs" />
+    <Compile Include="public\Field.cs" />
+    <Compile Include="Interception\LookupAccessInterceptor.cs" />
     <Compile Include="Common\LookupIterator.cs" />
-    <Compile Include="Common\Interceptors\UserAccessInterceptor.cs" />
+    <Compile Include="Interception\UserAccessInterceptor.cs" />
     <Compile Include="Common\UserIterator.cs" />
     <Compile Include="Entities\Holiday.cs" />
+    <Compile Include="public\IAppFac.cs" />
+    <Compile Include="public\SharepointCommonException.cs" />
     <Compile Include="Impl\QueryListEvent.cs" />
     <Compile Include="Events\IQueryListEvent.cs" />
-    <Compile Include="SharepointCommonException.cs" />
     <Compile Include="Expressions\ExpressionVisitor.cs" />
     <Compile Include="Common\FieldMapper.cs" />
-    <Compile Include="Q.cs" />
+    <Compile Include="public\Q.cs" />
     <Compile Include="Attributes\ContentTypeAttribute.cs" />
     <Compile Include="Entities\Announcement.cs" />
     <Compile Include="Entities\Document.cs" />
     <Compile Include="Common\EntityMapper.cs" />
     <Compile Include="Entities\Folder.cs" />
-    <Compile Include="Item.cs" />
+    <Compile Include="public\Item.cs" />
     <Compile Include="Expressions\MemberAccessVisitor.cs" />
     <Compile Include="Properties\NamespaceDoc.cs" />
-    <Compile Include="PageType.cs" />
+    <Compile Include="public\PageType.cs" />
     <Compile Include="Attributes\NotFieldAttribute.cs" />
-    <Compile Include="Person.cs" />
+    <Compile Include="public\Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IQueryList.cs" />
-    <Compile Include="Impl\QueryList.cs" />
-    <Compile Include="User.cs" />
-    <Compile Include="IQueryWeb.cs" />
-    <Compile Include="WebFactory.cs" />
+    <Compile Include="public\IQueryList.cs" />
+    <Compile Include="public\ListBase.cs" />
+    <Compile Include="public\User.cs" />
+    <Compile Include="public\IQueryWeb.cs" />
+    <Compile Include="public\WebFactory.cs" />
     <Compile Include="Impl\QueryWeb.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -345,7 +357,12 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="todo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\Interceptors\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

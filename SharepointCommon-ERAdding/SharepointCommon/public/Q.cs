@@ -33,9 +33,9 @@ using System.Globalization;
 using System.Linq.Expressions;
 using System.Text;
 using SharepointCommon.Attributes;
-using SharepointCommon.Entities;
 using SharepointCommon.Expressions;
 
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
     using System.Collections.Generic;
@@ -208,7 +208,13 @@ namespace SharepointCommon
         /// <param name="fieldRefElement">a CAML FieldRef element for the target event date</param>
         /// <param name="valueElement">a CAML Value element containing the date to be tested</param>
         /// <returns>a new CAML DateRangesOverlap element</returns>
-        public static string DateRangesOverlap(string fieldRefElement, string valueElement) { return Tag(CamlConst.DateRangesOverlap, null, null, fieldRefElement + FieldRef("EndDate") + FieldRef("RecurrenceID") + valueElement); }
+        public static string DateRangesOverlap(string fieldRefElement, string valueElement)
+        {
+#pragma warning disable 612,618
+            return Tag(CamlConst.DateRangesOverlap, null, null,
+                       fieldRefElement + FieldRef("EndDate") + FieldRef("RecurrenceID") + valueElement);
+#pragma warning restore 612,618
+        }
 
         /// <summary>
         /// Tests the equality of two CAML clauses.
@@ -713,9 +719,8 @@ namespace SharepointCommon
                 if (attr.Name != null)
                     fieldName = attr.Name;
             }
-
-            var attrsNf = property.GetCustomAttributes(typeof(NotFieldAttribute), false);
-            if (attrsNf.Length != 0)
+            
+            if (CommonHelper.IsPropertyNotMapped(property))
             {
                 // allow to use FieldRef<Document>(d => d.Name)
                 if (propName != "Name")
