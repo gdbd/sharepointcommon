@@ -9,10 +9,9 @@ namespace SharepointCommon.Test.Repository
             entity.AdditionalField = "overriden!";
             base.Add(entity);
         }
+    }
 
-        public override string Url
-        {
-            get { return "asdasdasd"; }
-        }
+    public class TestRepositoryInheritedTwice : TestRepository
+    {
     }
 }
