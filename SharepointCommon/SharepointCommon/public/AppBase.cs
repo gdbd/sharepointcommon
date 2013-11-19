@@ -1,6 +1,6 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using SharepointCommon.Attributes;
 using SharepointCommon.Common;
 using SharepointCommon.Entities;
@@ -77,7 +77,7 @@ namespace SharepointCommon
         {
         }
 
-        public TList EnsureList<TList>(Expression<Func<T, TList>> listSelector)
+        public TList Ensure<TList>(Expression<Func<T, TList>> listSelector)
         {
             var visitor = new MemberAccessVisitor();
             var selectedPropertyName = visitor.GetMemberName(listSelector);
@@ -91,42 +91,126 @@ namespace SharepointCommon
                 throw new SharepointCommonException("Cannot ensure list with ID. It may cause mapping problems.");
             }
 
-            if (CommonHelper.ImplementsOpenGenericInterface(propertyType, typeof(IQueryList<>)))
+            if (!CommonHelper.ImplementsOpenGenericInterface(propertyType, typeof (IQueryList<>)))
             {
-                var entityType = propertyType.GetGenericArguments()[0];
-                
-                if (listAttribute != null && !string.IsNullOrEmpty(listAttribute.Name))
-                {
-                    if (QueryWeb.ExistsByName(listAttribute.Name))
-                    {
-                       return (TList)((QueryWeb)QueryWeb).GetByName(entityType, listAttribute.Name);
-                    }
-
-                    var list = ((QueryWeb)QueryWeb).Create(entityType, selectedPropertyName);
-                    var titleProp = list.GetType().GetProperty("Title");
-                    titleProp.SetValue(list, listAttribute.Name, null);
-                    return (TList)list;
-                }
-                else if (listAttribute != null && !string.IsNullOrEmpty(listAttribute.Url))
-                {
-                    if (QueryWeb.ExistsByUrl(listAttribute.Url))
-                    {
-                        return (TList)((QueryWeb)QueryWeb).GetByUrl(entityType, listAttribute.Url);
-                    }
-
-                    var list = ((QueryWeb)QueryWeb).Create(entityType, selectedPropertyName);
-                    return (TList)list;
-                }
-                else
-                {
-                    throw new SharepointCommonException("default case");
-                }
-                
+                throw new SharepointCommonException("Ensure not IQueryList<> not supported yet!");
+            }
+            
+            var args = propertyType.GetGenericArguments();
+            var isRepository = args.Length == 0;
+            Type entityType;
+            if (isRepository)
+            {
+                entityType = GetRepositoryGenericArgument(propertyType);
             }
             else
             {
-                throw new SharepointCommonException("Ensure not IQueryList<> not implemented yet!");
+                entityType = args[0];
             }
+
+            if (listAttribute != null && !string.IsNullOrEmpty(listAttribute.Name))
+            {
+                if (QueryWeb.ExistsByName(listAttribute.Name))
+                {
+                    var qList = ((QueryWeb) QueryWeb).GetByName(entityType, listAttribute.Name);
+                    if (!isRepository)
+                    {
+                        // existing list
+                        return (TList) qList;
+                    }
+                    else
+                    {
+                        //existing repository
+                        var splistProp1 = qList.GetType().GetProperty("List");
+                        var splist1 = splistProp1.GetValue(qList, null);
+                        return CreateRepository<TList>(propertyType, splist1);
+                    }
+                }
+
+                var list = ((QueryWeb) QueryWeb).Create(entityType, selectedPropertyName);
+                var splist = list.GetType().GetProperty("List").GetValue(list, null);
+
+                list.GetType().GetProperty("Title").SetValue(list, listAttribute.Name, null);
+
+           
+                if (isRepository)
+                {
+                    //new repository
+                    return CreateRepository<TList>(propertyType, splist);
+                }
+                else
+                {
+                    //new list
+                    return (TList) list;
+                }
+            }
+            else if (listAttribute != null && listAttribute.Url != null)
+            {
+                var nameForCreateCorrectUrl = listAttribute.Url.Substring(
+                    listAttribute.Url.LastIndexOf("/", StringComparison.Ordinal) + 1);
+
+                if (QueryWeb.ExistsByUrl(listAttribute.Url))
+                {
+                    var existingList = ((QueryWeb)QueryWeb).GetByUrl(entityType, listAttribute.Url);
+
+                    if (!isRepository)
+                    {
+                        // existing list
+                        return (TList)existingList;
+                    }
+                    else
+                    {
+                        // existing repository
+                        var splist1 = existingList.GetType().GetProperty("List").GetValue(existingList, null);
+                        return CreateRepository<TList>(propertyType, splist1);
+                    }
+                }
+
+                var list = ((QueryWeb) QueryWeb).Create(entityType, nameForCreateCorrectUrl);
+                var splist = list.GetType().GetProperty("List").GetValue(list, null);
+                list.GetType().GetProperty("Title").SetValue(list, selectedPropertyName, null);
+                
+                if (isRepository)
+                {
+                    // new repository
+                    return CreateRepository<TList>(propertyType, splist);
+                }
+                else
+                {
+                    // new list
+                    return (TList) list;
+                }
+            }
+
+            throw new SharepointCommonException("default case.");
+            
+        }
+
+        private static Type GetRepositoryGenericArgument(Type type)
+        {
+            var ret = type;
+            while (ret != null && ret.Name != "ListBase`1")
+            {
+                ret = ret.BaseType;
+            }
+
+            if (ret == null)
+            {
+                throw new SharepointCommonException(string.Format("cannot find ListBase parent for repository {0}",
+                    type.Name));
+            }
+
+            return ret.GetGenericArguments().First();
+        }
+
+        private TList CreateRepository<TList>(Type propertyType, object splist)
+        {
+            var list1 = Activator.CreateInstance(propertyType);
+            var listProp = propertyType.GetProperty("List");
+            var webProp = propertyType.GetProperty("ParentWeb");
+            listProp.SetValue(list1, splist, null);
+            webProp.SetValue(list1, QueryWeb, null);
+            return (TList)list1;
         }
     }
 }

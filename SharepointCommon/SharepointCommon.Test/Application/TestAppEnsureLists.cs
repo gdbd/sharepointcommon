@@ -14,5 +14,14 @@ namespace SharepointCommon.Test.Application
 
         [List(Url = "lists/EnsureByUrl")]
         public virtual IQueryList<Item> EnsureByUrl { get; set; }
+
+        [List(Name = "ensured repository")]
+        public virtual Repository.TestRepository EnsureRepository { get; set; }
+
+        [List(Name = "ensured repository 2")]
+        public virtual Repository.TestRepositoryInheritedTwice EnsureRepositoryInheritedTwice { get; set; }
+
+        [List(Url = "lists/ensurerepurl")]
+        public virtual Repository.TestRepository EnsureRepositoryByUrl { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace SharepointCommon.Test
     [TestFixture]
     public class AppFacTests
     {
-        private readonly string _webUrl = Settings.GetTestSiteCollectionUrl();
+        private readonly string _webUrl = Settings.TestSiteUrl;
 
         [Test]
         public void AppBase_Factory_OpenByUrl_Test()
@@ -133,7 +133,7 @@ namespace SharepointCommon.Test
                 IQueryList<OneMoreField<string>> list = null;
                 try
                 {
-                    list = app.EnsureList(a => a.EnsureByName);
+                    list = app.Ensure(a => a.EnsureByName);
 
                     Assert.NotNull(list);
                     Assert.That(list.Title, Is.EqualTo("List ensured by name"));
@@ -142,7 +142,7 @@ namespace SharepointCommon.Test
                     IQueryList<OneMoreField<string>> list2 = null;
                     Assert.DoesNotThrow(() =>
                     {
-                        list2 = app.EnsureList(a => a.EnsureByName);
+                        list2 = app.Ensure(a => a.EnsureByName);
                     });
 
                     Assert.That(list.Id == list2.Id);
@@ -162,7 +162,7 @@ namespace SharepointCommon.Test
                 IQueryList<Item> list = null;
                 try
                 {
-                    list = app.EnsureList(a => a.EnsureByUrl);
+                    list = app.Ensure(a => a.EnsureByUrl);
 
                     Assert.NotNull(list);
                     Assert.That(list.Title, Is.EqualTo("EnsureByUrl"));
@@ -171,7 +171,7 @@ namespace SharepointCommon.Test
                     IQueryList<Item> list2 = null;
                     Assert.DoesNotThrow(() =>
                     {
-                        list2 = app.EnsureList(a => a.EnsureByUrl);
+                        list2 = app.Ensure(a => a.EnsureByUrl);
                     });
 
                     Assert.That(list.Id == list2.Id);
@@ -188,7 +188,94 @@ namespace SharepointCommon.Test
         {
             using (var app = TestAppEnsureLists.Factory.OpenNew(_webUrl))
             {
-                Assert.Throws<SharepointCommonException>(() => app.EnsureList(a => a.EnsureById));
+                Assert.Throws<SharepointCommonException>(() => app.Ensure(a => a.EnsureById));
+            }
+        }
+
+        [Test]
+        public void Ensure_Repository_InheritedTwice_Test()
+        {
+            using (var app = TestAppEnsureLists.Factory.OpenNew(_webUrl))
+            {
+                IQueryList<OneMoreField<string>> list = null;
+                try
+                {
+                    list = app.Ensure(a => a.EnsureRepositoryInheritedTwice);
+
+                    Assert.NotNull(list);
+                    Assert.That(list.Title, Is.EqualTo("ensured repository 2"));
+                    Assert.That(list.RelativeUrl.ToLower(), Is.EqualTo("lists/ensurerepositoryinheritedtwice"));
+
+                    IQueryList<OneMoreField<string>> list2 = null;
+                    Assert.DoesNotThrow(() =>
+                    {
+                        list2 = app.Ensure(a => a.EnsureRepositoryInheritedTwice);
+                    });
+
+                    Assert.That(list.Id == list2.Id);
+                }
+                finally
+                {
+                    if (list != null) list.DeleteList(false);
+                }
+            }
+        }
+
+        [Test]
+        public void Ensure_Repository_By_Name_Test()
+        {
+            using (var app = TestAppEnsureLists.Factory.OpenNew(_webUrl))
+            {
+                IQueryList<OneMoreField<string>> list = null;
+                try
+                {
+                    list = app.Ensure(a => a.EnsureRepository);
+
+                    Assert.NotNull(list);
+                    Assert.That(list.Title, Is.EqualTo("ensured repository"));
+                    Assert.That(list.RelativeUrl.ToLower(), Is.EqualTo("lists/ensurerepository"));
+
+                    IQueryList<OneMoreField<string>> list2 = null;
+                    Assert.DoesNotThrow(() =>
+                    {
+                        list2 = app.Ensure(a => a.EnsureRepository);
+                    });
+
+                    Assert.That(list.Id == list2.Id);
+                }
+                finally
+                {
+                    if (list != null) list.DeleteList(false);
+                }
+            }
+        }
+
+        [Test]
+        public void Ensure_Repository_By_Url_Test()
+        {
+            using (var app = TestAppEnsureLists.Factory.OpenNew(_webUrl))
+            {
+                IQueryList<OneMoreField<string>> list = null;
+                try
+                {
+                    list = app.Ensure(a => a.EnsureRepositoryByUrl);
+
+                    Assert.NotNull(list);
+                    Assert.That(list.Title.ToLower(), Is.EqualTo("ensurerepositorybyurl"));
+                    Assert.That(list.RelativeUrl.ToLower(), Is.EqualTo("lists/ensurerepurl"));
+
+                    IQueryList<OneMoreField<string>> list2 = null;
+                    Assert.DoesNotThrow(() =>
+                    {
+                        list2 = app.Ensure(a => a.EnsureRepositoryByUrl);
+                    });
+
+                    Assert.That(list.Id == list2.Id);
+                }
+                finally
+                {
+                    if (list != null) list.DeleteList(false);
+                }
             }
         }
     }
