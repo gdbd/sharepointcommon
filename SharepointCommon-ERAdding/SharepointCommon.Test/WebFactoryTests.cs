@@ -1,19 +1,16 @@
-﻿namespace SharepointCommon.Test
-{
-    using System;
+﻿    using System;
     using System.Linq;
-    using System.Security.Principal;
     using Microsoft.SharePoint;
-
     using NUnit.Framework;
-
     using SharepointCommon.Entities;
     using SharepointCommon.Test.Entity;
 
+namespace SharepointCommon.Test
+{
     [TestFixture]
     public class WebFactoryTests
     {
-        private readonly string _webUrl = Settings.GetTestSiteCollectionUrl();
+        private readonly string _webUrl = Settings.TestSiteUrl;
 
         [Test]
         public void Open_By_Url_Creates_QueryWeb_Test()

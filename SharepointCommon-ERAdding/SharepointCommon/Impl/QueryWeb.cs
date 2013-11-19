@@ -204,9 +204,9 @@ namespace SharepointCommon.Impl
         internal object Create(Type entityType, string listName)
         {
             var qw = typeof(QueryWeb);
-            var toEntity = qw.GetMethod(
+            var createMethod = qw.GetMethod(
                 "Create", BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(string) }, null);
-            var g = toEntity.MakeGenericMethod(entityType);
+            var g = createMethod.MakeGenericMethod(entityType);
 
             return g.Invoke(this, new object[] { listName });
         }

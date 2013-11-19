@@ -1,16 +1,15 @@
-﻿using Moq;
-using SharepointCommon.Impl;
-
-namespace SharepointCommon.Test
-{
+﻿using SharepointCommon.Entities;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.SharePoint;
     using NUnit.Framework;
-    using Entities;
-    using Entity;
+using SharepointCommon.Test.Entity;
     using Assert = NUnit.Framework.Assert;
+
+namespace SharepointCommon.Test
+{
+
 
     [TestFixture]
     public class QueryListTests
@@ -18,7 +17,7 @@ namespace SharepointCommon.Test
         private const string ListName1 = "SharepointCommonTestList";
         private const string ListForLookup = "ListForLookup";
 
-        private readonly string _webUrl = Settings.GetTestSiteCollectionUrl();
+        private readonly string _webUrl = Settings.TestSiteUrl;
 
         private SPUser _firstUser;
         private SPUser _secondUser;
