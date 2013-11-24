@@ -101,6 +101,7 @@
     <Compile Include="CamlQueryTests.cs" />
     <Compile Include="CastleTests.cs" />
     <Compile Include="DocumentTests.cs" />
+    <Compile Include="Entity\LookupWithShowField.cs" />
     <Compile Include="Entity\ItemWithNoMappedProperty.cs" />
     <Compile Include="Entity\NullableItem.cs" />
     <Compile Include="Entity\CustomDocument.cs" />

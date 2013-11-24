@@ -166,6 +166,30 @@ namespace SharepointCommon.Test
         }
 
         [Test]
+        public void Ensure_Lookup_Sets_ShowField_Test()
+        {
+            IQueryList<LookupWithShowField> list = null;
+            try
+            {
+                list = _queryWeb.Create<LookupWithShowField>("Ensure_Lookup_Sets_ShowField_Test");
+
+                var field = list.GetField(a => a.CustomLookup);
+                var field2 = list.GetField(a => a.CustomLookupWithShowField);
+
+                Assert.That(field.LookupField, Is.EqualTo("Title"));
+                Assert.That(field2.LookupField, Is.EqualTo("ID"));
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
+
+
+        [Test]
         public void Add_Adds_CustomItem_With_Empty_Fields()
         {
             IQueryList<CustomItem> list = null;
