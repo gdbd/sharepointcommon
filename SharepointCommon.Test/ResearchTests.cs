@@ -8,7 +8,7 @@ namespace SharepointCommon.Test
     [TestFixture]
     public class ResearchTests
     {
-        private string _webUrl = "http://" + Environment.MachineName;
+        private string _webUrl = Settings.TestSiteUrl;
 
         [Test]
         public void SP()

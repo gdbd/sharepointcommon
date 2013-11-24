@@ -1,3 +1,4 @@
+using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint.Utilities;
 
 namespace SharepointCommon.Impl
@@ -21,36 +22,31 @@ namespace SharepointCommon.Impl
         internal QueryWeb(string webUrl, bool elevate)
         {
             _webUrl = webUrl;
+
             if (elevate == false)
             {
                 Site = new SPSite(webUrl);
-                Web = Site.OpenWeb();
             }
             else
             {
-                SPSecurity.RunWithElevatedPrivileges(() =>
-                {
-                    Site = new SPSite(webUrl);
-                    Web = Site.OpenWeb();
-                });
+                Site = new SPSite(webUrl, SPUserToken.SystemAccount);
             }
+
+            Web = Site.OpenWeb();
         }
 
-        internal QueryWeb(Guid site, Guid web, bool elevate)
+        internal QueryWeb(Guid site, Guid web, bool elevate, SPUrlZone? zone = null)
         {
             if (elevate == false)
             {
-                Site = new SPSite(site);
-                Web = Site.OpenWeb(web);
+                Site = new SPSite(site, zone == null ? SPUrlZone.Default : zone.Value);
             }
             else
             {
-                SPSecurity.RunWithElevatedPrivileges(() =>
-                {
-                    Site = new SPSite(site);
-                    Web = Site.OpenWeb(web);
-                });
+                Site = new SPSite(site, zone == null ? SPUrlZone.Default : zone.Value, SPUserToken.SystemAccount);
             }
+
+            Web = Site.OpenWeb(web);
 
             _webUrl = Web.Url;
         }
@@ -60,17 +56,13 @@ namespace SharepointCommon.Impl
             if (elevate == false)
             {
                 Site = new SPSite(site);
-                Web = Site.OpenWeb();
             }
             else
             {
-                SPSecurity.RunWithElevatedPrivileges(() =>
-                {
-                    Site = new SPSite(site);
-                    Web = Site.OpenWeb();
-                });
+                Site = new SPSite(site, SPUserToken.SystemAccount);
             }
 
+            Web = Site.OpenWeb();
             _webUrl = Web.Url;
         }
 

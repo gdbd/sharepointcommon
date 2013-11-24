@@ -557,61 +557,14 @@ namespace SharepointCommon
                     throw new SharepointCommonException(string.Format("List {0} not found on {1}", fieldInfo.LookupListName, ParentWeb.Web.Url));
 
                 List.Fields.AddLookup(fieldInfo.Name, lookupList.ID, false);
-                
-                var field = (SPFieldLookup)List.Fields.GetFieldByInternalName(fieldInfo.Name);
-
-                var isChanged = FieldMapper.SetFieldAdditionalInfo(field, fieldInfo);
-
-                if (!string.IsNullOrEmpty(fieldInfo.LookupField) && fieldInfo.LookupField != "Title")
-                {
-                    field.LookupField = fieldInfo.LookupField;
-                    isChanged = true;
-                }
-
-                if (fieldInfo.IsMultiValue)
-                {
-                    field.AllowMultipleValues = true;
-                    isChanged = true;
-                }
-
-                if (isChanged)
-                {
-                    field.Update();
-                }
-
-                return;
             }
-
-            if (fieldInfo.Type == SPFieldType.Choice)
+            else
             {
                 List.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
-                var field = (SPFieldChoice)List.Fields.GetFieldByInternalName(fieldInfo.Name);
-
-                var choices = fieldInfo.Choices.ToArray();
-                
-                field.Choices.AddRange(choices);
-                field.DefaultValue = field.Choices[0];
-
-                FieldMapper.SetFieldAdditionalInfo(field, fieldInfo);
-                field.Update();
-
-                return;
             }
-
-            List.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
-
-            var field2 = List.Fields.GetFieldByInternalName(fieldInfo.Name);
-
-            FieldMapper.SetFieldAdditionalInfo(field2, fieldInfo);
-
-            if (fieldInfo.Type == SPFieldType.User && fieldInfo.IsMultiValue)
-            {
-                var f = (SPFieldLookup)field2;
-                Assert.NotNull(f);
-                f.AllowMultipleValues = true;
-            }
-
-            field2.Update();
+            
+            var field = List.Fields.GetFieldByInternalName(fieldInfo.Name);
+            FieldMapper.SetFieldProperties(field, fieldInfo);
         }
 
         private SPListItem GetItemByEntity(T entity)
