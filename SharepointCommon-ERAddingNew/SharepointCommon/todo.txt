@@ -1,0 +1,4 @@
+﻿AppBase<>::EnsureList<Tlist>(Expression<Func<AppBase, TList>>) -ok
+get unit test site collection from config db(instead of http://localhost:80) -ok
+
+push down AppBase<>::EnsureList to IQueryList
