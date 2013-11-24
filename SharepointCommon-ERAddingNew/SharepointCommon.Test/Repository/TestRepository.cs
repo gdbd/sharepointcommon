@@ -1,4 +1,5 @@
-﻿using SharepointCommon.Test.Entity;
+﻿using SharepointCommon.Attributes;
+using SharepointCommon.Test.Entity;
 
 namespace SharepointCommon.Test.Repository
 {
@@ -8,6 +9,15 @@ namespace SharepointCommon.Test.Repository
         {
             entity.AdditionalField = "overriden!";
             base.Add(entity);
+        }
+
+        [Sequence(1000)]
+        protected override void ItemAdded(OneMoreField<string> addedItem)
+        {
+        }
+
+        protected override void ItemUpdating(OneMoreField<string> updatingItem)
+        {
         }
     }
 

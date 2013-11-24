@@ -74,7 +74,11 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\AsyncAttribute.cs" />
+    <Compile Include="Attributes\SequenceAttribute.cs" />
     <Compile Include="Common\InvariantCultureScope.cs" />
+    <Compile Include="Events\ListEventMgr.cs" />
+    <Compile Include="Events\ListItemEventReceiver.cs" />
     <Compile Include="public\AppBase.cs" />
     <Compile Include="Attributes\ListAttribute.cs" />
     <Compile Include="Attributes\NotMappedAttribute.cs" />

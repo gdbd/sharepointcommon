@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
@@ -10,6 +11,7 @@ using Microsoft.SharePoint;
 using SharepointCommon.Attributes;
 using SharepointCommon.Common;
 using SharepointCommon.Entities;
+using SharepointCommon.Events;
 using SharepointCommon.Expressions;
 
 namespace SharepointCommon
@@ -22,6 +24,8 @@ namespace SharepointCommon
         /// </summary>
         public ListBase()
         {
+            var type = GetType();
+            ListEventMgr.RegisterEventReceivers(type);
         }
 
         internal ListBase(SPList list, IQueryWeb parentWeb)
@@ -497,6 +501,13 @@ namespace SharepointCommon
 
             List.ContentTypes.Delete(contentType.Id);
         }
+
+        protected virtual void ItemAdding(T addingItem) { }
+        protected virtual void ItemAdded(T addedItem) { }
+        protected virtual void ItemUpdating(T updatingItem) { }
+        protected virtual void ItemUpdated(T updatedItem) { }
+        protected virtual void ItemDeleting(T deletingItem) { }
+        protected virtual void ItemDeleted(int deletedItemId) { }
 
         private static SPListItemCollection ByCaml(SPList list, string camlString, params string[] viewFields)
         {

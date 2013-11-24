@@ -78,9 +78,9 @@ namespace SharepointCommon.Interception
             {
                 list = Activator.CreateInstance(listType,
                     BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { splist, _queryWeb }, null);
-                _listsCache[cacheKey] = list;
             }
-            
+
+            _listsCache[cacheKey] = list;
             return list;
         }
 
