@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
-using System.Xml;
 using System.Xml.Linq;
 using Microsoft.SharePoint;
 using SharepointCommon.Attributes;
 using SharepointCommon.Common;
 using SharepointCommon.Entities;
-using SharepointCommon.Events;
 using SharepointCommon.Expressions;
 
 namespace SharepointCommon
@@ -22,11 +19,7 @@ namespace SharepointCommon
         /// <summary>
         /// do not use this constructor in code, it is only for create derived types
         /// </summary>
-        public ListBase()
-        {
-            var type = GetType();
-            ListEventMgr.RegisterEventReceivers(type);
-        }
+        public ListBase() { }
 
         internal ListBase(SPList list, IQueryWeb parentWeb)
         {
@@ -128,6 +121,9 @@ namespace SharepointCommon
                 }
             }
         }
+
+        public virtual event Action<Item> ItemAddedEvent;
+
         public virtual string Url { get { return ParentWeb.Web.Url + "/" + List.RootFolder.Url; } }
         public virtual string RelativeUrl { get { return List.RootFolder.Url; } }
 

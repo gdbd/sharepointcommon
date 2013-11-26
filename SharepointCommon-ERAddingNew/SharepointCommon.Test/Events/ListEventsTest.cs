@@ -1,6 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 using SharepointCommon.Test.Application;
+using SharepointCommon.Test.Entity;
 using SharepointCommon.Test.Repository;
 
 namespace SharepointCommon.Test.Events
@@ -20,7 +21,10 @@ namespace SharepointCommon.Test.Events
                     list = app.Ensure(a => a.CustomItems);
 
                     var testRep = app.CustomItems;
-                    var testRep2 = app.CustomItems;
+                   
+                    testRep.Add(new OneMoreField<string>{ Title = "Test add event", });
+
+                    Assert.True(testRep.Called);
                 }
                 finally
                 {

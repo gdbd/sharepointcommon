@@ -6,6 +6,7 @@ using Microsoft.SharePoint;
 using Microsoft.SharePoint.Utilities;
 using SharepointCommon.Attributes;
 using SharepointCommon.Common;
+using SharepointCommon.Events;
 
 namespace SharepointCommon.Interception
 {
@@ -73,12 +74,15 @@ namespace SharepointCommon.Interception
                 var webProp = listType.GetProperty("ParentWeb");
                 listProp.SetValue(list, splist, null);
                 webProp.SetValue(list, _queryWeb, null);
+
+                ListEventMgr.RegisterEventReceivers(listType, splist);
             }
             else
             {
                 list = Activator.CreateInstance(listType,
                     BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { splist, _queryWeb }, null);
             }
+           
 
             _listsCache[cacheKey] = list;
             return list;
