@@ -1466,6 +1466,36 @@ namespace SharepointCommon.Test
             }
         }
 
+        [Test]
+        public void Get_Deleted_Lookup_Value_Returns_Null_Test()
+        {
+            IQueryList<LookupWithShowField> list = null;
+            try
+            {
+                var lookupItemBeenDeleted = new Item { Title = "aaa" };
+                _listForLookup.Add(lookupItemBeenDeleted);
+
+                list = _queryWeb.Create<LookupWithShowField>("Get_Deleted_Lookup_Value_Returns_Null_Test");
+
+                var item = new LookupWithShowField { CustomLookup = lookupItemBeenDeleted, };
+                list.Add(item);
+
+                _listForLookup.Delete(lookupItemBeenDeleted, false);
+
+                item = list.ById(item.Id);
+
+                Assert.DoesNotThrow(() => { var cl = item.CustomLookup.Title; });
+                Assert.Null(item.CustomLookup);
+            }
+            finally
+            {
+                if (list != null)
+                {
+                    list.DeleteList(false);
+                }
+            }
+        }
+
         #endregion
 
         #region Fields Tests
