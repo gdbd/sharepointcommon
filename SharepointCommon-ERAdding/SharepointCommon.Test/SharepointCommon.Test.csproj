@@ -105,7 +105,7 @@
     <Compile Include="ExtentionsTests.cs" />
     <Compile Include="Events\ListEventsTest.cs" />
     <Compile Include="MoqLibraryTests.cs" />
-    <Compile Include="Events\ListEventReceiver.cs" />
+    <Compile Include="Events\TestListEventReceiver.cs" />
     <Compile Include="Repository\TestRepository.cs" />
     <Compile Include="Application\TestApp.cs" />
     <Compile Include="Settings.cs" />

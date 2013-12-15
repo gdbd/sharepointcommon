@@ -1,19 +1,19 @@
 ﻿using SharepointCommon.Attributes;
-using SharepointCommon.Events;
+using SharepointCommon.Test.Entity;
 
 namespace SharepointCommon.Test.Events
 {
-    public class ListEventReceiver : ListEventHandler
+    public class TestListEventReceiver : ListEventReceiver<OneMoreField<string>>
     {
         public static bool IsCalled { get; set; }
 
         [Sequence(10000), Async]
-        public override void ItemAdded(Item addedItem)
+        protected override void ItemAdded(OneMoreField<string> addedItem)
         {
             IsCalled = true;
         }
 
-        public override void ItemDeleted(Item deletedItem)
+        protected override void ItemDeleted(int deletedItem)
         {
             IsCalled = true;
         }

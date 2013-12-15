@@ -10,6 +10,7 @@ using Microsoft.SharePoint;
 using SharepointCommon.Attributes;
 using SharepointCommon.Common;
 using SharepointCommon.Entities;
+using SharepointCommon.Events;
 using SharepointCommon.Expressions;
 using SharepointCommon.Impl;
 
@@ -29,7 +30,6 @@ namespace SharepointCommon
         {
             List = list;
             ParentWeb = parentWeb;
-            Events = new QueryListEvent(list);
         }
 
         public IQueryWeb ParentWeb { get; internal set; }
@@ -129,7 +129,15 @@ namespace SharepointCommon
         public virtual string Url { get { return ParentWeb.Web.Url + "/" + List.RootFolder.Url; } }
         public virtual string RelativeUrl { get { return List.RootFolder.Url; } }
 
-        public Events.IQueryListEvent Events { get; private set; }
+        public void AddEventReciver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>
+        {
+            ListEventMgr.RegisterEventReceivers<TEventReceiver>(List);
+        }
+
+        public void RemoveEventReciver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>
+        {
+            
+        }
 
         public virtual string FormUrl(PageType pageType, int id = 0, bool isDlg = false)
         {
