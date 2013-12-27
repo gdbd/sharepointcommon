@@ -96,8 +96,13 @@
     <Compile Include="Application\TestAppNoVirtualProperty.cs" />
     <Compile Include="CamlQueryTests.cs" />
     <Compile Include="CastleTests.cs" />
+    <Compile Include="CustomFields\Contract.cs" />
+    <Compile Include="CustomFields\CustomMultiLookupProvider.cs" />
+    <Compile Include="CustomFields\CustomLookupProvider.cs" />
+    <Compile Include="CustomFields\CustomLookupProviderBad.cs" />
     <Compile Include="DocumentTests.cs" />
     <Compile Include="Entity\ItemWithNoMappedProperty.cs" />
+    <Compile Include="Entity\CascadeLookup.cs" />
     <Compile Include="Entity\LookupWithShowField.cs" />
     <Compile Include="Entity\NullableItem.cs" />
     <Compile Include="Entity\CustomDocument.cs" />
@@ -108,6 +113,8 @@
     <Compile Include="Repository\TestRepository.cs" />
     <Compile Include="Application\TestApp.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="CustomFields\CustomFieldTests.cs" />
+    <Compile Include="TestListScope.cs" />
     <Compile Include="WebFactoryTests.cs" />
     <Compile Include="AssertTests.cs" />
     <Compile Include="Entity\CustomItem.cs" />

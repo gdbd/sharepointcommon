@@ -90,7 +90,7 @@ namespace SharepointCommon.Impl
 
         public IQueryList<T> GetByUrl<T>(string listUrl) where T : Item, new()
         {
-            var list = Web.GetList(Combine(Web.ServerRelativeUrl, listUrl));
+            var list = Web.GetList(CommonHelper.CombineUrls(Web.ServerRelativeUrl, listUrl));
             return new ListBase<T>(list, this);
         }
 
@@ -157,7 +157,7 @@ namespace SharepointCommon.Impl
         {
             try
             {
-                var list = Web.GetList(Combine(Web.ServerRelativeUrl, listUrl));
+                var list = Web.GetList(CommonHelper.CombineUrls(Web.ServerRelativeUrl, listUrl));
                 return list != null;
             }
             catch (System.IO.FileNotFoundException)
@@ -216,7 +216,7 @@ namespace SharepointCommon.Impl
         
         internal object GetByUrl(Type entityType, string listUrl)
         {
-            var list = Web.GetList(Combine(Web.ServerRelativeUrl, listUrl));
+            var list = Web.GetList(CommonHelper.CombineUrls(Web.ServerRelativeUrl, listUrl));
 
             var type = typeof(ListBase<>);
             var typeGeneric = type.MakeGenericType(entityType);
@@ -238,14 +238,6 @@ namespace SharepointCommon.Impl
             }
 
             throw new SharepointCommonException("Cant determine actual list type. Do you inherited item from 'Item' or 'Document'?");
-        }
-
-        private string Combine(string left, string right)
-        {
-            if (SPUrlUtility.IsUrlFull(right)) return right;
-
-            if (right.StartsWith(left)) return right;
-            return SPUrlUtility.CombineUrl(left, right);
         }
     }
 }

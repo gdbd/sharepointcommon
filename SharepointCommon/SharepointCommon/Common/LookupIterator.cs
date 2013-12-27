@@ -7,14 +7,13 @@
 
     using Microsoft.SharePoint;
 
-    internal sealed class LookupIterator<T> : IEnumerable<T>
-        where T : Item, new()
+    internal sealed class LookupIterator<T> : IEnumerable<T> where T : Item, new()
     {
-        private readonly SPFieldLookup _fieldLookup;
+        private readonly SPField _fieldLookup;
 
         private readonly SPListItem _listItem;
 
-        public LookupIterator(SPFieldLookup fieldLookup, SPListItem listItem)
+        public LookupIterator(SPField fieldLookup, SPListItem listItem)
         {
             _fieldLookup = fieldLookup;
             _listItem = listItem;
@@ -22,13 +21,13 @@
 
         public IEnumerator<T> GetEnumerator()
         {
-            var spItemsIter = this.GetLookupItems();
-            return spItemsIter.Select(this.Convert).GetEnumerator();
+            var spItemsIter = GetLookupItems();
+            return spItemsIter.Select(Convert).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         private T Convert(SPListItem item)
@@ -38,26 +37,35 @@
 
         private IEnumerable<SPListItem> GetLookupItems()
         {
-            // Reload item, because it may been changed before lazy load requested
-
-            using (var wf = WebFactory.Open(_listItem.Web.Url))
+            if (_fieldLookup.Type == SPFieldType.Lookup)
             {
-                var list = wf.Web.Lists[_listItem.ParentList.ID];
-                var item = list.GetItemById(_listItem.ID);
+                var spfl = (SPFieldLookup)_fieldLookup;
 
-                var lkplist = wf.Web.Lists[new Guid(_fieldLookup.LookupList)];
-                var lkpValues =
-                    new SPFieldLookupValueCollection(
-                        item[_fieldLookup.InternalName] != null
-                            ? item[_fieldLookup.InternalName].ToString()
-                            : string.Empty);
+                // Reload item, because it may been changed before lazy load requested
 
-                foreach (var lkpValue in lkpValues)
+                using (var wf = WebFactory.Open(_listItem.Web.Url))
                 {
-                    if (lkpValue.LookupId == 0) yield return null;
+                    var list = wf.Web.Lists[_listItem.ParentList.ID];
+                    var item = list.GetItemById(_listItem.ID);
 
-                    yield return lkplist.GetItemById(lkpValue.LookupId);
+                    var lkplist = wf.Web.Lists[new Guid(spfl.LookupList)];
+                    var lkpValues =
+                        new SPFieldLookupValueCollection(
+                            item[spfl.InternalName] != null
+                                ? item[spfl.InternalName].ToString()
+                                : string.Empty);
+
+                    foreach (var lkpValue in lkpValues)
+                    {
+                        if (lkpValue.LookupId == 0) yield return null;
+
+                        yield return lkplist.GetItemById(lkpValue.LookupId);
+                    }
                 }
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
     }
