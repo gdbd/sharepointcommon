@@ -939,6 +939,33 @@ namespace SharepointCommon.Test
         #region Get Items Tests
 
         [Test]
+        public void Cascade_Lookup_Test()
+        {
+            using (var tls = new TestListScope<CascadeLookup>("Cascade_Lookup_Test"))
+            {
+                var list = tls.List;
+
+                var i1 = new CascadeLookup { Title = "1", };
+                list.Add(i1);
+
+                var i2 = new CascadeLookup { Title = "2", Parent = new CascadeLookup { Id = i1.Id } };
+                list.Add(i2);
+
+                var i3 = new CascadeLookup { Title = "3", Parent = new CascadeLookup { Id = i2.Id } };
+                list.Add(i3);
+
+                var ii3 = list.ById(i3.Id);
+                var ii2 = ii3.Parent;
+                var ii1 = ii3.Parent.Parent;
+
+                Assert.That(i1.Guid, Is.EqualTo(ii1.Guid));
+                Assert.That(i2.Guid, Is.EqualTo(ii2.Guid));
+                Assert.That(i3.Guid, Is.EqualTo(ii3.Guid));
+            }
+        }
+
+
+        [Test]
         public void Items_Returns_Items_By_CamlQuery_Test()
         {
             var item = new Item { Title = "Items_Returns_Items_By_CamlQuery_Test" };
@@ -1484,7 +1511,7 @@ namespace SharepointCommon.Test
 
                 item = list.ById(item.Id);
 
-                Assert.DoesNotThrow(() => { var cl = item.CustomLookup.Title; });
+                Assert.DoesNotThrow(() => { var cl = item.CustomLookup; });
                 Assert.Null(item.CustomLookup);
             }
             finally
