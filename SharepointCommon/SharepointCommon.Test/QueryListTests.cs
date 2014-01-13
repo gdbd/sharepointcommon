@@ -911,6 +911,24 @@ namespace SharepointCommon.Test
 
             CollectionAssert.IsEmpty(items);
         }
+
+        [Test]
+        public void Delete_With_Disable_Recucle_Test()
+        {
+            _queryWeb.Web.Site.WebApplication.RecycleBinEnabled = false;
+            _queryWeb.Web.Site.WebApplication.Update();
+
+            _list.Add(new Item { Title = "Delete_With_Disable_Recucle_Test" });
+            var item =
+                _list.Items(
+                    new CamlQuery().Query(Q.Where(Q.Eq(Q.FieldRef("Title"), Q.Value("Delete_With_Disable_Recucle_Test"))))).FirstOrDefault();
+
+            _list.Delete(item, true);
+
+            _queryWeb.Web.Site.WebApplication.RecycleBinEnabled = true;
+            _queryWeb.Web.Site.WebApplication.Update();
+        }
+
         [Test]
         public void Delete_By_Id_Deletes_Item_Test()
         {

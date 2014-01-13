@@ -269,7 +269,13 @@ namespace SharepointCommon
             if (entity == null)
                 throw new SharepointCommonException(string.Format("cant found item with ID={0} in List={1}", entity.Id, List.Title));
 
-            if (recycle) forDelete.Recycle();
+            if (recycle)
+            {
+                if (List.ParentWeb.RecycleBinEnabled)
+                    forDelete.Recycle();
+                else
+                    forDelete.Delete();
+            }
             else forDelete.Delete();
         }
 
