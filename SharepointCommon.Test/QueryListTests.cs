@@ -1384,7 +1384,9 @@ namespace SharepointCommon.Test
 
             items = _list.ByField(i => i.Author, new User(@"andproject\sharepoint"));
             CollectionAssert.IsEmpty(items);
-            
+
+            var list = _queryWeb.GetByName<CustomItem>("Add_AddsCustomItem");
+            var customItems = list.ByField(i => i.CustomLookup, new Item {Id = 1});
         }
 
         #endregion
