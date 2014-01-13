@@ -324,7 +324,7 @@ namespace SharepointCommon
 
             return EntityMapper.ToEntity<TCt>(itemByGuid);
         }
-
+        
         public virtual IEnumerable<T> ByField<TR>(Expression<Func<T, TR>> selector, TR value)
         {
             var memberAccessor = new MemberAccessVisitor();
@@ -334,9 +334,41 @@ namespace SharepointCommon
             if (fieldInfo == null) throw new SharepointCommonException(string.Format("Field '{0}' not exist in '{1}'", fieldName, List.Title));
 
             string fieldType = fieldInfo.Type.ToString();
-            string fieldValue = value.ToString();
-#pragma warning disable 612,618
-            var camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName), Q.Value(fieldType, fieldValue)));
+            var fieldValue = string.Empty;
+            var camlByField = string.Empty;
+            if (value is User)
+            {
+                var user = value as User;
+                SPFieldUserValue userFieldValue = null;
+                if (user.Id == 0)
+                {
+                    SPUser spUser = null;
+                    try
+                    {
+                        spUser = List.ParentWeb.SiteUsers[user.Name];
+                    }
+                    catch (SPException)
+                    {
+                        throw new SharepointCommonException(string.Format("User {0} not found.", user.Name));
+                    }
+                    userFieldValue = new SPFieldUserValue(List.ParentWeb,spUser.ID,spUser.LoginName);
+                }
+                else
+                {
+                    userFieldValue = new SPFieldUserValue(List.ParentWeb, user.Id, user.Name);
+                }
+                #pragma warning disable 612,618
+                camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName, true), Q.Value(fieldType, userFieldValue.LookupId.ToString())));
+            }
+            else
+            {
+                fieldValue = value.ToString();
+                #pragma warning disable 612,618
+                camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName), Q.Value(fieldType, fieldValue)));
+            }
+            
+
+            
 #pragma warning restore 612,618
             var itemsByField = ByCaml(List, camlByField);
             return EntityMapper.ToEntities<T>(itemsByField);
