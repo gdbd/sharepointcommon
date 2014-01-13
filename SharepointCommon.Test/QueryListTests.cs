@@ -1204,7 +1204,7 @@ namespace SharepointCommon.Test
         [Test]
         public void ById_Returns_Entity_Test()
         {
-            var item = new Item { Title = "ById_Returns_Entity_Test" };
+            var item = new Item { Title = "ById_Returns_Entity_Test"};
             _list.Add(item);
             Assert.That(item.Id, Is.Not.EqualTo(0));
 
@@ -1378,6 +1378,13 @@ namespace SharepointCommon.Test
 
             CollectionAssert.IsNotEmpty(items);
             Assert.That(items.Count(), Is.EqualTo(2));
+
+            items = _list.ByField(i => i.Author, new User(@"sharepoint\system"));
+            CollectionAssert.IsNotEmpty(items);
+
+            items = _list.ByField(i => i.Author, new User(@"andproject\sharepoint"));
+            CollectionAssert.IsEmpty(items);
+            
         }
 
         #endregion
