@@ -23,11 +23,11 @@ namespace SharepointCommon.Test
         private SPUser _secondUser;
         private SPUser _domainGroup;
         private SPGroup _spGroup;
-        
+
         private IQueryList<Item> _list;
         private IQueryList<Item> _listForLookup;
         private IQueryWeb _queryWeb;
-        
+
         [TestFixtureSetUp]
         public void Start()
         {
@@ -80,10 +80,11 @@ namespace SharepointCommon.Test
         }
 
         #region  Add Item Tests
+
         [Test]
         public void Add_Adds_Item_Test()
         {
-            var item = new Item { Title = "Add_AddsItemTest" };
+            var item = new Item {Title = "Add_AddsItemTest"};
             _list.Add(item);
             Assert.That(item.Id, Is.Not.EqualTo(0));
 
@@ -102,33 +103,35 @@ namespace SharepointCommon.Test
             IQueryList<CustomItem> list = null;
             try
             {
-                var lookupItem = new Item { Title = "Add_Adds_CustomItem_Test_Lookup" };
+                var lookupItem = new Item {Title = "Add_Adds_CustomItem_Test_Lookup"};
                 _listForLookup.Add(lookupItem);
 
-                var lookupItem2 = new Item { Title = "Add_Adds_CustomItem_Test_Lookup_2" };
+                var lookupItem2 = new Item {Title = "Add_Adds_CustomItem_Test_Lookup_2"};
                 _listForLookup.Add(lookupItem2);
 
-                list = _queryWeb.Create<CustomItem>("Add_AddsCustomItem");
-                var customItem = new CustomItem
-                    {
-                        Title = "Items_ReturnsColectionOfCustomItemsTest",
-                        CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
-                        CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
-                        CustomFieldNumber = 123.5,
-                        CustomBoolean = true,
-                        CustomUser = new Person(_firstUser.LoginName),
-                        CustomUsers = new List<User> { new Person(_firstUser.LoginName), new User(_spGroup.Name) },
-                        CustomLookup = lookupItem,
-                        CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
-                        CustomDate = DateTime.Now,
-                        CustomChoice = TheChoice.Choice2,
-                        Тыдыщ = "тест",
-                    };
-                list.Add(customItem);
+                list = CreateCustomList();
 
+                var customItem = new CustomItem
+                {
+                    Title = "Items_ReturnsColectionOfCustomItemsTest",
+                    CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
+                    CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
+                    CustomFieldNumber = 123.5,
+                    CustomBoolean = true,
+                    CustomUser = new Person(_firstUser.LoginName),
+                    CustomUsers = new List<User> { new Person(_firstUser.LoginName), new User(_spGroup.Name) },
+                    CustomLookup = lookupItem,
+                    CustomMultiLookup = new List<Item> {lookupItem, lookupItem2},
+                    CustomDate = DateTime.Now,
+                    CustomChoice = TheChoice.Choice2,
+                    Тыдыщ = "тест",
+                };
+                list.Add(customItem);
                 var item = list.Items(new CamlQuery()
-                .Query(Q.Where(Q.Eq(Q.FieldRef<CustomItem>(i => i.Title), Q.Value("Items_ReturnsColectionOfCustomItemsTest")))))
-                .FirstOrDefault();
+                    .Query(
+                        Q.Where(Q.Eq(Q.FieldRef<CustomItem>(i => i.Title),
+                            Q.Value("Items_ReturnsColectionOfCustomItemsTest")))))
+                    .FirstOrDefault();
 
                 Assert.IsNotNull(item);
                 Assert.That(item.Id, Is.EqualTo(customItem.Id));
@@ -165,7 +168,12 @@ namespace SharepointCommon.Test
             }
         }
 
-        [Test]
+        private IQueryList<CustomItem> CreateCustomList()
+        {
+            return !_queryWeb.ExistsByName("Add_AddsCustomItem") ? _queryWeb.Create<CustomItem>("Add_AddsCustomItem") : _queryWeb.GetByName<CustomItem>("Add_AddsCustomItem");
+        }
+
+    [Test]
         public void Ensure_Lookup_Sets_ShowField_Test()
         {
             IQueryList<LookupWithShowField> list = null;
@@ -1831,6 +1839,14 @@ namespace SharepointCommon.Test
                     list.DeleteList(false);
                 }
             }
+        }
+
+        [Test]
+        public void Check_IsMultivalue_Test()
+        {
+            var list = _queryWeb.GetByName<CustomItem>("Add_AddsCustomItem");
+            var field = list.GetField(f => f.CustomUsers);
+            Assert.True(field.IsMultiValue);
         }
     }
 }
