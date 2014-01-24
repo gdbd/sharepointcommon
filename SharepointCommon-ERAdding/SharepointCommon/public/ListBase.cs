@@ -136,7 +136,7 @@ namespace SharepointCommon
 
         public void RemoveEventReciver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>
         {
-            
+            ListEventMgr.RemoveEventReceiver<TEventReceiver>(List);
         }
 
         public virtual string FormUrl(PageType pageType, int id = 0, bool isDlg = false)

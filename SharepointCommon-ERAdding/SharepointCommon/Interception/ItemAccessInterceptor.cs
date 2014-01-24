@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Castle.DynamicProxy;
 using Microsoft.SharePoint;
 using SharepointCommon.Common;
@@ -10,18 +11,20 @@ namespace SharepointCommon.Interception
     {
         private readonly SPListItem _listItem;
         private List<string> _changedFields;
-
+        
         public ItemAccessInterceptor(SPListItem listItem)
         {
             _listItem = listItem;
             _changedFields = new List<string>();
         }
-
+        
+        
         public void Intercept(IInvocation invocation)
         {
             if (invocation.Method.Name.StartsWith("set_"))
             {
-                _changedFields.Add(invocation.Method.Name.Substring(4));
+                var methodName = invocation.Method.Name.Substring(4);
+                _changedFields.Add(methodName);
                 invocation.Proceed();
                 return;
             }

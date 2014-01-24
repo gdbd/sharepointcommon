@@ -44,6 +44,43 @@ namespace SharepointCommon.Common
             return (T)entity;
         }
 
+        internal static T ToEntity<T>(SPListItem listItem, Hashtable properties)
+        {
+            var itemType = typeof(T);
+            var props = itemType.GetProperties();
+
+            foreach (var prop in props)
+            {
+                if (CommonHelper.IsPropertyNotMapped(prop)) continue;
+                Assert.IsPropertyVirtual(prop);
+            }
+
+            var entity = _proxyGenerator.CreateClassProxy(
+                itemType,
+                new ItemEventReceiverAccessInterceptor(listItem, properties));
+
+            return (T)entity;
+        }
+
+        internal static T ToEntity<T>(SPList list, Hashtable dict)
+        {
+            var itemType = typeof(T);
+            var props = itemType.GetProperties();
+
+            foreach (var prop in props)
+            {
+                if (CommonHelper.IsPropertyNotMapped(prop)) continue;
+                Assert.IsPropertyVirtual(prop);
+            }
+
+            var entity = _proxyGenerator.CreateClassProxy(
+                itemType,
+                
+                new ItemEventReceiverAccessInterceptor(list, dict));
+
+            return (T)entity;
+        }
+
         internal static object ToEntityField(PropertyInfo prop, SPListItem listItem)
         {
             string propName = prop.Name;
@@ -189,13 +226,144 @@ namespace SharepointCommon.Common
             return fieldValue;
         }
 
+        internal static object ToEntityField(PropertyInfo prop)
+        {
+            if (prop.PropertyType is ValueType)
+                return 0;
+            else 
+                return null;
+            //string propName = prop.Name;
+            //Type propType = prop.PropertyType;
+
+            //var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), true);
+
+            //string spPropName;
+            //if (fieldAttrs.Length != 0)
+            //{
+            //    spPropName = ((FieldAttribute)fieldAttrs[0]).Name;
+            //    if (spPropName == null) spPropName = propName;
+            //}
+            //else
+            //{
+            //    spPropName = FieldMapper.TranslateToFieldName(propName);
+            //}
+
+            //var field = list.Fields.TryGetFieldByStaticName(spPropName);
+            //if (field == null) throw new SharepointCommonException(string.Format("Field '{0}' not exist", propName));
+            //object fieldValue = null;
+
+            //if (field.Type == SPFieldType.User)
+            //{
+            //    return null;
+            //}
+
+            //if (field.Type == SPFieldType.Lookup)
+            //{
+            //    //var fieldLookup = (SPFieldLookup)field;
+
+            //    return null;
+            //}
+
+            //if (field.Type == SPFieldType.Guid)
+            //{
+            //    var guid = new Guid(fieldValue.ToString());
+            //    return guid;
+            //}
+
+            //if (field.Type == SPFieldType.Note)
+            //{
+            //    var field1 = (SPFieldMultiLineText)field;
+            //    if (fieldValue == null) return null;
+            //    var text = field1.GetFieldValueAsText(fieldValue);
+            //    return text;
+            //}
+
+            //if (propName == "Version")
+            //{
+            //    var version = new Version(fieldValue.ToString());
+            //    return version;
+            //}
+
+            //if (field.Type == SPFieldType.Number)
+            //{
+            //    if (propType == typeof(int))
+            //    {
+            //        int val = Convert.ToInt32(fieldValue);
+            //        return val;
+            //    }
+
+            //    if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
+            //    {
+            //        Type argumentType = propType.GetGenericArguments()[0];
+            //        if (argumentType == typeof(int))
+            //        {
+            //            return fieldValue == null ? (int?)null : Convert.ToInt32(fieldValue);
+            //        }
+            //    }
+            //}
+
+            //if (field.Type == SPFieldType.Currency)
+            //{
+            //    if (propType == typeof(decimal))
+            //    {
+            //        decimal val = Convert.ToDecimal(fieldValue);
+            //        return val;
+            //    }
+
+            //    if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
+            //    {
+            //        Type argumentType = propType.GetGenericArguments()[0];
+            //        if (argumentType == typeof(decimal))
+            //        {
+            //            return fieldValue == null ? (decimal?)null : Convert.ToDecimal(fieldValue);
+            //        }
+            //    }
+            //}
+
+            //if (field.Type == SPFieldType.Choice)
+            //{
+            //    if (propType.IsEnum == false)
+            //    {
+            //        if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
+            //        {
+            //            Type argumentType = propType.GetGenericArguments()[0];
+            //            if (argumentType.IsEnum == false) throw new SharepointCommonException(string.Format("Property '{0}' must be declared as enum with fields corresponds to choices", propName));
+            //            propType = argumentType;
+            //        }
+            //    }
+
+            //    return EnumMapper.ToEntity(propType, fieldValue);
+            //}
+
+            //return fieldValue;
+        }
+
         internal static object ToEntity(Type entityType, SPListItem listItem)
         {
+            
             var entityMapper = typeof(EntityMapper);
             var toEntity = entityMapper.GetMethod(
                 "ToEntity", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(SPListItem) }, null);
             var g = toEntity.MakeGenericMethod(entityType);
             return g.Invoke(null, new object[] { listItem });
+        }
+
+        internal static object ToEntity(Type entityType, Hashtable propertiesHashtable, SPList list)
+        {
+            var entityMapper = typeof(EntityMapper);
+            var toEntity = entityMapper.GetMethod(
+                "ToEntity", BindingFlags.Static | BindingFlags.NonPublic, null, new[] {typeof (SPList), typeof (Hashtable)}, null);
+            var g = toEntity.MakeGenericMethod(entityType);
+            return g.Invoke(null, new object[] {list, propertiesHashtable});
+        }
+
+        internal static object ToEntity(Type entityType, Hashtable properties, SPListItem listItem)
+        {
+            var entityMapper = typeof(EntityMapper);
+            var toEntity = entityMapper.GetMethod(
+                "ToEntity", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(SPListItem), typeof(Hashtable) }, null);
+            var g = toEntity.MakeGenericMethod(entityType);
+            return g.Invoke(null, new object[] { listItem, properties });
         }
 
         internal static void ToItem<T>(T entity, SPListItem listItem, List<string> propertiesToSet = null)

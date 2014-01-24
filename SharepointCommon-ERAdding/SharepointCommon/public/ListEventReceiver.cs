@@ -9,5 +9,7 @@ namespace SharepointCommon
         protected virtual void ItemUpdated(T updatedItem) { }
         protected virtual void ItemDeleting(T deletingItem) { }
         protected virtual void ItemDeleted(int deletedItemId) { }
+
+        public bool Cancel { get; protected set; }
     }
 }

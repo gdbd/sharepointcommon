@@ -29,29 +29,37 @@ namespace SharepointCommon.Events
             ProccessMethod(list, deleted, receiverType, SPEventReceiverType.ItemDeleted);
         }
 
-        private static void ProccessMethod(SPList list, MethodInfo method, Type handlerType, SPEventReceiverType eventType)
+        internal static void RemoveEventReceiver<TEventReceiver>(SPList list)
+        {
+            
+        }
+
+        private static void ProccessMethod(SPList list, MethodInfo method, Type handlerType,
+            SPEventReceiverType eventType)
         {
             if (IsMethodOverriden(method))
             {
-                var async = (AsyncAttribute)Attribute.GetCustomAttribute(method, typeof(AsyncAttribute));
-                var sequence = (SequenceAttribute)Attribute.GetCustomAttribute(method, typeof(SequenceAttribute));
-                
+                var async = (AsyncAttribute) Attribute.GetCustomAttribute(method, typeof (AsyncAttribute));
+                var sequence = (SequenceAttribute) Attribute.GetCustomAttribute(method, typeof (SequenceAttribute));
+                var synchronization = SPEventReceiverSynchronization.Default;
+                if (async != null && async.IsAsync)
+                    synchronization = SPEventReceiverSynchronization.Asynchronous;
+                else if (async != null && !async.IsAsync)
+                    synchronization = SPEventReceiverSynchronization.Synchronous;
+
                 // ReSharper disable once PossibleNullReferenceException
                 RegisterEventReceiver(handlerType.AssemblyQualifiedName,
-                    list, eventType, 
-                    async != null && async.IsAsync,
+                    list, eventType,
+                    synchronization,
                     sequence == null ? 10000 : sequence.Sequence);
             }
         }
 
-        private static void RegisterEventReceiver(string handlerClassName, SPList list, SPEventReceiverType type, bool async, int sequence)
+        private static void RegisterEventReceiver(string handlerClassName, SPList list, SPEventReceiverType type, SPEventReceiverSynchronization async, int sequence)
         {
             // save link repository<=>list by set eventreceiver name to Repository.Type.AssemblyQualifiedName
             // add SharepointCommon.Events.ListItemEventReceiver to SPList.EventReceivers
-            var synchronization = async
-                ? SPEventReceiverSynchronization.Asynchronous
-                : SPEventReceiverSynchronization.Default;
-
+           
             if (list.EventReceivers.Cast<SPEventReceiverDefinition>().Any(e =>
                 e.Assembly == Assembly.GetExecutingAssembly().FullName &&
                 e.Class == "SharepointCommon.Events.ListItemEventReceiver" &&
@@ -68,7 +76,7 @@ namespace SharepointCommon.Events
             er.Type = type;
             er.Data = handlerClassName;
             er.SequenceNumber = sequence;
-            er.Synchronization = synchronization;
+            er.Synchronization = async;
             er.Update();
         }
 

@@ -61,7 +61,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>SharepointCommon.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>temp.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
@@ -79,6 +79,7 @@
     <Compile Include="Common\InvariantCultureScope.cs" />
     <Compile Include="Events\EventReceiverProperties.cs" />
     <Compile Include="Events\ListEventMgr.cs" />
+    <Compile Include="Interception\ItemEventReceiverAccessInterceptor.cs" />
     <Compile Include="public\AppBase.cs" />
     <Compile Include="Attributes\ListAttribute.cs" />
     <Compile Include="Attributes\NotMappedAttribute.cs" />
@@ -338,6 +339,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Castle\DynamicProxy\DynProxy.snk" />
     <None Include="SharepointCommon.pfx" />
+    <None Include="temp.snk" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
