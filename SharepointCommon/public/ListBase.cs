@@ -341,52 +341,84 @@ namespace SharepointCommon
             if (fieldInfo == null) throw new SharepointCommonException(string.Format("Field '{0}' not exist in '{1}'", fieldName, List.Title));
 
             string fieldType = fieldInfo.Type.ToString();
-            var fieldValue = string.Empty;
+  
             var camlByField = string.Empty;
-            if (fieldInfo.Type == SPFieldType.User)
+            fieldName = fieldInfo.Name;
+
+#pragma warning disable 612,618
+            if (CommonHelper.IsNullOrDefault(value))
             {
-                var user = value as User;
-                if(user == null)
-                    throw new SharepointCommonException(string.Format("Field '{0}' doesn't contain a value", fieldName));
-                SPFieldUserValue userFieldValue = null;
-                if (user.Id == 0)
+                if (value is ValueType)
                 {
-                    SPUser spUser = null;
-                    try
-                    {
-                        spUser = List.ParentWeb.SiteUsers[user.Name];
-                    }
-                    catch (SPException)
-                    {
-                        throw new SharepointCommonException(string.Format("User {0} not found.", user.Name));
-                    }
-                    userFieldValue = new SPFieldUserValue(List.ParentWeb,spUser.ID,spUser.LoginName);
+                    camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName), Q.Value(default(TR).ToString())));
                 }
                 else
                 {
-                    userFieldValue = new SPFieldUserValue(List.ParentWeb, user.Id, user.Name);
+                    camlByField = Q.Where(Q.IsNull(Q.FieldRef(fieldName)));
                 }
-                #pragma warning disable 612,618
-                camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName, true), Q.Value(fieldType, userFieldValue.LookupId.ToString())));
+            }
+            else if (fieldInfo.Type == SPFieldType.User)
+            {
+                var user = value as User;
+                int userId;
+
+                if (user.Id != 0)
+                {
+                    userId = user.Id;
+                }
+                else
+                {
+                    var person = user as Person;
+                    if (person != null)
+                    {
+                        try
+                        {
+                            var spUser = ParentWeb.Web.SiteUsers[person.Login];
+                            userId = spUser.ID;
+                        }
+                        catch (SPException)
+                        {
+                            throw new SharepointCommonException(string.Format("Person {0} not found.", person.Login));
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            var group = ParentWeb.Web.SiteGroups[user.Name];
+                            userId = @group.ID;
+                        }
+                        catch (SPException)
+                        {
+                            throw new SharepointCommonException(string.Format("Group {0} not found.", user.Name));
+                        }
+                    }
+                }
+
+                camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName, true), Q.Value(fieldType, userId.ToString())));
             }
             else if (fieldInfo.Type == SPFieldType.Lookup)
             {
                 var item = value as Item;
-                if (item != null && item.Id != 0)
+
+                if (item.Id != 0)
+                {
                     camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName, true), Q.Value(fieldType, item.Id.ToString())));
+                }
+                else if (item.Title != null)
+                {
+                    camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName), Q.Value(fieldType, item.Title)));
+                }
                 else
-                    throw new SharepointCommonException(string.Format("Field '{0}' doesn't contain a value", fieldName));
+                {
+                    throw new SharepointCommonException("Both Id and Title are null in search value");
+                }
             }
             else
             {
-                fieldValue = value.ToString();
-                #pragma warning disable 612,618
-                camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName), Q.Value(fieldType, fieldValue)));
+                camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName), Q.Value(fieldType, value.ToString())));
             }
-
-
-
-            #pragma warning restore 612,618
+#pragma warning restore 612,618
             var itemsByField = ByCaml(List, camlByField);
             return EntityMapper.ToEntities<T>(itemsByField);
         }
