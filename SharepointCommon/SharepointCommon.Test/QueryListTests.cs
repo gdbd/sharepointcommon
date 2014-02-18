@@ -1,4 +1,6 @@
-﻿using SharepointCommon.Entities;
+﻿using System.Security.Principal;
+using Microsoft.SharePoint.Utilities;
+using SharepointCommon.Entities;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -1392,27 +1394,104 @@ namespace SharepointCommon.Test
         [Test]
         public void ByField_Returns_Entity_Test()
         {
-            var item1 = new Item { Title = "ByField_Returns_Entity_Test" };
-            var item2 = new Item { Title = "ByField_Returns_Entity_Test" };
-            _list.Add(item1);
-            _list.Add(item2);
+            using (var ts = new TestListScope<CustomItem>("ByField_Returns_Entity_Test"))
+            {
+                var entity = new Item();
+                var entity2 = new Item { Title = "ByField_Returns_Entity_Test_1", };
 
-            Assert.That(item1.Id, Is.Not.EqualTo(0));
-            Assert.That(item2.Id, Is.Not.EqualTo(0));
+                _listForLookup.Add(entity);
+                _listForLookup.Add(entity2);
 
-            var items = _list.ByField(i => i.Title, "ByField_Returns_Entity_Test");
+                var item1 = new CustomItem
+                {
+                    Title = "ByField_Returns_Entity_Test",
+                    CustomUser = new Person(WindowsIdentity.GetCurrent().Name),
+                    CustomLookup = entity,
+                };
+                var item2 = new CustomItem
+                {
+                    Title = "ByField_Returns_Entity_Test_2",
+                    CustomUser = new Person(_domainGroup.Name),
+                    CustomLookup = entity2,
+                };
 
-            CollectionAssert.IsNotEmpty(items);
-            Assert.That(items.Count(), Is.EqualTo(2));
+                var item3 = new CustomItem
+                {
+                    Title = "ByField_Returns_Entity_Test_3",
+                    CustomUser = new User(_spGroup.Name),
+                };
 
-            items = _list.ByField(i => i.Author, new User(@"sharepoint\system"));
-            CollectionAssert.IsNotEmpty(items);
+                var item4 = new CustomItem { CustomFieldNumber = 1565, };
 
-            items = _list.ByField(i => i.Author, new User(@"andproject\sharepoint"));
-            CollectionAssert.IsEmpty(items);
+                ts.List.Add(item1);
+                ts.List.Add(item2);
+                ts.List.Add(item3);
+                ts.List.Add(item4);
 
-            var list = _queryWeb.GetByName<CustomItem>("Add_AddsCustomItem");
-            var customItems = list.ByField(i => i.CustomLookup, new Item {Id = 1});
+                Assert.That(item1.Id, Is.Not.EqualTo(0));
+                Assert.That(item2.Id, Is.Not.EqualTo(0));
+                Assert.That(item3.Id, Is.Not.EqualTo(0));
+
+                var items = ts.List.ByField(i => i.Title, "ByField_Returns_Entity_Test").ToList();
+                CollectionAssert.IsNotEmpty(items);
+                Assert.That(items.Count(), Is.EqualTo(1));
+                Assert.That(items.First().Id, Is.EqualTo(item1.Id));
+
+                // get item by user field with domain user
+                items = ts.List.ByField(i => i.CustomUser, new Person(((Person) item1.CustomUser).Login)).ToList();
+                CollectionAssert.IsNotEmpty(items);
+                Assert.That(items.Count(), Is.EqualTo(1));
+                Assert.That(items.First().Id, Is.EqualTo(item1.Id));
+
+                // get item by user field with domain group
+                items = ts.List.ByField(i => i.CustomUser, new Person(((Person)item2.CustomUser).Login)).ToList();
+                CollectionAssert.IsNotEmpty(items);
+                Assert.That(items.Count(), Is.EqualTo(1));
+                Assert.That(items.First().Id, Is.EqualTo(item2.Id));
+
+                // get item by user field with sharepoint group
+                items = ts.List.ByField(i => i.CustomUser, new User(item3.CustomUser.Name)).ToList();
+                CollectionAssert.IsNotEmpty(items);
+                Assert.That(items.Count(), Is.EqualTo(1));
+                Assert.That(items.First().Id, Is.EqualTo(item3.Id));
+
+                // get item by lookup field with item.ID
+                items = ts.List.ByField(i => i.CustomLookup, new Item { Id = entity.Id, }).ToList();
+                CollectionAssert.IsNotEmpty(items);
+                Assert.That(items.Count(), Is.EqualTo(1));
+                Assert.That(items.First().Id, Is.EqualTo(item1.Id));
+
+                // get item by lookup field with item.Title
+                items = ts.List.ByField(i => i.CustomLookup, new Item { Title = entity2.Title, }).ToList();
+                CollectionAssert.IsNotEmpty(items);
+                Assert.That(items.Count(), Is.EqualTo(1));
+                Assert.That(items.First().Id, Is.EqualTo(item2.Id));
+
+                // get item by lookup field with empty item
+                Assert.Throws<SharepointCommonException>(() =>
+                    items = ts.List.ByField(i => i.CustomLookup, new Item {}).ToList());
+
+                items = ts.List.ByField(i => i.Title, null).ToList();
+                CollectionAssert.IsNotEmpty(items);
+                Assert.That(items.Count(), Is.EqualTo(1));
+                Assert.That(items.First().Id, Is.EqualTo(item4.Id));
+
+                items = ts.List.ByField(i => i.CustomFieldNumber, default(double)).ToList();
+                CollectionAssert.IsNotEmpty(items);
+                Assert.That(items.Count(), Is.EqualTo(3));
+
+
+                items = ts.List.ByField(i => i.CustomUser, null).ToList();
+                CollectionAssert.IsNotEmpty(items);
+                Assert.That(items.Count(), Is.EqualTo(1));
+                Assert.That(items.First().Id, Is.EqualTo(item4.Id));
+
+                items = ts.List.ByField(i => i.CustomLookup, null).ToList();
+                CollectionAssert.IsNotEmpty(items);
+                Assert.That(items.Count(), Is.EqualTo(3));
+                Assert.That(items.First().Id, Is.EqualTo(item1.Id));
+                Assert.That(items.Last().Id, Is.EqualTo(item4.Id));
+            }
         }
 
         #endregion
@@ -1425,7 +1504,7 @@ namespace SharepointCommon.Test
             string dispUrl = _list.FormUrl(PageType.Display, 2);
             string editUrl = _list.FormUrl(PageType.Edit, 3);
 
-            var listsPath = System.IO.Path.Combine(_list.ParentWeb.Web.ServerRelativeUrl, "lists");
+            var listsPath = SPUtility.ConcatUrls(_list.ParentWeb.Web.ServerRelativeUrl, "lists");
 
             Assert.That(newUrl.ToLower(),
                 Is.EqualTo(string.Format("{1}/{0}/NewForm.aspx", ListName1, listsPath).ToLower()));
@@ -1844,9 +1923,12 @@ namespace SharepointCommon.Test
         [Test]
         public void Check_IsMultivalue_Test()
         {
-            var list = _queryWeb.GetByName<CustomItem>("Add_AddsCustomItem");
-            var field = list.GetField(f => f.CustomUsers);
-            Assert.True(field.IsMultiValue);
+            using (var ts = new TestListScope<CustomItem>("Check_IsMultivalue_Test"))
+            {
+                var list = ts.List;
+                var field = list.GetField(f => f.CustomUsers);
+                Assert.True(field.IsMultiValue);
+            }
         }
     }
 }

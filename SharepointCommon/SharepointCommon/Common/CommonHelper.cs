@@ -138,5 +138,26 @@ namespace SharepointCommon.Common
             if (right.StartsWith(left)) return right;
             return SPUrlUtility.CombineUrl(left, right);
         }
+
+        internal static bool IsNullOrDefault<T>(T argument)
+        {
+            // deal with normal scenarios
+            if (argument == null) return true;
+            if (Equals(argument, default(T))) return true;
+
+            // deal with non-null nullables
+            var methodType = typeof(T);
+            if (Nullable.GetUnderlyingType(methodType) != null) return false;
+
+            // deal with boxed value types
+            var argumentType = argument.GetType();
+            if (argumentType.IsValueType && argumentType != methodType)
+            {
+                object obj = Activator.CreateInstance(argument.GetType());
+                return obj.Equals(argument);
+            }
+
+            return false;
+        }
     }
 }
