@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.SharePoint.Utilities;
 using SharepointCommon.Attributes;
 using SharepointCommon.Expressions;
 using SharepointCommon.Impl;
@@ -26,11 +27,45 @@ namespace SharepointCommon.Common
             return fieldValue.User;
         }
 
+        internal static SPUser GetUser(SPList list, string fieldStaticName, object value)
+        {
+            var userField = (SPFieldUser)list.Fields.TryGetFieldByStaticName(fieldStaticName);
+            if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
+
+            var fieldValue = (SPFieldUserValue)userField.GetFieldValue((string)value);
+
+            if (fieldValue == null) return null;
+
+            return fieldValue.User;
+        }
+
+        internal static SPFieldUserValueCollection GetUsers(SPList list, string fieldStaticName, object value)
+        {
+            var userField = (SPFieldUser)list.Fields.TryGetFieldByStaticName(fieldStaticName);
+            if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
+            var ids = ((string) value).Split(new[] {";#"}, StringSplitOptions.RemoveEmptyEntries);
+            var users = new SPFieldUserValueCollection();
+            foreach (var id in ids)
+            {
+                try
+                {
+                    var user = list.ParentWeb.AllUsers.GetByID(int.Parse(id));
+                    users.Add(new SPFieldUserValue(list.ParentWeb, user.ID, user.LoginName));
+                }
+                catch (SPException)
+                {
+                    var group = list.ParentWeb.Groups.GetByID(int.Parse(id));
+                    users.Add(new SPFieldUserValue(list.ParentWeb, group.ID, group.Name));
+                }
+            }
+            return users;
+        }
+
         internal static SPFieldUserValueCollection GetUsers(SPListItem item, string fieldStaticName)
         {
             var userField = (SPFieldUser)item.Fields.TryGetFieldByStaticName(fieldStaticName);
             if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
-            
+
             return (SPFieldUserValueCollection)item[fieldStaticName];
         }
 

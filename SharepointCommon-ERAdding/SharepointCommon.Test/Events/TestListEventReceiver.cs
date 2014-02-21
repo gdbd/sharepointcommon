@@ -38,9 +38,9 @@ namespace SharepointCommon.Test.Events
             updatedItem.ParentList.Update(updatedItem, false, u => u.Title);
         }
 
-        protected override void ItemUpdating(OneMoreField<string> updatingItem)
+        protected override void ItemUpdating(OneMoreField<string> updatingItem, OneMoreField<string> changedItem)
         {
-            base.ItemUpdating(updatingItem);
+            base.ItemUpdating(updatingItem, changedItem);
             var s = updatingItem.Title;
             updatingItem.AdditionalField = "ItemUpdating";
         }

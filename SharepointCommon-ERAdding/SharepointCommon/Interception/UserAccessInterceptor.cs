@@ -13,9 +13,10 @@ namespace SharepointCommon.Interception
             _user = user;
         }
 
-        public UserAccessInterceptor(SPFieldLookupValue userValue)
+        public UserAccessInterceptor(SPFieldUserValue userValue)
         {
             _userValue = userValue;
+            _user = userValue.User;
         }
 
         public void Intercept(IInvocation invocation)
