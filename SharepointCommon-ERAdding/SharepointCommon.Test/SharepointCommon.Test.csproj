@@ -102,6 +102,8 @@
     <Compile Include="Entity\CustomDocument.cs" />
     <Compile Include="Entity\OneMoreField.cs" />
     <Compile Include="Entity\TheChoice.cs" />
+    <Compile Include="Events\AddRemoveTestEventReceiver.cs" />
+    <Compile Include="Events\EventTestItem.cs" />
     <Compile Include="Events\TestListItemEventReceiver.cs" />
     <Compile Include="ExtentionsTests.cs" />
     <Compile Include="Events\ListEventsTest.cs" />
@@ -110,6 +112,7 @@
     <Compile Include="Repository\TestRepository.cs" />
     <Compile Include="Application\TestApp.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="TestListScope.cs" />
     <Compile Include="WebFactoryTests.cs" />
     <Compile Include="AssertTests.cs" />
     <Compile Include="Entity\CustomItem.cs" />

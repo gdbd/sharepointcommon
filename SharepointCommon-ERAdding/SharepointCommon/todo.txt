@@ -2,3 +2,4 @@
 get unit test site collection from config db(instead of http://localhost:80) -ok
 
 push down AppBase<>::EnsureList to IQueryList
+items cache! in eventreceiver return cached item instead of create new!

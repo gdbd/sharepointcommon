@@ -77,6 +77,7 @@
     <Compile Include="Attributes\AsyncAttribute.cs" />
     <Compile Include="Attributes\SequenceAttribute.cs" />
     <Compile Include="Common\InvariantCultureScope.cs" />
+    <Compile Include="Events\EventReceiverInfo.cs" />
     <Compile Include="Events\EventReceiverProperties.cs" />
     <Compile Include="Events\ListEventMgr.cs" />
     <Compile Include="Interception\ItemEventReceiverAccessInterceptor.cs" />
