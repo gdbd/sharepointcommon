@@ -45,7 +45,6 @@ namespace SharepointCommon
         /// </summary>
         /// <param name="viewFields">The view field names (not xml tags!).</param>
         /// <returns>Fluent instance of that class</returns>
-        [Obsolete("Use typed overload of ViewFields")]
         public CamlQuery ViewFields(params string[] viewFields)
         {
             if (viewFields.Length == 0) throw new SharepointCommonException("ViewFields must have at least one parameter");
