@@ -1,0 +1,366 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{84F70ECA-0B60-4452-ADE3-1A9ABC7B765E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SharepointCommon</RootNamespace>
+    <AssemblyName>SharepointCommon</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\BUILD\14\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;PHYSICALASSEMBLY DOTNET DOTNET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>
+    </DocumentationFile>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\BUILD\14\</OutputPath>
+    <DefineConstants>TRACE;PHYSICALASSEMBLY DOTNET DOTNET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>0</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>..\BUILD\14\SharepointCommon.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>SharepointCommon.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\14\Microsoft.SharePoint.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Attributes\CustomPropertyAttribute.cs" />
+    <Compile Include="Common\InvariantCultureScope.cs" />
+    <Compile Include="Common\Mockable.cs" />
+    <Compile Include="Extentions\ListExtention.cs" />
+    <Compile Include="Extentions\WebExtention.cs" />
+    <Compile Include="public\AppBase.cs" />
+    <Compile Include="Attributes\ListAttribute.cs" />
+    <Compile Include="Attributes\NotMappedAttribute.cs" />
+    <Compile Include="Interception\AppBaseAccessInterceptor.cs" />
+    <Compile Include="Entities\UserInfoList.cs" />
+    <Compile Include="Extentions\ItemExtention.cs" />
+    <Compile Include="Impl\AppFac.cs" />
+    <Compile Include="public\CamlQuery.cs" />
+    <Compile Include="Castle\Core\Internal\AttributesUtil.cs" />
+    <Compile Include="Castle\Core\Internal\CollectionExtensions.cs" />
+    <Compile Include="Castle\Core\Internal\ILockHolder.cs" />
+    <Compile Include="Castle\Core\Internal\InternalsVisible.cs" />
+    <Compile Include="Castle\Core\Internal\IUpgradeableLockHolder.cs" />
+    <Compile Include="Castle\Core\Internal\Lock.cs" />
+    <Compile Include="Castle\Core\Internal\MonitorLock.cs" />
+    <Compile Include="Castle\Core\Internal\MonitorLockHolder.cs" />
+    <Compile Include="Castle\Core\Internal\MonitorUpgradeableLockHolder.cs" />
+    <Compile Include="Castle\Core\Internal\NoOpLock.cs" />
+    <Compile Include="Castle\Core\Internal\NoOpUpgradeableLock.cs" />
+    <Compile Include="Castle\Core\Internal\PermissionUtil.cs" />
+    <Compile Include="Castle\Core\Internal\SlimReadLockHolder.cs" />
+    <Compile Include="Castle\Core\Internal\SlimReadWriteLock.cs" />
+    <Compile Include="Castle\Core\Internal\SlimUpgradeableReadLockHolder.cs" />
+    <Compile Include="Castle\Core\Internal\SlimWriteLockHolder.cs" />
+    <Compile Include="Castle\Core\Internal\WeakKey.cs" />
+    <Compile Include="Castle\Core\Internal\WeakKeyComparer.cs" />
+    <Compile Include="Castle\Core\Internal\WeakKeyDictionary.cs" />
+    <Compile Include="Castle\Core\Logging\AbstractExtendedLoggerFactory.cs" />
+    <Compile Include="Castle\Core\Logging\AbstractLoggerFactory.cs" />
+    <Compile Include="Castle\Core\Logging\ConsoleFactory.cs" />
+    <Compile Include="Castle\Core\Logging\ConsoleLogger.cs" />
+    <Compile Include="Castle\Core\Logging\DiagnosticsLogger.cs" />
+    <Compile Include="Castle\Core\Logging\DiagnosticsLoggerFactory.cs" />
+    <Compile Include="Castle\Core\Logging\IContextProperties.cs" />
+    <Compile Include="Castle\Core\Logging\IContextStack.cs" />
+    <Compile Include="Castle\Core\Logging\IContextStacks.cs" />
+    <Compile Include="Castle\Core\Logging\IExtendedLogger.cs" />
+    <Compile Include="Castle\Core\Logging\IExtendedLoggerFactory.cs" />
+    <Compile Include="Castle\Core\Logging\ILogger.cs" />
+    <Compile Include="Castle\Core\Logging\ILoggerFactory.cs" />
+    <Compile Include="Castle\Core\Logging\LevelFilteredLogger.cs" />
+    <Compile Include="Castle\Core\Logging\LoggerException.cs" />
+    <Compile Include="Castle\Core\Logging\LoggerLevel.cs" />
+    <Compile Include="Castle\Core\Logging\NullLogFactory.cs" />
+    <Compile Include="Castle\Core\Logging\NullLogger.cs" />
+    <Compile Include="Castle\Core\Logging\StreamLogger.cs" />
+    <Compile Include="Castle\Core\Logging\StreamLoggerFactory.cs" />
+    <Compile Include="Castle\Core\Logging\TraceLogger.cs" />
+    <Compile Include="Castle\Core\Logging\TraceLoggerFactory.cs" />
+    <Compile Include="Castle\DynamicProxy\AbstractInvocation.cs" />
+    <Compile Include="Castle\DynamicProxy\AllMethodsHook.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\ClassMembersCollector.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\ClassProxyInstanceContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\ClassProxyTargetContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\ClassProxyWithTargetTargetContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\CompositeTypeContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\DelegateProxyTargetContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\Delegates.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\DelegateTypeGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\ForwardingMethodGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\InterfaceMembersCollector.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\InterfaceMembersOnClassCollector.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\InterfaceProxyInstanceContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\InterfaceProxyTargetContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\InterfaceProxyWithOptionalTargetContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\InterfaceProxyWithoutTargetContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\InterfaceProxyWithTargetInterfaceTargetContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\InvocationWithDelegateContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\InvocationWithGenericDelegateContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\ITypeContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\MembersCollector.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\MinimialisticMethodGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\MixinContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\OptionallyForwardingMethodGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\ProxyInstanceContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Contributors\WrappedClassMembersCollector.cs" />
+    <Compile Include="Castle\DynamicProxy\DefaultProxyBuilder.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\AttributeDisassembler.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\AttributesToAvoidReplicating.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\BaseProxyGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\CacheKey.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\ClassProxyGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\ClassProxyWithTargetGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\CompositionInvocationTypeGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\DelegateMembersCollector.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\DelegateProxyGenerationHook.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\DelegateProxyGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\AbstractTypeEmitter.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\ArgumentsUtil.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\ClassEmitter.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\CodeBuilders\AbstractCodeBuilder.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\CodeBuilders\ConstructorCodeBuilder.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\CodeBuilders\MethodCodeBuilder.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\ConstructorCollection.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\ConstructorEmitter.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\EventCollection.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\EventEmitter.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\GenericUtil.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\IMemberEmitter.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\LdcOpCodesDictionary.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\LdindOpCodesDictionary.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\MethodCollection.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\MethodEmitter.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\NestedClassCollection.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\NestedClassEmitter.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\OpCodeUtil.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\PropertiesCollection.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\PropertyEmitter.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\AddressOfReferenceExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\ArgumentReference.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\AssignArgumentStatement.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\AssignArrayStatement.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\AssignStatement.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\AsTypeReference.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\BindDelegateExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\ByRefReference.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\ConstReference.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\ConstructorInvocationStatement.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\ConvertExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\DefaultValueExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\EndExceptionBlockStatement.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\Expression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\ExpressionStatement.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\FieldReference.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\FinallyStatement.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\IfNullExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\IILEmitter.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\IndirectReference.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\LiteralIntExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\LoadArrayElementExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\LoadRefArrayElementExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\LocalReference.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\MethodInvocationExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\MethodTokenExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\MultiStatementExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\NewArrayExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\NewInstanceExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\NopStatement.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\NullCoalescingOperatorExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\NullExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\Reference.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\ReferenceExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\ReferencesToObjectArrayExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\ReturnReferenceExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\ReturnStatement.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\SelfReference.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\Statement.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\ThrowStatement.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\TryStatement.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\TypeReference.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\SimpleAST\TypeTokenExpression.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\StindOpCodesDictionary.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\StrongNameUtil.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\TypeConstructorEmitter.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\Emitters\TypeUtil.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\GeneratorException.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\GeneratorUtil.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\IGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\IInvocationCreationContributor.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\INamingScope.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\InheritanceInvocationTypeGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\InterfaceProxyWithoutTargetGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\InterfaceProxyWithTargetGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\InterfaceProxyWithTargetInterfaceGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\InvocationTypeGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\MetaEvent.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\MetaMethod.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\MetaProperty.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\MetaType.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\MetaTypeElement.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\MethodFinder.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\MethodGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\MethodSignatureComparer.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\MethodWithInvocationGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\NamingScope.cs" />
+    <Compile Include="Castle\DynamicProxy\Generators\TypeElementCollection.cs" />
+    <Compile Include="Castle\DynamicProxy\IAttributeDisassembler.cs" />
+    <Compile Include="Castle\DynamicProxy\IChangeProxyTarget.cs" />
+    <Compile Include="Castle\DynamicProxy\IInterceptor.cs" />
+    <Compile Include="Castle\DynamicProxy\IInterceptorSelector.cs" />
+    <Compile Include="Castle\DynamicProxy\IInvocation.cs" />
+    <Compile Include="Castle\DynamicProxy\Internal\AttributeUtil.cs" />
+    <Compile Include="Castle\DynamicProxy\Internal\CompositionInvocation.cs" />
+    <Compile Include="Castle\DynamicProxy\Internal\InheritanceInvocation.cs" />
+    <Compile Include="Castle\DynamicProxy\Internal\InternalsUtil.cs" />
+    <Compile Include="Castle\DynamicProxy\Internal\InvocationHelper.cs" />
+    <Compile Include="Castle\DynamicProxy\InvalidMixinConfigurationException.cs" />
+    <Compile Include="Castle\DynamicProxy\InvalidProxyConstructorArgumentsException.cs" />
+    <Compile Include="Castle\DynamicProxy\IProxyBuilder.cs" />
+    <Compile Include="Castle\DynamicProxy\IProxyGenerationHook.cs" />
+    <Compile Include="Castle\DynamicProxy\IProxyTargetAccessor.cs" />
+    <Compile Include="Castle\DynamicProxy\MixinData.cs" />
+    <Compile Include="Castle\DynamicProxy\ModuleScope.cs" />
+    <Compile Include="Castle\DynamicProxy\PersistentProxyBuilder.cs" />
+    <Compile Include="Castle\DynamicProxy\ProxyGenerationException.cs" />
+    <Compile Include="Castle\DynamicProxy\ProxyGenerationOptions.cs" />
+    <Compile Include="Castle\DynamicProxy\ProxyGenerator.cs" />
+    <Compile Include="Castle\DynamicProxy\ProxyUtil.cs" />
+    <Compile Include="Castle\DynamicProxy\Serialization\CacheMappingsAttribute.cs" />
+    <Compile Include="Castle\DynamicProxy\Serialization\ProxyObjectReference.cs" />
+    <Compile Include="Castle\DynamicProxy\Serialization\ProxyTypeConstants.cs" />
+    <Compile Include="Castle\DynamicProxy\Serialization\RemotableInvocation.cs" />
+    <Compile Include="Castle\DynamicProxy\StandardInterceptor.cs" />
+    <Compile Include="Castle\DynamicProxy\Tokens\DelegateMethods.cs" />
+    <Compile Include="Castle\DynamicProxy\Tokens\FormatterServicesMethods.cs" />
+    <Compile Include="Castle\DynamicProxy\Tokens\InvocationMethods.cs" />
+    <Compile Include="Castle\DynamicProxy\Tokens\MethodBaseMethods.cs" />
+    <Compile Include="Castle\DynamicProxy\Tokens\SerializationInfoMethods.cs" />
+    <Compile Include="Castle\DynamicProxy\Tokens\TypeBuilderMethods.cs" />
+    <Compile Include="Castle\DynamicProxy\Tokens\TypeMethods.cs" />
+    <Compile Include="Castle\DynamicProxy\Tokens\TypeUtilMethods.cs" />
+    <Compile Include="Common\Assert.cs" />
+    <Compile Include="Common\CamlConst.cs" />
+    <Compile Include="Attributes\FieldAttribute.cs" />
+    <Compile Include="Common\CommonHelper.cs" />
+    <Compile Include="Common\EnumMapper.cs" />
+    <Compile Include="Common\FilenameOrganizer.cs" />
+    <Compile Include="Interception\DocumentAccessInterceptor.cs" />
+    <Compile Include="Interception\ItemAccessInterceptor.cs" />
+    <Compile Include="Entities\Category.cs" />
+    <Compile Include="Entities\Form.cs" />
+    <Compile Include="public\Field.cs" />
+    <Compile Include="Common\LookupIterator.cs" />
+    <Compile Include="Interception\UserAccessInterceptor.cs" />
+    <Compile Include="Common\UserIterator.cs" />
+    <Compile Include="Entities\Holiday.cs" />
+    <Compile Include="public\IAppFac.cs" />
+    <Compile Include="public\CustomFieldProvider.cs" />
+    <Compile Include="public\SharepointCommonException.cs" />
+    <Compile Include="Expressions\ExpressionVisitor.cs" />
+    <Compile Include="Common\FieldMapper.cs" />
+    <Compile Include="public\Q.cs" />
+    <Compile Include="Attributes\ContentTypeAttribute.cs" />
+    <Compile Include="Entities\Announcement.cs" />
+    <Compile Include="Entities\Document.cs" />
+    <Compile Include="Common\EntityMapper.cs" />
+    <Compile Include="Entities\Folder.cs" />
+    <Compile Include="public\Item.cs" />
+    <Compile Include="Expressions\MemberAccessVisitor.cs" />
+    <Compile Include="Properties\NamespaceDoc.cs" />
+    <Compile Include="public\PageType.cs" />
+    <Compile Include="Attributes\NotFieldAttribute.cs" />
+    <Compile Include="public\Person.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="public\IQueryList.cs" />
+    <Compile Include="public\ListBase.cs" />
+    <Compile Include="public\User.cs" />
+    <Compile Include="public\IQueryWeb.cs" />
+    <Compile Include="public\WebFactory.cs" />
+    <Compile Include="Impl\QueryWeb.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Castle\DynamicProxy\DynProxy.snk" />
+    <None Include="SharepointCommon.pfx" />
+    <None Include="temp.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="todo.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
