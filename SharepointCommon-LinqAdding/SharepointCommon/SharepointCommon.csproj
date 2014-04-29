@@ -61,7 +61,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>SharepointCommon.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>temp.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
@@ -79,6 +79,7 @@
     <Compile Include="Common\Mockable.cs" />
     <Compile Include="Extentions\ListExtention.cs" />
     <Compile Include="Extentions\WebExtention.cs" />
+    <Compile Include="Linq\CamlableQuery.cs" />
     <Compile Include="public\AppBase.cs" />
     <Compile Include="Attributes\ListAttribute.cs" />
     <Compile Include="Attributes\NotMappedAttribute.cs" />

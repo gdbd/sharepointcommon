@@ -13,6 +13,7 @@ using SharepointCommon.Attributes;
 using SharepointCommon.Common;
 using SharepointCommon.Entities;
 using SharepointCommon.Expressions;
+using SharepointCommon.Linq;
 
 namespace SharepointCommon
 {
@@ -466,6 +467,11 @@ namespace SharepointCommon
             SPListItemCollection itemsToMap = ByCaml(List, camlByContentType);
 
             return EntityMapper.ToEntities<TCt>(itemsToMap);
+        }
+
+        public virtual IOrderedQueryable<T> Items()
+        {
+            return new CamlableQuery<T>();
         }
 
         public virtual void DeleteList(bool recycle)

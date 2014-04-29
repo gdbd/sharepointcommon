@@ -110,6 +110,7 @@
     <Compile Include="Entity\TheChoice.cs" />
     <Compile Include="ExtentionsTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />
+    <Compile Include="QueryableTests.cs" />
     <Compile Include="Repository\TestRepository.cs" />
     <Compile Include="Application\TestApp.cs" />
     <Compile Include="Settings.cs" />

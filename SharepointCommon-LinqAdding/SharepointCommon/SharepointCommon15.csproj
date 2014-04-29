@@ -61,7 +61,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>SharepointCommon.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>temp.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
@@ -310,6 +310,7 @@
     <Compile Include="Interception\DocumentAccessInterceptor.cs" />
     <Compile Include="Interception\ItemAccessInterceptor.cs" />
     <Compile Include="Interception\UserAccessInterceptor.cs" />
+    <Compile Include="Linq\CamlableQuery.cs" />
     <Compile Include="Properties\NamespaceDoc.cs" />
     <Compile Include="Attributes\NotFieldAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -333,6 +334,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Castle\DynamicProxy\DynProxy.snk" />
     <None Include="SharepointCommon.pfx" />
+    <None Include="temp.snk" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
