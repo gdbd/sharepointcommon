@@ -23,78 +23,6 @@ namespace SharepointCommon.Events
             EventFiringEnabled = true;
         }
 
-        //Invoke Added/Updated/Deleted receivers
-        private void InvokeEdReceiver(SPItemEventProperties properties, SPEventReceiverType eventReceiverType, string methodName)
-        {
-            var receiverProps = GetEventReceiverType(properties, eventReceiverType);
-            var receiver = Activator.CreateInstance(receiverProps.EventReceiverType);
-            var receiverMethod = receiverProps.EventReceiverType.GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
-            var receiverParam = receiverMethod.GetParameters().First();
-            switch (eventReceiverType)
-            {
-                    case SPEventReceiverType.ItemDeleted:
-                    receiverMethod.Invoke(receiver, new[] { (object)properties.ListItemId });
-                    break;
-                default:
-                    var entityType = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem);
-                    receiverMethod.Invoke(receiver, new[] {entityType});
-                    break;
-            }
-            
-            var cancelProperty = receiverProps.EventReceiverType.GetProperty("Cancel");
-            var cancel = cancelProperty.GetValue(receiver, null);
-            properties.Cancel = (bool)cancel;
-        }
-
-
-        //Invoke Adding/Updating/Deleting receivers
-        private void InvokeIngReceiver(SPItemEventProperties properties, SPEventReceiverType eventReceiverType, string methodName)
-        {
-            var hashTable = new Hashtable();
-            foreach (DictionaryEntry afterProperty in properties.AfterProperties)
-            {
-                hashTable.Add(afterProperty.Key, afterProperty.Value);
-            }
-            var receiverProps = GetEventReceiverType(properties, eventReceiverType);
-            var receiver = Activator.CreateInstance(receiverProps.EventReceiverType);
-            var method = receiverProps.EventReceiverType.GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
-            var receiverParam = method.GetParameters().First();
-            object entity;
-            switch (eventReceiverType)
-            {
-                case SPEventReceiverType.ItemAdding:
-                    entity = EntityMapper.ToEntity(receiverParam.ParameterType, hashTable, properties.List);
-                    method.Invoke(receiver, new[] {entity});
-                    break;
-                case SPEventReceiverType.ItemUpdating:
-                    entity = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem);
-                    var changedItem = EntityMapper.ToEntity(receiverParam.ParameterType, hashTable, properties.List);
-                    method.Invoke(receiver, new[] {entity, changedItem});
-                    break;
-                case SPEventReceiverType.ItemDeleting:
-                    entity = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem);
-                    method.Invoke(receiver, new[] {entity});
-                    break;
-                
-            }
-            
-            var cancelProperty = receiverProps.EventReceiverType.GetProperty("Cancel");
-            var cancel = cancelProperty.GetValue(receiver, null);
-            properties.Cancel = (bool)cancel;
-            if (properties.Cancel) return;
-            foreach (DictionaryEntry property in properties.AfterProperties)
-            {
-                if (hashTable.ContainsKey(property.Key) && hashTable[property.Key] == property.Value)
-                {
-                    hashTable.Remove(property.Key);
-                }
-            }
-            foreach (DictionaryEntry entry in hashTable)
-            {
-                properties.AfterProperties.ChangedProperties.Add(entry.Key, entry.Value);
-            }
-        }
-
         public override void ItemUpdating(SPItemEventProperties properties)
         {
             EventFiringEnabled = false;
@@ -138,6 +66,72 @@ namespace SharepointCommon.Events
             {
                 EventReceiverType = Type.GetType(er.Data),
             };
+        }
+
+        //Invoke Added/Updated/Deleted receivers
+        private void InvokeEdReceiver(SPItemEventProperties properties, SPEventReceiverType eventReceiverType, string methodName)
+        {
+            var receiverProps = GetEventReceiverType(properties, eventReceiverType);
+            var receiver = Activator.CreateInstance(receiverProps.EventReceiverType);
+            var receiverMethod = receiverProps.EventReceiverType.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
+            var receiverParam = receiverMethod.GetParameters().First();
+            switch (eventReceiverType)
+            {
+                case SPEventReceiverType.ItemDeleted:
+                    receiverMethod.Invoke(receiver, new[] { (object)properties.ListItemId });
+                    break;
+                default:
+                    var entityType = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem);
+                    receiverMethod.Invoke(receiver, new[] { entityType });
+                    break;
+            }
+
+            
+        }
+        
+        //Invoke Adding/Updating/Deleting receivers
+        private void InvokeIngReceiver(SPItemEventProperties properties, SPEventReceiverType eventReceiverType, string methodName)
+        {
+            var hashTable = new Hashtable();
+            foreach (DictionaryEntry afterProperty in properties.AfterProperties)
+            {
+                hashTable.Add(afterProperty.Key, afterProperty.Value);
+            }
+            var receiverProps = GetEventReceiverType(properties, eventReceiverType);
+            var receiver = Activator.CreateInstance(receiverProps.EventReceiverType);
+            var method = receiverProps.EventReceiverType.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
+            var receiverParam = method.GetParameters().First();
+            object entity;
+            switch (eventReceiverType)
+            {
+                case SPEventReceiverType.ItemAdding:
+                    entity = EntityMapper.ToEntity(receiverParam.ParameterType, hashTable, properties.List);
+                    method.Invoke(receiver, new[] { entity });
+                    break;
+                case SPEventReceiverType.ItemUpdating:
+                    entity = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem);
+                    var changedItem = EntityMapper.ToEntity(receiverParam.ParameterType, hashTable, properties.List);
+                    method.Invoke(receiver, new[] { entity, changedItem });
+                    break;
+                case SPEventReceiverType.ItemDeleting:
+                    entity = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem);
+                    method.Invoke(receiver, new[] { entity });
+                    break;
+
+            }
+
+           
+            foreach (DictionaryEntry property in properties.AfterProperties)
+            {
+                if (hashTable.ContainsKey(property.Key) && hashTable[property.Key] == property.Value)
+                {
+                    hashTable.Remove(property.Key);
+                }
+            }
+            foreach (DictionaryEntry entry in hashTable)
+            {
+                properties.AfterProperties.ChangedProperties.Add(entry.Key, entry.Value);
+            }
         }
     }
 }

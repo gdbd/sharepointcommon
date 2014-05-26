@@ -1411,7 +1411,7 @@ namespace SharepointCommon.Test
                 var item2 = new CustomItem
                 {
                     Title = "ByField_Returns_Entity_Test_2",
-                    CustomUser = new Person(_domainGroup.Name),
+                    CustomUser = new Person(_domainGroup.LoginName),
                     CustomLookup = entity2,
                 };
 

@@ -3,13 +3,13 @@ namespace SharepointCommon
 {
     public abstract class ListEventReceiver<T> where T : Item, new()
     {
-        protected virtual void ItemAdding(T addingItem) { }
-        protected virtual void ItemAdded(T addedItem) { }
-        protected virtual void ItemUpdating(T updatingItem, T changedItem) { }
-        protected virtual void ItemUpdated(T updatedItem) { }
-        protected virtual void ItemDeleting(T deletingItem) { }
-        protected virtual void ItemDeleted(int deletedItemId) { }
+        public virtual void ItemAdding(T addingItem) { }
+        public virtual void ItemAdded(T addedItem) { }
+        public virtual void ItemUpdating(T updatingItem, T changedItem) { }
+        public virtual void ItemUpdated(T updatedItem) { }
+        public virtual void ItemDeleting(T deletingItem) { }
+        public virtual void ItemDeleted(int deletedItemId) { }
 
-        public bool Cancel { get; protected set; }
+      //  public bool Cancel { get; protected set; }
     }
 }

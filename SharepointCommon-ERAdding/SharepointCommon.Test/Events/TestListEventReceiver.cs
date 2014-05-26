@@ -8,7 +8,7 @@ namespace SharepointCommon.Test.Events
     {
         public static bool IsCalled { get; set; }
 
-        protected override void ItemAdding(OneMoreField<string> addingItem)
+        public override void ItemAdding(OneMoreField<string> addingItem)
         {
             addingItem.Author = new User();
             addingItem.ConcreteParentList = null;
@@ -23,7 +23,7 @@ namespace SharepointCommon.Test.Events
         }
 
         [Sequence(10000), Async(false)]
-        protected override void ItemAdded(OneMoreField<string> addedItem)
+        public override void ItemAdded(OneMoreField<string> addedItem)
         {
             IsCalled = true;
             addedItem.Title = "TestItem_Added";
@@ -31,26 +31,26 @@ namespace SharepointCommon.Test.Events
         }
 
         [Async(false)]
-        protected override void ItemUpdated(OneMoreField<string> updatedItem)
+        public override void ItemUpdated(OneMoreField<string> updatedItem)
         {
             base.ItemUpdated(updatedItem);
             updatedItem.Title = "ItemUpdated";
             updatedItem.ParentList.Update(updatedItem, false, u => u.Title);
         }
 
-        protected override void ItemUpdating(OneMoreField<string> updatingItem, OneMoreField<string> changedItem)
+        public override void ItemUpdating(OneMoreField<string> updatingItem, OneMoreField<string> changedItem)
         {
             base.ItemUpdating(updatingItem, changedItem);
             var s = updatingItem.Title;
             updatingItem.AdditionalField = "ItemUpdating";
         }
 
-        protected override void ItemDeleting(OneMoreField<string> deletingItem)
+        public override void ItemDeleting(OneMoreField<string> deletingItem)
         {
             base.ItemDeleting(deletingItem);
         }
         [Async(false)]
-        protected override void ItemDeleted(int deletedItem)
+        public override void ItemDeleted(int deletedItem)
         {
             base.ItemDeleted(deletedItem);
         }

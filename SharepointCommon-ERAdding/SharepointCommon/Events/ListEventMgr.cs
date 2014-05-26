@@ -18,8 +18,19 @@ namespace SharepointCommon.Events
 
             foreach (var eventReceiverInfo in registeredEvents)
             {
+                if(!CheckRegistrationValid(eventReceiverInfo))
+                    throw new SharepointCommonException("Asynchronous execution of before events is invalid.");
+
                 RegisterEventReceiver(receiverType.AssemblyQualifiedName, list, eventReceiverInfo);
             }
+        }
+
+        private static bool CheckRegistrationValid(EventReceiverInfo erInfo)
+        {
+            if(erInfo.Type == SPEventReceiverType.ItemAdding && erInfo.Synchronization == SPEventReceiverSynchronization.Asynchronous)
+                return false;
+            
+            return true;
         }
 
         internal static void RemoveEventReceiver<TEventReceiver>(SPList list)
@@ -38,12 +49,12 @@ namespace SharepointCommon.Events
             var receiverType = typeof (TEventReceiver);
 
             var methods = new List<MethodInfo>();
-            methods.Add(receiverType.GetMethod("ItemAdded", BindingFlags.Instance | BindingFlags.NonPublic));
-            methods.Add(receiverType.GetMethod("ItemAdding", BindingFlags.Instance | BindingFlags.NonPublic));
-            methods.Add(receiverType.GetMethod("ItemUpdating", BindingFlags.Instance | BindingFlags.NonPublic));
-            methods.Add(receiverType.GetMethod("ItemUpdated", BindingFlags.Instance | BindingFlags.NonPublic));
-            methods.Add(receiverType.GetMethod("ItemDeleting", BindingFlags.Instance | BindingFlags.NonPublic));
-            methods.Add(receiverType.GetMethod("ItemDeleted", BindingFlags.Instance | BindingFlags.NonPublic));
+            methods.Add(receiverType.GetMethod("ItemAdded", BindingFlags.Instance | BindingFlags.Public));
+            methods.Add(receiverType.GetMethod("ItemAdding", BindingFlags.Instance | BindingFlags.Public));
+            methods.Add(receiverType.GetMethod("ItemUpdating", BindingFlags.Instance | BindingFlags.Public));
+            methods.Add(receiverType.GetMethod("ItemUpdated", BindingFlags.Instance | BindingFlags.Public));
+            methods.Add(receiverType.GetMethod("ItemDeleting", BindingFlags.Instance | BindingFlags.Public));
+            methods.Add(receiverType.GetMethod("ItemDeleted", BindingFlags.Instance | BindingFlags.Public));
 
             foreach (var method in methods)
             {

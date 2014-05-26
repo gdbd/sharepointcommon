@@ -10,8 +10,8 @@ namespace SharepointCommon.Test.Events
 {
     public class TestListItemEventReceiver : ListEventReceiver<CustomItem>
     {
-        
-        protected override void ItemAdding(CustomItem addingItem)
+
+        public override void ItemAdding(CustomItem addingItem)
         {
             base.ItemAdding(addingItem);
             //addingItem.CustomBoolean = false;
@@ -23,7 +23,7 @@ namespace SharepointCommon.Test.Events
         }
 
         [Async(false)]
-        protected override void ItemAdded(CustomItem addedItem)
+        public override void ItemAdded(CustomItem addedItem)
         {
             base.ItemAdded(addedItem);
             addedItem.CustomBoolean = false;
@@ -31,13 +31,13 @@ namespace SharepointCommon.Test.Events
             addedItem.ParentList.Update(addedItem, false);
         }
 
-        protected override void ItemUpdating(CustomItem updatingItem, CustomItem changedItem)
+        public override void ItemUpdating(CustomItem updatingItem, CustomItem changedItem)
         {
             base.ItemUpdating(updatingItem, changedItem);
         }
 
         [Async(false)]
-        protected override void ItemUpdated(CustomItem updatedItem)
+        public override void ItemUpdated(CustomItem updatedItem)
         {
             base.ItemUpdated(updatedItem);
         }

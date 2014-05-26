@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.SharePoint.Utilities;
 using NUnit.Framework;
 using SharepointCommon.Entities;
 using SharepointCommon.Test.Entity;
@@ -64,7 +65,7 @@ namespace SharepointCommon.Test
                 Assert.That(item.Icon, Is.EqualTo("/_layouts/images/icgen.gif"));
                 Assert.That(item.Folder, Is.EqualTo(document.Folder));
                 Assert.NotNull(item.Url);
-                Assert.That(item.Url, Is.EqualTo(_queryWeb.Web.ServerRelativeUrl + "/Add_AddsCustomItem/Add_AddsCustomItem.dat"));
+                Assert.That(item.Url, Is.EqualTo(SPUtility.ConcatUrls( _queryWeb.Web.ServerRelativeUrl , "/Add_AddsCustomItem/Add_AddsCustomItem.dat")));
             }
             finally
             {
