@@ -27,7 +27,10 @@ namespace SharepointCommon.Events
 
         private static bool CheckRegistrationValid(EventReceiverInfo erInfo)
         {
-            if(erInfo.Type == SPEventReceiverType.ItemAdding && erInfo.Synchronization == SPEventReceiverSynchronization.Asynchronous)
+            if(erInfo.Synchronization == SPEventReceiverSynchronization.Asynchronous 
+                && (erInfo.Type == SPEventReceiverType.ItemAdding
+                || erInfo.Type == SPEventReceiverType.ItemUpdating
+                || erInfo.Type == SPEventReceiverType.ItemDeleting))
                 return false;
             
             return true;

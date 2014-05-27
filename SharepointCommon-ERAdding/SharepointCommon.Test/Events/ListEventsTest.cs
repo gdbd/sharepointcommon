@@ -5,7 +5,6 @@ namespace SharepointCommon.Test.Events
 {
     public class ListEventsTest
     {
-
         [Test]
         public void Add_Remove_Receiever_Test()
         {
@@ -22,6 +21,8 @@ namespace SharepointCommon.Test.Events
                 Assert.False(AddRemoveTest.IsUpdateCalled, "Fired after receiver was removed!");
             }
         }
+
+        #region Add, Adding
 
         [Test]
         public void Is_Added_Sync_Called_Test()
@@ -63,7 +64,7 @@ namespace SharepointCommon.Test.Events
         }
 
         [Test]
-        public void Is_Register_Adding_Async_Throws_Test()
+        public void Is_Adding_Async_Throws_Test()
         {
             using (var ts = new TestListScope<AddingItemAsync>("Is_Register_Adding_Async_Throws_Test"))
             {
@@ -71,6 +72,10 @@ namespace SharepointCommon.Test.Events
                     ts.List.AddEventReciver<AddingReceiverAsync>());
             }
         }
+
+        #endregion
+
+        #region Update, Updating
 
         [Test]
         public void Is_Updated_Sync_Called_Test()
@@ -107,6 +112,93 @@ namespace SharepointCommon.Test.Events
                 if (UpdatedItem.Exception != null)
                     throw UpdatedItemAsync.Exception;
             }
-        } 
+        }
+
+        [Test]
+        public void Is_Updating_Sync_Called_Test()
+        {
+            using (var ts = new TestListScope<UpdatingItem>("Is_Updating_Sync_Called_Test"))
+            {
+                ts.List.AddEventReciver<UpdatingReceiver>();
+                var entity = new UpdatingItem { Title = "test1", TheText = "test2" };
+                ts.List.Add(entity);
+                entity.Title = "new title";
+                ts.List.Update(entity, true, i => i.Title);
+                Assert.True(UpdatingItem.IsUpdateCalled, "Not fired updating receiver!");
+
+                if (UpdatingItem.Exception != null)
+                    throw UpdatingItem.Exception;
+            }
+        }
+
+        [Test]
+        public void Is_Updating_Async_Throws_Test()
+        {
+            using (var ts = new TestListScope<UpdatingItemAsync>("Is_Updating_Async_Called_Test"))
+            {
+                Assert.Throws<SharepointCommonException>(
+                    () => ts.List.AddEventReciver<UpdatingReceiverAsync>());
+            }
+        }
+
+        #endregion
+
+        #region Delete, Deleting
+
+        [Test]
+        public void Is_Deleted_Sync_Called_Test()
+        {
+            using (var ts = new TestListScope<DeletedItem>("Is_Deleted_Sync_Called_Test"))
+            {
+                ts.List.AddEventReciver<DeletedReceiver>();
+                var entity = new DeletedItem { Title = "test1", TheText = "test2" };
+                ts.List.Add(entity);
+                ts.List.Delete(entity, false);
+                Assert.True(DeletedItem.IsDeleteCalled, "Not fired deleted receiver!");
+                Assert.That(entity.Id, Is.EqualTo(DeletedItem.DeletedId));
+            }
+        }
+
+        [Test]
+        public void Is_Deleted_Async_Called_Test()
+        {
+            using (var ts = new TestListScope<DeletedItemAsync>("Is_Deleted_Async_Called_Test"))
+            {
+                ts.List.AddEventReciver<DeletedReceiverAsync>();
+                var entity = new DeletedItemAsync { Title = "test1", TheText = "test2" };
+                ts.List.Add(entity);
+                ts.List.Delete(entity, false);
+
+                DeletedItemAsync.ManualResetEvent.WaitOne(10000);
+
+                Assert.True(DeletedItemAsync.IsDeleteCalled, "Not fired deleted receiver!");
+                Assert.That(entity.Id, Is.EqualTo(DeletedItemAsync.DeletedId));
+            }
+        }
+
+        [Test]
+        public void Is_Deleteing_Sync_Called_Test()
+        {
+            using (var ts = new TestListScope<DeletingItem>("Is_Deleteing_Sync_Called_Test"))
+            {
+                ts.List.AddEventReciver<DeletingReceiver>();
+                var entity = new DeletingItem { Title = "test1", TheText = "test2" };
+                ts.List.Add(entity);
+                ts.List.Delete(entity,false);
+                Assert.True(DeletingItem.IsDeleteCalled, "Not fired added receiver!");
+            }
+        }
+
+        [Test]
+        public void Is_Deleting_Async_Throws_Test()
+        {
+            using (var ts = new TestListScope<DeletingItemAsync>("Is_Deleting_Async_Throws_Test"))
+            {
+                Assert.Throws<SharepointCommonException>(
+                    () => ts.List.AddEventReciver<DeletingReceiverAsync>());
+            }
+        }
+
+        #endregion
     }
 }
