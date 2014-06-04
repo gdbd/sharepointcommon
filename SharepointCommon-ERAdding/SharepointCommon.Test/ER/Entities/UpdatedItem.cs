@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using SharepointCommon.Attributes;
+using SharepointCommon.Test.Entity;
 
-namespace SharepointCommon.Test.Entity.Events
+namespace SharepointCommon.Test.ER.Entities
 {
-    public class UpdatedItem : Item
+    public class UpdatedItem : CustomItem
     {
+        public static UpdatedItem Recieved;
         public static Exception Exception;
-
+        
         [NotMapped]
         public static bool IsUpdateCalled { get; set; }
 

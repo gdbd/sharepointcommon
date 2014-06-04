@@ -8,11 +8,16 @@ namespace SharepointCommon.Test
 {
     public class TestListScope<TList> : IDisposable where TList: Item, new()
     {
-        public TestListScope(string testListName)
+        public TestListScope(string testListName, bool ensureLookupList = false)
         {
             try
             {
                 Web = WebFactory.Open(Settings.TestSiteUrl);
+
+                if (ensureLookupList)
+                {
+                    EnsureListForLookup();
+                }
 
                 if (Web.ExistsByName(testListName))
                 {
@@ -31,12 +36,25 @@ namespace SharepointCommon.Test
         }
 
         public IQueryWeb Web;
-        public IQueryList<TList> List; 
-
+        public IQueryList<TList> List;
+        public IQueryList<Item> LookupList;
+        
         public void Dispose()
         {
             if (List != null) List.DeleteList(false);
             if (Web != null) Web.Dispose();
+        }
+
+        private void EnsureListForLookup()
+        {
+            if (!Web.ExistsByName("ListForLookup"))
+            {
+                LookupList = Web.Create<Item>("ListForLookup");
+            }
+            else
+            {
+                LookupList = Web.GetByName<Item>("ListForLookup");
+            }
         }
     }
 }

@@ -1,8 +1,7 @@
-﻿using NUnit.Framework;
-using SharepointCommon.Attributes;
-using SharepointCommon.Test.Entity.Events;
+﻿using SharepointCommon.Attributes;
+using SharepointCommon.Test.ER.Entities;
 
-namespace SharepointCommon.Test.Events
+namespace SharepointCommon.Test.ER.Receivers
 {
     public class AddingReceiverAsync : ListEventReceiver<AddingItemAsync>
     {

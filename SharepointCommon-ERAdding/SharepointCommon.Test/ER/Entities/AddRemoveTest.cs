@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using SharepointCommon.Attributes;
 
-namespace SharepointCommon.Test.Entity.Events
+namespace SharepointCommon.Test.ER.Entities
 {
     public class AddRemoveTest : Item
     {
+        public static Exception Exception;
+
         [NotMapped]
         public static bool IsAddCalled { get; set; }
 

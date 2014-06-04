@@ -1,22 +1,19 @@
 ﻿using System;
 using NUnit.Framework;
 using SharepointCommon.Attributes;
-using SharepointCommon.Test.Entity.Events;
+using SharepointCommon.Test.ER.Entities;
 
-namespace SharepointCommon.Test.Events
+namespace SharepointCommon.Test.ER.Receivers
 {
     public class UpdatedReceiver : ListEventReceiver<UpdatedItem>
     {
         [Async(false)]
         public override void ItemUpdated(UpdatedItem addedItem)
         {
-            UpdatedItem.IsUpdateCalled = true;
-
             try
             {
-                Assert.That(addedItem, Is.Not.Null);
-                Assert.That(addedItem.Title, Is.EqualTo("new title"));
-                Assert.That(addedItem.TheText, Is.EqualTo("test2"));
+                UpdatedItem.IsUpdateCalled = true;
+                UpdatedItem.Recieved = addedItem;
             }
             catch (Exception e)
             {

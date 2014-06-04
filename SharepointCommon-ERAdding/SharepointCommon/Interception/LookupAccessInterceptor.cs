@@ -12,12 +12,15 @@ namespace SharepointCommon.Interception
     internal sealed class LookupAccessInterceptor : IInterceptor
     {
         private readonly SPListItem _listItem;
+        private readonly bool _reloadLookupItem;
         private List<string> _changedFields;
         private readonly object _value;
         private readonly SPList _list;
-        public LookupAccessInterceptor(SPListItem listItem)
+
+        public LookupAccessInterceptor(SPListItem listItem, bool reloadLookupItem = true)
         {
             _listItem = listItem;
+            _reloadLookupItem = reloadLookupItem;
             _changedFields = new List<string>();
         }
 
@@ -57,9 +60,18 @@ namespace SharepointCommon.Interception
         {
             if (_listItem != null)
             {
-                var wf = new QueryWeb(_listItem.ParentList.ParentWeb);
-                var list = wf.Web.Lists[_listItem.ParentList.ID];
-                var listItem = list.GetItemById(_listItem.ID);
+                // todo: in ItemDeleting event _listItem not exist!
+
+                var web = _listItem.ParentList.ParentWeb;
+                SPListItem listItem = _listItem;
+
+                if (_reloadLookupItem)
+                {
+                    
+                    var list = web.Lists[_listItem.ParentList.ID];
+                    listItem = list.GetItemById(_listItem.ID);
+                }
+                
 
                 var ft = FieldMapper.ToFieldType(memberInfo);
                 var lookupField = listItem.Fields.TryGetFieldByStaticName(ft.Name) as SPFieldLookup;
@@ -70,7 +82,7 @@ namespace SharepointCommon.Interception
                         listItem.ParentList.Title));
                 }
 
-                var lookupList = wf.Web.Lists[new Guid(lookupField.LookupList)];
+                var lookupList = web.Lists[new Guid(lookupField.LookupList)];
 
                 // Lookup with picker (ilovesharepoint) returns SPFieldLookupValue
                 var fieldValue = listItem[ft.Name];

@@ -10,11 +10,13 @@ namespace SharepointCommon.Interception
     internal class ItemAccessInterceptor : IInterceptor
     {
         private readonly SPListItem _listItem;
+        private readonly bool _reloadLookupItem;
         private List<string> _changedFields;
         
-        public ItemAccessInterceptor(SPListItem listItem)
+        public ItemAccessInterceptor(SPListItem listItem, bool reloadLookupItem = true)
         {
             _listItem = listItem;
+            _reloadLookupItem = reloadLookupItem;
             _changedFields = new List<string>();
         }
         
@@ -77,7 +79,7 @@ namespace SharepointCommon.Interception
                 return;
             }
 
-            var value = EntityMapper.ToEntityField(prop, _listItem);
+            var value = EntityMapper.ToEntityField(prop, _listItem, _reloadLookupItem);
 
             invocation.ReturnValue = value;
         }

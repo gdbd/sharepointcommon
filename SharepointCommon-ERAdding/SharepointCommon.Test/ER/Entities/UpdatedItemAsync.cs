@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using SharepointCommon.Attributes;
+using SharepointCommon.Test.Entity;
 
-namespace SharepointCommon.Test.Entity.Events
+namespace SharepointCommon.Test.ER.Entities
 {
-    public class UpdatedItemAsync : Item
+    public class UpdatedItemAsync : CustomItem
     {
+        public static UpdatedItemAsync Received;
+
         public static ManualResetEvent ManualResetEvent = new ManualResetEvent(false);
 
         public static Exception Exception;

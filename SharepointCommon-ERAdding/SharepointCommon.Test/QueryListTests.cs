@@ -5,7 +5,6 @@
     using Microsoft.SharePoint;
     using NUnit.Framework;
 using SharepointCommon.Test.Entity;
-using SharepointCommon.Test.Events;
 using Assert = NUnit.Framework.Assert;
 
 namespace SharepointCommon.Test
@@ -160,6 +159,7 @@ namespace SharepointCommon.Test
                 Assert.That(item.CustomMultiLookup.First().Title, Is.EqualTo(lookupItem.Title));
                 Assert.That(item.CustomChoice, Is.EqualTo(customItem.CustomChoice));
                 Assert.That(item.Тыдыщ, Is.EqualTo(customItem.Тыдыщ));
+                Assert.That(item.CustomDate.ToString(), Is.EqualTo(customItem.CustomDate.ToString()));
             }
             finally
             {
@@ -1720,86 +1720,6 @@ namespace SharepointCommon.Test
                     list.Add(customItem);
                 };
                 Assert.Throws<SharepointCommonException>(test);
-            }
-            finally
-            {
-                if (list != null)
-                {
-                    list.DeleteList(false);
-                }
-            }
-        }
-
-        [Test]
-        public void ListItemEventReceivers_Test()
-        {
-            IQueryList<CustomItem> list = null;
-            try
-            {
-                var lookupItem = new Item { Title = "Add_Adds_CustomItem_Test_Lookup_3" };
-                _listForLookup.Add(lookupItem);
-
-                var lookupItem2 = new Item { Title = "Add_Adds_CustomItem_Test_Lookup_4" };
-                _listForLookup.Add(lookupItem2);
-
-                list = !_queryWeb.ExistsByName("Add_AddsCustomItemForReceiversTest") ? _queryWeb.Create<CustomItem>("Add_AddsCustomItemForReceiversTest") : _queryWeb.GetByName<CustomItem>("Add_AddsCustomItemForReceiversTest");
-                list.AddEventReciver<TestListItemEventReceiver>();
-
-                var customItem = new CustomItem
-                {
-                    Title = "Items_ReturnsColectionOfCustomItemsTest",
-                    CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
-                    CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
-                    CustomFieldNumber = 123.5,
-                    CustomBoolean = true,
-                    //CustomUser = new Person(_firstUser.LoginName),
-                    CustomUsers = new List<User> { new Person(_firstUser.LoginName), new User(_spGroup.Name) },
-                    CustomLookup = lookupItem,
-                    //CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
-                    CustomDate = DateTime.Now,
-                    CustomChoice = TheChoice.Choice2,
-                    Тыдыщ = "тест",
-                };
-                list.Add(customItem);
-                var item =
-                    list.Items(
-                        new CamlQuery().Query(
-                            Q.Where(Q.Eq(Q.FieldRef<CustomItem>(f => f.Title),
-                                Q.Value("Items_ReturnsColectionOfCustomItemsTest"))))).FirstOrDefault();
-                if (item != null)
-                {
-                    item.CustomFieldNumber = 321.325;
-                    item.ParentList.Update(item, false);
-                }
-                //var item = list.Items(new CamlQuery()
-                //.Query(Q.Where(Q.Eq(Q.FieldRef<CustomItem>(i => i.Title), Q.Value("Items_ReturnsColectionOfCustomItemsTest")))))
-                //.FirstOrDefault();
-
-                //Assert.IsNotNull(item);
-                //Assert.That(item.Id, Is.EqualTo(customItem.Id));
-                //Assert.That(item.Title, Is.EqualTo(customItem.Title));
-                //Assert.That(item.CustomField1, Is.EqualTo(customItem.CustomField1));
-                //Assert.That(item.CustomField2, Is.EqualTo(customItem.CustomField2));
-                //Assert.That(item.CustomFieldNumber, Is.EqualTo(customItem.CustomFieldNumber));
-                //Assert.That(item.CustomBoolean, Is.EqualTo(customItem.CustomBoolean));
-                //Assert.That(item.CustomUser.Id, Is.Not.EqualTo(0));
-
-                //Assert.That(item.CustomUser.GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
-
-                //var users = item.CustomUsers.ToList();
-                //Assert.That(users[0].GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
-                //Assert.That(users[1].GetType().ToString(), Is.EqualTo("Castle.Proxies.UserProxy"));
-
-
-                //Assert.That(item.CustomUsers.Count(), Is.EqualTo(2));
-                //Assert.That(item.CustomUsers.First().Id, Is.EqualTo(_firstUser.ID));
-                //Assert.That(item.CustomLookup, Is.Not.Null);
-                //Assert.That(item.CustomLookup.Id, Is.EqualTo(lookupItem.Id));
-                //Assert.That(item.CustomMultiLookup, Is.Not.Null);
-                //Assert.That(item.CustomMultiLookup.Count(), Is.EqualTo(2));
-                //Assert.That(item.CustomMultiLookup.First().Title, Is.EqualTo(lookupItem.Title));
-                //Assert.That(item.CustomChoice, Is.EqualTo(customItem.CustomChoice));
-                //Assert.That(item.Тыдыщ, Is.EqualTo(customItem.Тыдыщ));
             }
             finally
             {

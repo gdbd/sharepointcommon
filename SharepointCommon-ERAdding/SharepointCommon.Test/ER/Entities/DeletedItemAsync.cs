@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
+using System.Threading;
 using SharepointCommon.Attributes;
 
-namespace SharepointCommon.Test.Entity.Events
+namespace SharepointCommon.Test.ER.Entities
 {
-    public class DeletedItem : Item
+    public class DeletedItemAsync : Item
     {
+        public static Exception Exception;
+        public static ManualResetEvent ManualResetEvent = new ManualResetEvent(false);
+
         [NotMapped]
         public static int DeletedId { get; set; }
 

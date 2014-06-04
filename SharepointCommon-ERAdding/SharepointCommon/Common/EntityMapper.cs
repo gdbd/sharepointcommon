@@ -23,10 +23,10 @@ namespace SharepointCommon.Common
 
         internal static IEnumerable<T> ToEntities<T>(SPListItemCollection items)
         {
-            return items.Cast<SPListItem>().Select(ToEntity<T>);
+            return items.Cast<SPListItem>().Select(i => ToEntity<T>(i));
         }
 
-        internal static T ToEntity<T>(SPListItem listItem)
+        internal static T ToEntity<T>(SPListItem listItem, bool reloadLookupItem = true)
         {
             var itemType = typeof(T);
             var props = itemType.GetProperties();
@@ -39,9 +39,9 @@ namespace SharepointCommon.Common
 
             var entity = _proxyGenerator.CreateClassProxy(
                 itemType, 
-                new LookupAccessInterceptor(listItem),
+                new LookupAccessInterceptor(listItem, reloadLookupItem),
                 new DocumentAccessInterceptor(listItem),
-                new ItemAccessInterceptor(listItem));
+                new ItemAccessInterceptor(listItem, reloadLookupItem));
             
             return (T)entity;
         }
@@ -84,7 +84,7 @@ namespace SharepointCommon.Common
         }
 
         
-        internal static object ToEntityField(PropertyInfo prop, SPListItem listItem)
+        internal static object ToEntityField(PropertyInfo prop, SPListItem listItem, bool reloadLookupItem = true)
         {
             string propName = prop.Name;
             Type propType = prop.PropertyType;
@@ -149,7 +149,7 @@ namespace SharepointCommon.Common
                     var t = typeof(LookupIterator<>);
                     var gt = t.MakeGenericType(lookupType);
 
-                    object instance = Activator.CreateInstance(gt, field, listItem);
+                    object instance = Activator.CreateInstance(gt, field, listItem, reloadLookupItem);
 
                     return instance;
                 }
@@ -430,33 +430,33 @@ namespace SharepointCommon.Common
             return value;
         }
 
-        internal static object ToEntity(Type entityType, SPListItem listItem)
+        internal static object ToEntity(Type entityType, SPListItem listItem, bool reloadLookupItem = true)
         {
             
             var entityMapper = typeof(EntityMapper);
             var toEntity = entityMapper.GetMethod(
-                "ToEntity", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(SPListItem) }, null);
+                "ToEntity", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(SPListItem), typeof(bool) }, null);
             var g = toEntity.MakeGenericMethod(entityType);
-            return g.Invoke(null, new object[] { listItem });
+            return g.Invoke(null, new object[] { listItem, reloadLookupItem });
         }
 
-        internal static object ToEntity(Type entityType, Hashtable propertiesHashtable, SPList list)
+        internal static object ToEntity(Type entityType, Hashtable afterProperties, SPList list)
         {
             var entityMapper = typeof(EntityMapper);
             var toEntity = entityMapper.GetMethod(
                 "ToEntity", BindingFlags.Static | BindingFlags.NonPublic, null, new[] {typeof (SPList), typeof (Hashtable)}, null);
             var g = toEntity.MakeGenericMethod(entityType);
-            return g.Invoke(null, new object[] {list, propertiesHashtable});
+            return g.Invoke(null, new object[] {list, afterProperties});
         }
 
-        internal static object ToEntity(Type entityType, Hashtable properties, SPListItem listItem)
+       /* internal static object ToEntity(Type entityType, Hashtable properties, SPListItem listItem)
         {
             var entityMapper = typeof(EntityMapper);
             var toEntity = entityMapper.GetMethod(
                 "ToEntity", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(SPListItem), typeof(Hashtable) }, null);
             var g = toEntity.MakeGenericMethod(entityType);
             return g.Invoke(null, new object[] { listItem, properties });
-        }
+        }*/
 
         internal static void ToItem<T>(T entity, SPListItem listItem, List<string> propertiesToSet = null)
         {

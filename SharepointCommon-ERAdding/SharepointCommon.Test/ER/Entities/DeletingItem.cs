@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using SharepointCommon.Attributes;
+using SharepointCommon.Test.Entity;
 
-namespace SharepointCommon.Test.Entity.Events
+namespace SharepointCommon.Test.ER.Entities
 {
-    public class DeletingItem : Item
+    public class DeletingItem : CustomItem
     {
+        public static DeletingItem Received;
         public static Exception Exception;
 
         [NotMapped]
