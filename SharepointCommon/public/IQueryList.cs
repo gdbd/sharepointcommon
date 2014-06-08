@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.SharePoint;
 
@@ -169,6 +170,9 @@ namespace SharepointCommon
         /// <param name="option">The option used to filter items.</param>
         /// <returns>items by query.</returns>
         IEnumerable<TCt> Items<TCt>(CamlQuery option) where TCt : Item, new();
+
+
+        IOrderedQueryable<T> Items();
 
         /// <summary>
         /// Deletes the list.

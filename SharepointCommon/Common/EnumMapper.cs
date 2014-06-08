@@ -21,7 +21,7 @@ namespace SharepointCommon.Common
                 var attrs = member.GetCustomAttributes(typeof(FieldAttribute), false);
                 if (attrs.Length != 0)
                 {
-                    if (((FieldAttribute)attrs[0]).Name.Equals(value.ToString(), StringComparison.InvariantCultureIgnoreCase))
+                    if (((FieldAttribute)attrs[0]).Name.Equals(value.ToString()))
                     {
                         value = member.Name;
                         break;
@@ -37,7 +37,7 @@ namespace SharepointCommon.Common
             if (value == null) return null;
 
             var members = enumType.GetMembers(BindingFlags.Public | BindingFlags.Static);
-            var member = members.FirstOrDefault(m => m.Name.Equals(value.ToString(), StringComparison.InvariantCultureIgnoreCase));
+            var member = members.FirstOrDefault(m => m.Name.Equals(value.ToString()));
             if (member == null) Assert.Inconsistent();
 
             var attrs = member.GetCustomAttributes(typeof(FieldAttribute), false);
