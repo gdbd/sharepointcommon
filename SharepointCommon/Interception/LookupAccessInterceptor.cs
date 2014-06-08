@@ -60,8 +60,6 @@ namespace SharepointCommon.Interception
         {
             if (_listItem != null)
             {
-                // todo: in ItemDeleting event _listItem not exist!
-
                 var web = _listItem.ParentList.ParentWeb;
                 SPListItem listItem = _listItem;
 

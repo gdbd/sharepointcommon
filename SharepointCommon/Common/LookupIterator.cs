@@ -25,7 +25,7 @@
             _reloadLookupItem = reloadLookupItem;
         }
 
-        public LookupIterator(SPList list, SPFieldLookup fieldLookup, object value)
+        public LookupIterator(SPList list, SPFieldLookup fieldLookup, object value, bool reloadLookupItem = true)
         {
             _fieldLookup = fieldLookup;
             _list = list;
@@ -81,7 +81,7 @@
             {
                 using (var wf = WebFactory.Open(_list.ParentWeb.Url))
                 {
-                    var lkpValues = new SPFieldLookupValueCollection((string)_lookupValue);
+                    var lkpValues = (SPFieldLookupValueCollection)_lookupValue;
                     var lkplist = wf.Web.Lists[new Guid(_fieldLookup.LookupList)];
                     foreach (var lkpValue in lkpValues)
                     {
