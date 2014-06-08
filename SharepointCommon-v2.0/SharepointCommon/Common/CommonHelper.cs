@@ -43,7 +43,7 @@ namespace SharepointCommon.Common
         {
             var userField = (SPFieldUser)list.Fields.TryGetFieldByStaticName(fieldStaticName);
             if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
-            var ids = ((string) value).Split(new[] {";#"}, StringSplitOptions.RemoveEmptyEntries);
+            var ids = ((string)value).Split(new[] { ";#" }, StringSplitOptions.RemoveEmptyEntries);
             var users = new SPFieldUserValueCollection();
             foreach (var id in ids)
             {
@@ -126,6 +126,15 @@ namespace SharepointCommon.Common
             }
 
             return propName;
+        }
+        
+        internal static object GetDefaultValue(Type t)
+        {
+            if (t.IsValueType)
+            {
+                return Activator.CreateInstance(t);
+            }
+            return null;
         }
     }
 }

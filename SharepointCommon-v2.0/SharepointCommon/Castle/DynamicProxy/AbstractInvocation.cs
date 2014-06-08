@@ -28,6 +28,7 @@ namespace Castle.DynamicProxy
 	public abstract class AbstractInvocation : IInvocation
 #else
 	[Serializable]
+    [DebuggerStepThrough]
 	public abstract class AbstractInvocation : IInvocation, ISerializable
 #endif
 	{

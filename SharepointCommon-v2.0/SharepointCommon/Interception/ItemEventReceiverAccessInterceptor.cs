@@ -69,27 +69,16 @@ namespace SharepointCommon.Interception
 
                 case "get_ListItem":
                 {
-                    invocation.ReturnValue = _listItem;
+                    invocation.ReturnValue = null;
                     return;
                 }
 
                 case "get_Folder":
                 {
-                    if (_list == null)
-                        invocation.ReturnValue = null;
-                    else
-                    {
-                        var folderUrl = _listItem.Url;
-                        folderUrl = folderUrl.Replace(_listItem.ParentList.RootFolder.Url + "/", string.Empty);
-                        var linkFileName = (string) _listItem[SPBuiltInFieldId.LinkFilename];
-                        folderUrl = folderUrl.Replace(linkFileName, string.Empty);
-                        invocation.ReturnValue = folderUrl.TrimEnd('/');
-                    }
+                    invocation.ReturnValue = null;
                     return;
                 }
             }
-
-
 
             if (CommonHelper.IsPropertyNotMapped(prop))
             {
@@ -98,34 +87,30 @@ namespace SharepointCommon.Interception
                 return;
             }
 
-            if (prop.GetSetMethod(false) != null && _list.Fields.ContainsField(propName))
+            if (!_afterProperties.ContainsKey(propName))
             {
-                if (!_mappedProperties.ContainsKey(propName))
-                {
-                    _mappedProperties.Add(propName,
-                        _listItem == null
-                            ? EntityMapper.ToEntityField(prop, _list, null)
-                            : EntityMapper.ToEntityField(prop, _listItem));
-                }
-                
-                invocation.ReturnValue = _list.Fields.GetFieldByInternalName(propName).Type == SPFieldType.Lookup ||
-                                         _list.Fields.GetFieldByInternalName(propName).Type == SPFieldType.User
-                    ? GetLookupItem(invocation, prop)
-                    : EntityMapper.ToEntityField(prop, _list, _mappedProperties[propName]);
+                var defaultValue = CommonHelper.GetDefaultValue(invocation.Method.ReturnType);
+                invocation.ReturnValue = defaultValue;
                 return;
             }
 
-            if (!_notMappedProperties.ContainsKey(propName) && _list.Fields.ContainsField(propName))
-            {
-                _notMappedProperties.Add(propName,
-                    _listItem == null
-                        ? EntityMapper.ToEntityField(prop, _list, null)
-                        : EntityMapper.ToEntityField(prop, _listItem));
-            }
-            invocation.ReturnValue = _notMappedProperties[propName];
+
+            var field = _list.Fields.GetFieldByInternalName(propName);
+
+            var val = EntityMapper.ToEntityField(prop, _list, _afterProperties[propName]);
+                
+           /* invocation.ReturnValue = _list.Fields.GetFieldByInternalName(propName).Type == SPFieldType.Lookup ||
+                                        _list.Fields.GetFieldByInternalName(propName).Type == SPFieldType.User
+                ? GetLookupItem(invocation, prop)
+                : EntityMapper.ToEntityField(prop, _list, _mappedProperties[propName]);*/
+
+            invocation.ReturnValue = val;
+            return;
+       
+           
         }
 
-        
+        /*
 
         private object GetLookupItem(IInvocation invocation, PropertyInfo prop)
         {
@@ -212,5 +197,7 @@ namespace SharepointCommon.Interception
             }
             return result.ToString();
         }
+         */
+         
     }
 }

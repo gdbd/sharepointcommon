@@ -113,7 +113,7 @@ namespace SharepointCommon.Test.ER
                 if (AddingItem.Exception != null)
                     throw AddingItem.Exception;
 
-                ValidateCustomItem(AddingItem.Received, entity);
+                ValidateCustomItem(AddingItem.Received, entity, true);
             }
         }
 
@@ -309,10 +309,20 @@ namespace SharepointCommon.Test.ER
             return ci;
         }
 
-        private void ValidateCustomItem<T>(T recieived, T orig) where T : CustomItem
+        private void ValidateCustomItem<T>(T recieived, T orig, bool isAfterProprtyMapped = false) where T : CustomItem
         {
             Assert.IsNotNull(recieived);
-            Assert.That(recieived.Id, Is.EqualTo(orig.Id));
+
+            if (isAfterProprtyMapped)
+            {
+                Assert.That(recieived.Id, Is.EqualTo(0));
+            }
+            else
+            {
+                Assert.That(recieived.Id, Is.EqualTo(orig.Id));
+            }
+
+            
             Assert.That(recieived.Title, Is.EqualTo(orig.Title));
             Assert.That(recieived.CustomField1, Is.EqualTo(orig.CustomField1));
             Assert.That(recieived.CustomField2, Is.EqualTo(orig.CustomField2));
