@@ -61,7 +61,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>SharepointCommon.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>temp.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
@@ -74,11 +74,13 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\CustomPropertyAttribute.cs" />
+    <Compile Include="Attributes\AsyncAttribute.cs" />
+    <Compile Include="Attributes\SequenceAttribute.cs" />
     <Compile Include="Common\InvariantCultureScope.cs" />
-    <Compile Include="Common\Mockable.cs" />
-    <Compile Include="Extentions\ListExtention.cs" />
-    <Compile Include="Extentions\WebExtention.cs" />
+    <Compile Include="Events\EventReceiverInfo.cs" />
+    <Compile Include="Events\EventReceiverProperties.cs" />
+    <Compile Include="Events\ListEventMgr.cs" />
+    <Compile Include="Interception\ItemEventReceiverAccessInterceptor.cs" />
     <Compile Include="public\AppBase.cs" />
     <Compile Include="Attributes\ListAttribute.cs" />
     <Compile Include="Attributes\NotMappedAttribute.cs" />
@@ -294,19 +296,24 @@
     <Compile Include="Common\CamlConst.cs" />
     <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Common\CommonHelper.cs" />
+    <Compile Include="Configuration\ConfigMgr.cs" />
     <Compile Include="Common\EnumMapper.cs" />
     <Compile Include="Common\FilenameOrganizer.cs" />
+    <Compile Include="Configuration\Settings.cs" />
+    <Compile Include="Events\ListItemEventReceiver.cs" />
+    <Compile Include="Common\XmlSerializator.cs" />
     <Compile Include="Interception\DocumentAccessInterceptor.cs" />
     <Compile Include="Interception\ItemAccessInterceptor.cs" />
     <Compile Include="Entities\Category.cs" />
     <Compile Include="Entities\Form.cs" />
+    <Compile Include="public\ListEventReceiver.cs" />
     <Compile Include="public\Field.cs" />
+    <Compile Include="Interception\LookupAccessInterceptor.cs" />
     <Compile Include="Common\LookupIterator.cs" />
     <Compile Include="Interception\UserAccessInterceptor.cs" />
     <Compile Include="Common\UserIterator.cs" />
     <Compile Include="Entities\Holiday.cs" />
     <Compile Include="public\IAppFac.cs" />
-    <Compile Include="public\CustomFieldProvider.cs" />
     <Compile Include="public\SharepointCommonException.cs" />
     <Compile Include="Expressions\ExpressionVisitor.cs" />
     <Compile Include="Common\FieldMapper.cs" />
@@ -354,6 +361,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="todo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\Interceptors\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

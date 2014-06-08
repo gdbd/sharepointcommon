@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharepointCommon15", "SharepointCommon\SharepointCommon15.csproj", "{84F70ECA-0B60-4452-ADE3-1A9ABC7B765E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharepointCommon.Test15", "SharepointCommon.Test\SharepointCommon.Test15.csproj", "{862730D3-4233-46D1-B8CC-E0C828943AF8}"
@@ -25,6 +23,7 @@ Global
 		SccLocalPath1 = SharepointCommon.Test
 		SccProvider1 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccProjectUniqueName2 = SharepointCommon.Docs\\SharepointCommon.Docs15.shfbproj
+		SccProjectName2 = SharepointCommon.Docs
 		SccAuxPath2 = https://tfs.codeplex.com/tfs/tfs29
 		SccLocalPath2 = SharepointCommon.Docs
 		SccProvider2 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}

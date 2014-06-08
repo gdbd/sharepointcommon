@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-
 namespace SharepointCommon.Attributes
 {
+    using System;
+
     /// <summary>
     /// Attribute, used on entity property to provide additional info about mapped field
     /// </summary>
@@ -14,17 +12,7 @@ namespace SharepointCommon.Attributes
         /// Initializes a new instance of the <see cref="FieldAttribute"/> class.
         /// </summary>
         public FieldAttribute() { }
-        
-        public FieldAttribute(Type fieldProviderType)
-        {
-            var prov = Activator.CreateInstance(fieldProviderType) as CustomFieldProvider;
-            if (prov == null)
-            {
-                throw new SharepointCommonException("fieldProviderType must implement ICustomFieldProvider");
-            }
-            FieldProvider = prov;
-        }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldAttribute"/> class.
         /// </summary>
@@ -46,7 +34,7 @@ namespace SharepointCommon.Attributes
         public string DisplayName { get; set; }
 
         /// <summary>
-        /// Gets or sets the name, url, or id of list, referenced by lookup field.
+        /// Gets or sets the name of list, referenced by lookup field.
         /// </summary>
         public string LookupList { get; set; }
 
@@ -75,7 +63,5 @@ namespace SharepointCommon.Attributes
         /// Gets or sets a value used as default for field
         /// </summary>
         public object DefaultValue { get; set; }
-        
-        internal CustomFieldProvider FieldProvider { get; set; }
     }
 }

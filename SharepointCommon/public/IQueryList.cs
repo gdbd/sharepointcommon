@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Microsoft.SharePoint;
+using SharepointCommon.Events;
 
 // ReSharper disable once CheckNamespace
 namespace SharepointCommon
@@ -78,7 +79,10 @@ namespace SharepointCommon
         /// Gets the relative url of list. Ex: /lists/list1
         /// </summary>
         string RelativeUrl { get; }
-        
+
+        void AddEventReciver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>;
+        void RemoveEventReciver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>;
+
         /// <summary>
         /// Gets the url of specific list form
         /// </summary>
@@ -238,5 +242,10 @@ namespace SharepointCommon
         /// </summary>
         /// <typeparam name="TCt">Type of entity, represents content type (marked with [ContentType])</typeparam>
         void RemoveContentType<TCt>() where TCt : Item, new();   
+    }
+
+    public class QueryEvent<T>
+    {
+        public event Action<T> Added;
     }
 }

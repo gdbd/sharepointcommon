@@ -7,27 +7,40 @@
 
     using Microsoft.SharePoint;
 
-    internal sealed class LookupIterator<T> : IEnumerable<T> where T : Item, new()
+    internal sealed class LookupIterator<T> : IEnumerable<T>
+        where T : Item, new()
     {
-        private readonly SPField _fieldLookup;
+        private readonly SPFieldLookup _fieldLookup;
 
         private readonly SPListItem _listItem;
+        private readonly bool _reloadLookupItem;
 
-        public LookupIterator(SPField fieldLookup, SPListItem listItem)
+        private readonly object _lookupValue;
+
+        private readonly SPList _list;
+        public LookupIterator(SPFieldLookup fieldLookup, SPListItem listItem, bool reloadLookupItem = true)
         {
             _fieldLookup = fieldLookup;
             _listItem = listItem;
+            _reloadLookupItem = reloadLookupItem;
+        }
+
+        public LookupIterator(SPList list, SPFieldLookup fieldLookup, object value)
+        {
+            _fieldLookup = fieldLookup;
+            _list = list;
+            _lookupValue = value;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            var spItemsIter = GetLookupItems();
-            return spItemsIter.Select(Convert).GetEnumerator();
+            var spItemsIter = this.GetLookupItems();
+            return spItemsIter.Select(this.Convert).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return this.GetEnumerator();
         }
 
         private T Convert(SPListItem item)
@@ -37,24 +50,39 @@
 
         private IEnumerable<SPListItem> GetLookupItems()
         {
-            if (_fieldLookup.Type == SPFieldType.Lookup)
+
+            if (_listItem != null)
             {
-                var spfl = (SPFieldLookup)_fieldLookup;
-
-                // Reload item, because it may been changed before lazy load requested
-
-                using (var wf = WebFactory.Open(_listItem.Web.Url))
+                var wf = _listItem.ParentList;
+                var item = _listItem;
+                if (_reloadLookupItem)
                 {
-                    var list = wf.Web.Lists[_listItem.ParentList.ID];
-                    var item = list.GetItemById(_listItem.ID);
+                    // Reload item, because it may been changed before lazy load requested
+                    var list = wf.Lists[_listItem.ParentList.ID];
+                    item = list.GetItemById(_listItem.ID);
+                }
 
-                    var lkplist = wf.Web.Lists[new Guid(spfl.LookupList)];
-                    var lkpValues =
-                        new SPFieldLookupValueCollection(
-                            item[spfl.InternalName] != null
-                                ? item[spfl.InternalName].ToString()
-                                : string.Empty);
+                var lkplist = wf.Lists[new Guid(_fieldLookup.LookupList)];
+                var lkpValues =
+                    new SPFieldLookupValueCollection(
+                        item[_fieldLookup.InternalName] != null
+                            ? item[_fieldLookup.InternalName].ToString()
+                            : string.Empty);
 
+                foreach (var lkpValue in lkpValues)
+                {
+                    if (lkpValue.LookupId == 0) yield return null;
+
+                    yield return lkplist.GetItemById(lkpValue.LookupId);
+                }
+
+            }
+            else
+            {
+                using (var wf = WebFactory.Open(_list.ParentWeb.Url))
+                {
+                    var lkpValues = new SPFieldLookupValueCollection((string)_lookupValue);
+                    var lkplist = wf.Web.Lists[new Guid(_fieldLookup.LookupList)];
                     foreach (var lkpValue in lkpValues)
                     {
                         if (lkpValue.LookupId == 0) yield return null;
@@ -62,10 +90,6 @@
                         yield return lkplist.GetItemById(lkpValue.LookupId);
                     }
                 }
-            }
-            else
-            {
-                throw new NotImplementedException();
             }
         }
     }

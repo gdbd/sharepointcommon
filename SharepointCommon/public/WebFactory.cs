@@ -1,6 +1,5 @@
 using System;
 using Microsoft.SharePoint;
-using Microsoft.SharePoint.Administration;
 using SharepointCommon.Common;
 using SharepointCommon.Impl;
 
@@ -51,18 +50,6 @@ namespace SharepointCommon
         public static IQueryWeb Open(Guid site, Guid web)
         {
             return new QueryWeb(site, web, false);
-        }
-
-        /// <summary>
-        /// Opens wrapper for SPWeb and SPSite by their ID's
-        /// </summary>
-        /// <param name="site">SPSite id</param>
-        /// <param name="web">SPWeb id</param>
-        /// <param name="zone">site zone</param>
-        /// <returns>abstract wrapper for SPWeb and SPSite objects</returns>
-        public static IQueryWeb Open(Guid site, Guid web, SPUrlZone zone)
-        {
-            return new QueryWeb(site, web, false, zone);
         }
 
         /// <summary>

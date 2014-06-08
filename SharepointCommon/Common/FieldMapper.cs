@@ -64,7 +64,7 @@ namespace SharepointCommon.Common
                         Name = field.InternalName,
                         Required = field.Required,
                         Type = field.Type,
-                        LookupList = lookupList != null ? lookupList.RootFolder.Url : string.Empty,
+                        LookupListName = lookupList != null ? lookupList.Title : string.Empty,
                     });
                 }
                 catch (Exception ex)
@@ -95,11 +95,10 @@ namespace SharepointCommon.Common
             bool isMultilineText = false;
             object defaultValue = null;
             bool required = false;
-            FieldAttribute attr = null;
 
             if (fieldAttrs.Length != 0)
             {
-                attr = (FieldAttribute)fieldAttrs[0];
+                var attr = (FieldAttribute)fieldAttrs[0];
                 var spPropName = attr.Name;
                 if (spPropName != null) spName = spPropName;
                 dispName = attr.DisplayName;
@@ -108,14 +107,7 @@ namespace SharepointCommon.Common
                 defaultValue = attr.DefaultValue;
             }
 
-            var field = new Field { Name = spName, Property = propertyInfo, DisplayName = dispName, 
-                Required = required, DefaultValue = defaultValue, FieldAttribute = attr, };
-
-            if (attr != null && attr.FieldProvider != null)
-            {
-                field.Type = SPFieldType.Invalid;
-                return field;
-            }
+            var field = new Field { Name = spName, PropName = propertyInfo.Name, DisplayName = dispName, Required = required, DefaultValue = defaultValue };
 
             if (propType == typeof(string))
             {
@@ -167,11 +159,13 @@ namespace SharepointCommon.Common
             if (typeof(Item).IsAssignableFrom(propType))
             {
                 // lookup single value
-                if (attr == null) throw new SharepointCommonException("Lookups must be marked with [SharepointCommon.Attributes.FieldAttribute]");
-      
+                var fieldAttr = propertyInfo.GetCustomAttributes(typeof(FieldAttribute), true);
+                if (fieldAttr.Length == 0) throw new SharepointCommonException("Lookups must be marked with [SharepointCommon.Attributes.FieldAttribute]");
+                var attr = (FieldAttribute)fieldAttr[0];
+
                 field.Type = SPFieldType.Lookup;
-                field.LookupList = attr.LookupList;
-                field.LookupField = attr.LookupField ?? "Title";
+                field.LookupListName = attr.LookupList;
+                field.LookupField = attr.LookupField;
                 return field;
             }
 
@@ -190,14 +184,15 @@ namespace SharepointCommon.Common
                 }
 
                 //// lookup multi value
-                
-                if (attr == null) throw new SharepointCommonException("Lookups must be marked with [SharepointCommon.Attributes.FieldAttribute]");
-                
+
+                var fieldAttr = propertyInfo.GetCustomAttributes(typeof(FieldAttribute), true);
+                if (fieldAttr.Length == 0) throw new SharepointCommonException("Lookups must be marked with [SharepointCommon.Attributes.FieldAttribute]");
+                var attr = (FieldAttribute)fieldAttr[0];
 
                 if (typeof(Item).IsAssignableFrom(argumentType))
                 {
                     field.Type = SPFieldType.Lookup;
-                    field.LookupList = attr.LookupList;
+                    field.LookupListName = attr.LookupList;
                     field.LookupField = attr.LookupField;
                     field.IsMultiValue = true;
                     return field;
@@ -270,7 +265,7 @@ namespace SharepointCommon.Common
             return fields.Contains(spName) == false;
         }
 
-        internal static void SetFieldProperties(SPField field, Field fieldInfo)
+        internal static bool SetFieldAdditionalInfo(SPField field, Field fieldInfo)
         {
             var isChanged = false;
             if (fieldInfo.DisplayName != null)
@@ -294,41 +289,7 @@ namespace SharepointCommon.Common
                 isChanged = true;
             }
 
-            if (field is SPFieldLookup)
-            {
-                var asLookup = field as SPFieldLookup;
-
-                if (!string.IsNullOrEmpty(fieldInfo.LookupField) && fieldInfo.LookupField != "Title")
-                {
-                    asLookup.LookupField = fieldInfo.LookupField;
-                }
-                else
-                {
-                    asLookup.LookupField = "Title";
-                }
-                isChanged = true;
-            }
-            
-            if (field is SPFieldChoice)
-            {
-                var asChoice = field as SPFieldChoice;
-                var choices = fieldInfo.Choices.ToArray();
-                asChoice.Choices.AddRange(choices);
-                asChoice.DefaultValue = asChoice.Choices[0];
-                isChanged = true;
-            }
-
-            if ((fieldInfo.Type == SPFieldType.User || fieldInfo.Type == SPFieldType.Lookup) && fieldInfo.IsMultiValue)
-            {
-                var f = (SPFieldLookup)field;
-                f.AllowMultipleValues = true;
-                isChanged = true;
-            }
-
-            if (isChanged)
-            {
-                field.Update();
-            }
+            return isChanged;
         }
 
         internal static bool SetRequired(SPField field, Field fieldInfo)

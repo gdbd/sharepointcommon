@@ -1,4 +1,3 @@
-using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint.Utilities;
 
 namespace SharepointCommon.Impl
@@ -22,31 +21,36 @@ namespace SharepointCommon.Impl
         internal QueryWeb(string webUrl, bool elevate)
         {
             _webUrl = webUrl;
-
             if (elevate == false)
             {
                 Site = new SPSite(webUrl);
+                Web = Site.OpenWeb();
             }
             else
             {
-                Site = new SPSite(webUrl, SPUserToken.SystemAccount);
+                SPSecurity.RunWithElevatedPrivileges(() =>
+                {
+                    Site = new SPSite(webUrl);
+                    Web = Site.OpenWeb();
+                });
             }
-
-            Web = Site.OpenWeb();
         }
 
-        internal QueryWeb(Guid site, Guid web, bool elevate, SPUrlZone? zone = null)
+        internal QueryWeb(Guid site, Guid web, bool elevate)
         {
             if (elevate == false)
             {
-                Site = new SPSite(site, zone == null ? SPUrlZone.Default : zone.Value);
+                Site = new SPSite(site);
+                Web = Site.OpenWeb(web);
             }
             else
             {
-                Site = new SPSite(site, zone == null ? SPUrlZone.Default : zone.Value, SPUserToken.SystemAccount);
+                SPSecurity.RunWithElevatedPrivileges(() =>
+                {
+                    Site = new SPSite(site);
+                    Web = Site.OpenWeb(web);
+                });
             }
-
-            Web = Site.OpenWeb(web);
 
             _webUrl = Web.Url;
         }
@@ -56,13 +60,17 @@ namespace SharepointCommon.Impl
             if (elevate == false)
             {
                 Site = new SPSite(site);
+                Web = Site.OpenWeb();
             }
             else
             {
-                Site = new SPSite(site, SPUserToken.SystemAccount);
+                SPSecurity.RunWithElevatedPrivileges(() =>
+                {
+                    Site = new SPSite(site);
+                    Web = Site.OpenWeb();
+                });
             }
 
-            Web = Site.OpenWeb();
             _webUrl = Web.Url;
         }
 
@@ -90,7 +98,7 @@ namespace SharepointCommon.Impl
 
         public IQueryList<T> GetByUrl<T>(string listUrl) where T : Item, new()
         {
-            var list = Web.GetList(CommonHelper.CombineUrls(Web.ServerRelativeUrl, listUrl));
+            var list = Web.GetList(Combine(Web.ServerRelativeUrl, listUrl));
             return new ListBase<T>(list, this);
         }
 
@@ -157,7 +165,7 @@ namespace SharepointCommon.Impl
         {
             try
             {
-                var list = Web.GetList(CommonHelper.CombineUrls(Web.ServerRelativeUrl, listUrl));
+                var list = Web.GetList(Combine(Web.ServerRelativeUrl, listUrl));
                 return list != null;
             }
             catch (System.IO.FileNotFoundException)
@@ -216,7 +224,7 @@ namespace SharepointCommon.Impl
         
         internal object GetByUrl(Type entityType, string listUrl)
         {
-            var list = Web.GetList(CommonHelper.CombineUrls(Web.ServerRelativeUrl, listUrl));
+            var list = Web.GetList(Combine(Web.ServerRelativeUrl, listUrl));
 
             var type = typeof(ListBase<>);
             var typeGeneric = type.MakeGenericType(entityType);
@@ -238,6 +246,14 @@ namespace SharepointCommon.Impl
             }
 
             throw new SharepointCommonException("Cant determine actual list type. Do you inherited item from 'Item' or 'Document'?");
+        }
+
+        private string Combine(string left, string right)
+        {
+            if (SPUrlUtility.IsUrlFull(right)) return right;
+
+            if (right.StartsWith(left)) return right;
+            return SPUrlUtility.CombineUrl(left, right);
         }
     }
 }
