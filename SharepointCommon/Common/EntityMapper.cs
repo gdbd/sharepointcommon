@@ -94,7 +94,7 @@ namespace SharepointCommon.Common
             }
 
             // lookup
-            if ((field.Type == SPFieldType.Lookup || field.Type == SPFieldType.Invalid) && typeof(Item).IsAssignableFrom(propType))
+            if ((field.Type == SPFieldType.Lookup /*|| field.Type == SPFieldType.Invalid*/) && typeof(Item).IsAssignableFrom(propType))
             {
                 var attr = fieldAttrs[0];
 
@@ -111,7 +111,7 @@ namespace SharepointCommon.Common
             }
 
             //multi lookup
-            if ((field.Type == SPFieldType.Lookup || field.Type == SPFieldType.Invalid) &&
+            if ((field.Type == SPFieldType.Lookup /*|| field.Type == SPFieldType.Invalid*/) &&
                 (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(IEnumerable<>))))
             {
                 var attr = fieldAttrs[0];
