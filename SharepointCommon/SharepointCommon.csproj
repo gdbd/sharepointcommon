@@ -76,11 +76,15 @@
   <ItemGroup>
     <Compile Include="Attributes\AsyncAttribute.cs" />
     <Compile Include="Attributes\SequenceAttribute.cs" />
+    <Compile Include="Attributes\CustomPropertyAttribute.cs" />
     <Compile Include="Common\InvariantCultureScope.cs" />
     <Compile Include="Events\EventReceiverInfo.cs" />
     <Compile Include="Events\EventReceiverProperties.cs" />
     <Compile Include="Events\ListEventMgr.cs" />
     <Compile Include="Interception\ItemEventReceiverAccessInterceptor.cs" />
+    <Compile Include="Common\Mockable.cs" />
+    <Compile Include="Extentions\ListExtention.cs" />
+    <Compile Include="Extentions\WebExtention.cs" />
     <Compile Include="public\AppBase.cs" />
     <Compile Include="Attributes\ListAttribute.cs" />
     <Compile Include="Attributes\NotMappedAttribute.cs" />
@@ -308,12 +312,12 @@
     <Compile Include="Entities\Form.cs" />
     <Compile Include="public\ListEventReceiver.cs" />
     <Compile Include="public\Field.cs" />
-    <Compile Include="Interception\LookupAccessInterceptor.cs" />
     <Compile Include="Common\LookupIterator.cs" />
     <Compile Include="Interception\UserAccessInterceptor.cs" />
     <Compile Include="Common\UserIterator.cs" />
     <Compile Include="Entities\Holiday.cs" />
     <Compile Include="public\IAppFac.cs" />
+    <Compile Include="public\CustomFieldProvider.cs" />
     <Compile Include="public\SharepointCommonException.cs" />
     <Compile Include="Expressions\ExpressionVisitor.cs" />
     <Compile Include="Common\FieldMapper.cs" />

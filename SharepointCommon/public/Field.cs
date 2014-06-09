@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.SharePoint;
+using SharepointCommon.Attributes;
 
 // ReSharper disable once CheckNamespace
 namespace SharepointCommon
@@ -56,9 +58,9 @@ namespace SharepointCommon
         /// Gets or sets the name of the lookup list which referenced by lookup field.
         /// </summary>
         /// <value>
-        /// The name of the lookup list.
+        /// The name, url or id of the lookup list.
         /// </value>
-        public string LookupListName { get; set; }
+        public string LookupList { get; set; }
 
         /// <summary>
         /// Gets or sets the field used to display lookup.
@@ -89,6 +91,8 @@ namespace SharepointCommon
         /// </summary>
         public object DefaultValue { get; set; }
         
-        internal string PropName { get; set; }
+        internal PropertyInfo Property { get; set; }
+
+        internal FieldAttribute FieldAttribute { get; set; }
     }
 }

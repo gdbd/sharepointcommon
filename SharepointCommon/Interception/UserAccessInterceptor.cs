@@ -6,7 +6,7 @@ namespace SharepointCommon.Interception
     internal class UserAccessInterceptor : IInterceptor
     {
         private readonly SPUser _user;
-        private SPFieldLookupValue _userValue;
+        private SPFieldUserValue _userValue;
 
         public UserAccessInterceptor(SPUser user)
         {
