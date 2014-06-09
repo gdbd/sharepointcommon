@@ -7,8 +7,7 @@
 
     using Microsoft.SharePoint;
 
-    internal sealed class LookupIterator<T> : IEnumerable<T>
-        where T : Item, new()
+    internal sealed class LookupIterator<T> : IEnumerable<T> where T : Item, new()
     {
         private readonly SPFieldLookup _fieldLookup;
 
@@ -34,13 +33,13 @@
 
         public IEnumerator<T> GetEnumerator()
         {
-            var spItemsIter = this.GetLookupItems();
-            return spItemsIter.Select(this.Convert).GetEnumerator();
+            var spItemsIter = GetLookupItems();
+            return spItemsIter.Select(Convert).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         private T Convert(SPListItem item)
@@ -50,7 +49,6 @@
 
         private IEnumerable<SPListItem> GetLookupItems()
         {
-
             if (_listItem != null)
             {
                 var wf = _listItem.ParentList;
@@ -65,8 +63,8 @@
                 var lkplist = wf.Lists[new Guid(_fieldLookup.LookupList)];
                 var lkpValues =
                     new SPFieldLookupValueCollection(
-                        item[_fieldLookup.InternalName] != null
-                            ? item[_fieldLookup.InternalName].ToString()
+                            item[_fieldLookup.InternalName] != null
+                                ? item[_fieldLookup.InternalName].ToString()
                             : string.Empty);
 
                 foreach (var lkpValue in lkpValues)
@@ -83,14 +81,16 @@
                 {
                     var lkpValues = (SPFieldLookupValueCollection)_lookupValue;
                     var lkplist = wf.Web.Lists[new Guid(_fieldLookup.LookupList)];
-                    foreach (var lkpValue in lkpValues)
-                    {
-                        if (lkpValue.LookupId == 0) yield return null;
+                foreach (var lkpValue in lkpValues)
+                {
+                    if (lkpValue.LookupId == 0) yield return null;
 
-                        yield return lkplist.GetItemById(lkpValue.LookupId);
-                    }
+                    yield return lkplist.GetItemById(lkpValue.LookupId);
                 }
+                }
+                
             }
+         
         }
     }
 }

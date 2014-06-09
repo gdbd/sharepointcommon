@@ -1,17 +1,16 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Microsoft.SharePoint.Utilities;
 using SharepointCommon.Attributes;
 using SharepointCommon.Expressions;
 using SharepointCommon.Impl;
+    using System;
+    using System.Linq;
+    using Microsoft.SharePoint;
 
 namespace SharepointCommon.Common
 {
-    using System;
-    using System.Linq;
-
-    using Microsoft.SharePoint;
-
 
     internal sealed class CommonHelper
     {
@@ -65,7 +64,7 @@ namespace SharepointCommon.Common
         {
             var userField = (SPFieldUser)item.Fields.TryGetFieldByStaticName(fieldStaticName);
             if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
-
+            
             return (SPFieldUserValueCollection)item[fieldStaticName];
         }
 
@@ -73,14 +72,31 @@ namespace SharepointCommon.Common
         {
             // NotFieldAttribute is obsolete but old code can still use it
 #pragma warning disable 612,618
-            var notFieldAttrs = prop.GetCustomAttributes(typeof(NotFieldAttribute), false);
+            var notFieldAttrs = Attribute.GetCustomAttribute(prop, typeof(NotFieldAttribute), true);
+                
+                //prop.GetCustomAttributes(typeof(NotFieldAttribute), false);
 #pragma warning restore 612,618
-            var nomapAttrs = prop.GetCustomAttributes(typeof(NotMappedAttribute), false);
+            var nomapAttrs = Attribute.GetCustomAttribute(prop, typeof(NotMappedAttribute), true);
+                //prop.GetCustomAttributes(typeof(NotMappedAttribute), false);
 
-            var attrs = notFieldAttrs.Union(nomapAttrs);
-
-            return attrs.Any();
+            return notFieldAttrs != null || nomapAttrs != null;
         }
+
+        /// <summary>Determines whether a type, like IList<int>, implements an open generic interface, like
+        /// IEnumerable<>. Note that this only checks against *interfaces*.</summary>
+        /// <param name="candidateType">The type to check.</param>
+        /// <param name="openGenericInterfaceType">The open generic type which it may impelement</param>
+        /// <returns>Whether the candidate type implements the open interface.</returns>
+        internal static bool ImplementsInterface(Type candidateType, Type interfaceType)
+        {
+            Assert.NotNull(candidateType);
+            Assert.NotNull(interfaceType);
+
+            return
+                candidateType.Equals(interfaceType) ||
+                candidateType.GetInterfaces().Any(i => ImplementsInterface(i, interfaceType));
+        }
+
 
         /// <summary>Determines whether a type, like IList<int>, implements an open generic interface, like
         /// IEnumerable<>. Note that this only checks against *interfaces*.</summary>
@@ -127,7 +143,57 @@ namespace SharepointCommon.Common
 
             return propName;
         }
-        
+
+        internal static Guid? TryParseGuid(string self)
+        {
+            if (self == null)
+            {
+                return null;
+            }
+            var format = new Regex(
+                "^[A-Fa-f0-9]{32}$|" +
+                "^({|\\()?[A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}(}|\\))?$|" +
+                "^({)?[0xA-Fa-f0-9]{3,10}(, {0,1}[0xA-Fa-f0-9]{3,6}){2}, {0,1}({)([0xA-Fa-f0-9]{3,4}, {0,1}){7}[0xA-Fa-f0-9]{3,4}(}})$");
+            var match = format.Match(self);
+            if (match.Success)
+            {
+                return new Guid(self);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        internal static string CombineUrls(string left, string right)
+        {
+            if (SPUrlUtility.IsUrlFull(right)) return right;
+
+            if (right.StartsWith(left)) return right;
+            return SPUrlUtility.CombineUrl(left, right);
+        }
+
+        internal static bool IsNullOrDefault<T>(T argument)
+        {
+            // deal with normal scenarios
+            if (argument == null) return true;
+            if (Equals(argument, default(T))) return true;
+
+            // deal with non-null nullables
+            var methodType = typeof(T);
+            if (Nullable.GetUnderlyingType(methodType) != null) return false;
+
+            // deal with boxed value types
+            var argumentType = argument.GetType();
+            if (argumentType.IsValueType && argumentType != methodType)
+            {
+                object obj = Activator.CreateInstance(argument.GetType());
+                return obj.Equals(argument);
+            }
+
+            return false;
+        }
+
         internal static object GetDefaultValue(Type t)
         {
             if (t.IsValueType)

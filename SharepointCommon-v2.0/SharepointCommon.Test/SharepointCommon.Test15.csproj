@@ -100,7 +100,14 @@
     <Compile Include="AssertTests.cs" />
     <Compile Include="CamlQueryTests.cs" />
     <Compile Include="CastleTests.cs" />
+    <Compile Include="CustomFields\Contract.cs" />
+    <Compile Include="CustomFields\CustomFieldTests.cs" />
+    <Compile Include="CustomFields\CustomLookupProvider.cs" />
+    <Compile Include="CustomFields\CustomLookupProviderBad.cs" />
+    <Compile Include="CustomFields\CustomMultiLookupProvider.cs" />
     <Compile Include="DocumentTests.cs" />
+    <Compile Include="Entity\CascadeLookup.cs" />
+    <Compile Include="Entity\LookupWithShowField.cs" />
     <Compile Include="ER\Entities\DeletingItemAsync.cs" />
     <Compile Include="ER\Entities\DeletingItem.cs" />
     <Compile Include="ER\Entities\DeletedItemAsync.cs" />

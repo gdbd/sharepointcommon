@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
@@ -19,6 +21,7 @@ namespace SharepointCommon
     [DebuggerDisplay("Title = {Title}, Url= {Url}")]
     public class ListBase<T> : IQueryList<T> where T : Item, new()
     {
+        private readonly Type _entityType = typeof(T);
         /// <summary>
         /// do not use this constructor in code, it is only for create derived types
         /// </summary>
@@ -278,7 +281,13 @@ namespace SharepointCommon
             if (entity == null)
                 throw new SharepointCommonException(string.Format("cant found item with ID={0} in List={1}", entity.Id, List.Title));
 
-            if (recycle) forDelete.Recycle();
+            if (recycle)
+            {
+                if (List.ParentWeb.RecycleBinEnabled)
+                    forDelete.Recycle();
+                else
+                    forDelete.Delete();
+            }
             else forDelete.Delete();
         }
 
@@ -292,33 +301,15 @@ namespace SharepointCommon
 
         public virtual T ById(int id)
         {
-            SPListItem itemById;
-            try
-            {
-                itemById = List.GetItemById(id);
-            }
-            catch
-            {
-                return null;
-            }
-
+            var itemById = List.TryGetItemById(id);
             return EntityMapper.ToEntity<T>(itemById);
         }
 
         public virtual TCt ById<TCt>(int id) where TCt : Item, new()
         {
-            SPListItem itemById;
-
             string typeName = typeof(TCt).Name;
-
-            try
-            {
-                itemById = List.GetItemById(id);
-            }
-            catch
-            {
-                return null;
-            }
+            var itemById = List.TryGetItemById(id);
+            if(itemById == null) return null;
 
             var ct = GetContentType(new TCt(), true);
 
@@ -351,19 +342,94 @@ namespace SharepointCommon
 
             return EntityMapper.ToEntity<TCt>(itemByGuid);
         }
-
+        
         public virtual IEnumerable<T> ByField<TR>(Expression<Func<T, TR>> selector, TR value)
         {
             var memberAccessor = new MemberAccessVisitor();
             string fieldName = memberAccessor.GetMemberName(selector);
 
+            
             var fieldInfo = FieldMapper.ToFields<T>().FirstOrDefault(f => f.Name.Equals(fieldName));
             if (fieldInfo == null) throw new SharepointCommonException(string.Format("Field '{0}' not exist in '{1}'", fieldName, List.Title));
 
             string fieldType = fieldInfo.Type.ToString();
-            string fieldValue = value.ToString();
+  
+            var camlByField = string.Empty;
+            fieldName = fieldInfo.Name;
+
 #pragma warning disable 612,618
-            var camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName), Q.Value(fieldType, fieldValue)));
+            if (CommonHelper.IsNullOrDefault(value))
+            {
+                if (value is ValueType)
+                {
+                    camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName), Q.Value(default(TR).ToString())));
+                }
+                else
+                {
+                    camlByField = Q.Where(Q.IsNull(Q.FieldRef(fieldName)));
+                }
+            }
+            else if (fieldInfo.Type == SPFieldType.User)
+            {
+                var user = value as User;
+                int userId;
+
+                if (user.Id != 0)
+                {
+                    userId = user.Id;
+                }
+                else
+                {
+                    var person = user as Person;
+                    if (person != null)
+                    {
+                        try
+                        {
+                            var spUser = ParentWeb.Web.SiteUsers[person.Login];
+                            userId = spUser.ID;
+                        }
+                        catch (SPException)
+                        {
+                            throw new SharepointCommonException(string.Format("Person {0} not found.", person.Login));
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            var group = ParentWeb.Web.SiteGroups[user.Name];
+                            userId = @group.ID;
+                        }
+                        catch (SPException)
+                        {
+                            throw new SharepointCommonException(string.Format("Group {0} not found.", user.Name));
+                        }
+                    }
+                }
+
+                camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName, true), Q.Value(fieldType, userId.ToString())));
+            }
+            else if (fieldInfo.Type == SPFieldType.Lookup)
+            {
+                var item = value as Item;
+
+                if (item.Id != 0)
+                {
+                    camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName, true), Q.Value(fieldType, item.Id.ToString())));
+                }
+                else if (item.Title != null)
+                {
+                    camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName), Q.Value(fieldType, item.Title)));
+                }
+                else
+                {
+                    throw new SharepointCommonException("Both Id and Title are null in search value");
+                }
+            }
+            else
+            {
+                camlByField = Q.Where(Q.Eq(Q.FieldRef(fieldName), Q.Value(fieldType, value.ToString())));
+            }
 #pragma warning restore 612,618
             var itemsByField = ByCaml(List, camlByField);
             return EntityMapper.ToEntities<T>(itemsByField);
@@ -441,8 +507,8 @@ namespace SharepointCommon
             // get proprerty name
             var memberAccessor = new MemberAccessVisitor();
             string propName = memberAccessor.GetMemberName(selector);
-
-            return ContainsFieldImpl(propName);
+            var prop = _entityType.GetProperty(propName);
+            return ContainsFieldImpl(prop);
         }
 
         public virtual Field GetField(Expression<Func<T, object>> selector)
@@ -480,7 +546,7 @@ namespace SharepointCommon
             var memberAccessor = new MemberAccessVisitor();
             string propName = memberAccessor.GetMemberName(selector);
 
-            var prop = typeof(T).GetProperty(propName);
+            var prop = _entityType.GetProperty(propName);
 
             var fieldType = FieldMapper.ToFieldType(prop);
 
@@ -534,9 +600,9 @@ namespace SharepointCommon
                 });
         }
 
-        private bool ContainsFieldImpl(string propName)
+        private bool ContainsFieldImpl(PropertyInfo prop)
         {
-            var prop = typeof(T).GetProperty(propName);
+            var propName = prop.Name;
 
             var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), true);
 
@@ -550,80 +616,57 @@ namespace SharepointCommon
                 propName = FieldMapper.TranslateToFieldName(propName);
             }
 
-            // check field in list
             return List.Fields.ContainsFieldWithStaticName(propName);
         }
 
         private void EnsureFieldImpl(Field fieldInfo)
         {
-            if (ContainsFieldImpl(fieldInfo.PropName)) return;
+            if (ContainsFieldImpl(fieldInfo.Property)) return;
             
             if (fieldInfo.Type == SPFieldType.Lookup)
             {
-                if (string.IsNullOrEmpty(fieldInfo.LookupListName))
-                    throw new SharepointCommonException(string.Format("LookupListName must be set for lookup fields. ({0})", fieldInfo.Name));
+                if (string.IsNullOrEmpty(fieldInfo.LookupList))
+                    throw new SharepointCommonException(string.Format("LookupList must be set for lookup fields. ({0})", fieldInfo.Name));
 
-                var lookupList = ParentWeb.Web.Lists.TryGetList(fieldInfo.LookupListName);
+                var lookupList = ParentWeb.Web.TryGetListByNameOrUrlOrId(fieldInfo.LookupList);
 
                 if (lookupList == null)
-                    throw new SharepointCommonException(string.Format("List {0} not found on {1}", fieldInfo.LookupListName, ParentWeb.Web.Url));
+                    throw new SharepointCommonException(string.Format("List {0} not found on {1}", fieldInfo.LookupList, ParentWeb.Web.Url));
 
                 List.Fields.AddLookup(fieldInfo.Name, lookupList.ID, false);
-                
-                var field = (SPFieldLookup)List.Fields.GetFieldByInternalName(fieldInfo.Name);
-
-                var isChanged = FieldMapper.SetFieldAdditionalInfo(field, fieldInfo);
-
-                if (!string.IsNullOrEmpty(fieldInfo.LookupField) && fieldInfo.LookupField != "Title")
-                {
-                    field.LookupField = fieldInfo.LookupField;
-                    isChanged = true;
-                }
-
-                if (fieldInfo.IsMultiValue)
-                {
-                    field.AllowMultipleValues = true;
-                    isChanged = true;
-                }
-
-                if (isChanged)
-                {
-                    field.Update();
-                }
-
-                return;
             }
+            else if (fieldInfo.Type == SPFieldType.Invalid && fieldInfo.FieldAttribute.FieldProvider != null)
+            {
+                var customPropAttrs = (CustomPropertyAttribute[])Attribute.GetCustomAttributes(fieldInfo.Property, typeof(CustomPropertyAttribute));
 
-            if (fieldInfo.Type == SPFieldType.Choice)
+                var sb = new StringBuilder();
+                var xv = new XmlTextWriter(new StringWriter(sb));
+                xv.WriteStartElement("Field");
+
+                xv.WriteAttributeString("ID", Guid.NewGuid().ToString());
+                xv.WriteAttributeString("Type", fieldInfo.FieldAttribute.FieldProvider.FieldTypeAsString);
+                xv.WriteAttributeString("DisplayName", fieldInfo.Name);
+
+                foreach (var customProp in customPropAttrs)
+                {
+                    xv.WriteAttributeString(customProp.Name, customProp.Value);
+                }
+
+                xv.WriteEndElement();
+
+                Mockable.AddFieldAsXml(List.Fields, sb.ToString());
+
+              //  List.Fields.AddFieldAsXml(sb.ToString());
+            }
+            else
             {
                 List.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
-                var field = (SPFieldChoice)List.Fields.GetFieldByInternalName(fieldInfo.Name);
-
-                var choices = fieldInfo.Choices.ToArray();
-                
-                field.Choices.AddRange(choices);
-                field.DefaultValue = field.Choices[0];
-
-                FieldMapper.SetFieldAdditionalInfo(field, fieldInfo);
-                field.Update();
-
-                return;
             }
+            
+            //var field = List.Fields.GetFieldByInternalName(fieldInfo.Name);
+            var field = Mockable.GetFieldByInternalName(List.Fields, fieldInfo.Name);
 
-            List.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
-
-            var field2 = List.Fields.GetFieldByInternalName(fieldInfo.Name);
-
-            FieldMapper.SetFieldAdditionalInfo(field2, fieldInfo);
-
-            if (fieldInfo.Type == SPFieldType.User && fieldInfo.IsMultiValue)
-            {
-                var f = (SPFieldLookup)field2;
-                Assert.NotNull(f);
-                f.AllowMultipleValues = true;
-            }
-
-            field2.Update();
+            Mockable.FieldMapper_SetFieldProperties(field, fieldInfo);
         }
 
         private SPListItem GetItemByEntity(T entity)

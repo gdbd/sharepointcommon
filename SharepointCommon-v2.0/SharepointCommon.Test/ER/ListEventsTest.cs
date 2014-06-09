@@ -199,7 +199,7 @@ namespace SharepointCommon.Test.ER
                     throw UpdatingItem.Exception;
 
                 ValidateCustomItem(UpdatingItem.ReceivedOrig, origCopy);
-                ValidateCustomItem(UpdatingItem.ReceivedChanged, entity);
+                ValidateCustomItem(UpdatingItem.ReceivedChanged, entity, true);
             }
         }
 

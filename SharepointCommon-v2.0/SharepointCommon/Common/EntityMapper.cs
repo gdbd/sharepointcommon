@@ -21,13 +21,15 @@ namespace SharepointCommon.Common
             _proxyGenerator = new ProxyGenerator();
         }
 
-        internal static IEnumerable<T> ToEntities<T>(SPListItemCollection items)
+        internal static IEnumerable<T> ToEntities<T>(SPListItemCollection items) where T : Item
         {
             return items.Cast<SPListItem>().Select(i => ToEntity<T>(i));
         }
 
-        internal static T ToEntity<T>(SPListItem listItem, bool reloadLookupItem = true)
+        internal static T ToEntity<T>(SPListItem listItem, bool reloadLookupItem = true) where T : Item
         {
+            if (listItem == null) return null;
+
             var itemType = typeof(T);
             var props = itemType.GetProperties();
 
@@ -39,24 +41,23 @@ namespace SharepointCommon.Common
 
             var entity = _proxyGenerator.CreateClassProxy(
                 itemType, 
-                new LookupAccessInterceptor(listItem, reloadLookupItem),
                 new DocumentAccessInterceptor(listItem),
                 new ItemAccessInterceptor(listItem, reloadLookupItem));
             
             return (T)entity;
         }
-        
+
         internal static object ToEntityField(PropertyInfo prop, SPListItem listItem, bool reloadLookupItem = true)
         {
             string propName = prop.Name;
             Type propType = prop.PropertyType;
 
-            var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), true);
+            var fieldAttrs = (FieldAttribute[])prop.GetCustomAttributes(typeof(FieldAttribute), true);
 
             string spPropName;
             if (fieldAttrs.Length != 0)
             {
-                spPropName = ((FieldAttribute)fieldAttrs[0]).Name;
+                spPropName = fieldAttrs[0].Name;
                 if (spPropName == null) spPropName = propName;
             }
             else
@@ -78,7 +79,7 @@ namespace SharepointCommon.Common
                     if (spUser == null)
                     {
                         if (listItem[spPropName] == null) return null;
-                        var userValue = new SPFieldUserValue(listItem.Web,listItem[spPropName].ToString());
+                        var userValue = new SPFieldUserValue(listItem.Web, listItem[spPropName].ToString());
                         return _proxyGenerator.CreateClassProxy<User>(new UserAccessInterceptor(userValue));
                     }
                     else
@@ -94,27 +95,45 @@ namespace SharepointCommon.Common
                 }
             }
 
-            if (field.Type == SPFieldType.Lookup)
+            // lookup
+            if ((field.Type == SPFieldType.Lookup /*|| field.Type == SPFieldType.Invalid*/) && typeof(Item).IsAssignableFrom(propType))
             {
-                //var fieldLookup = (SPFieldLookup)field;
+                var attr = fieldAttrs[0];
 
-                if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(IEnumerable<>)) == false)
+                try
                 {
-                    var lookup = _proxyGenerator.CreateClassProxy(
-                        propType, new LookupAccessInterceptor(listItem));
-                    return lookup;
+                    var meth = typeof(EntityMapper).GetMethod("GetLookupItem", BindingFlags.Static | BindingFlags.NonPublic);
+                    var methGeneric = meth.MakeGenericMethod(propType);
+                    return methGeneric.Invoke(null, new[] { field, fieldValue, attr });
                 }
-                else
+                catch (TargetInvocationException e)
                 {
+                    throw e.InnerException;
+                }
+            }
+
+            //multi lookup
+            if ((field.Type == SPFieldType.Lookup /*|| field.Type == SPFieldType.Invalid*/) &&
+                (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(IEnumerable<>))))
+            {
+                var attr = fieldAttrs[0];
                     var lookupType = propType.GetGenericArguments()[0];
 
-                    var t = typeof(LookupIterator<>);
-                    var gt = t.MakeGenericType(lookupType);
-
-                    object instance = Activator.CreateInstance(gt, field, listItem, reloadLookupItem);
-
-                    return instance;
+                if (!typeof(Item).IsAssignableFrom(lookupType)) 
+                {
+                    throw new SharepointCommonException(string.Format("Type {0} cannot be used as lookup", lookupType));
                 }
+
+                try
+                {
+                    var meth = typeof(EntityMapper).GetMethod("GetLookupItems", BindingFlags.Static | BindingFlags.NonPublic);
+                    var methGeneric = meth.MakeGenericMethod(lookupType);
+                    return methGeneric.Invoke(null, new object[] { field, listItem, attr, reloadLookupItem });
+                }
+                catch (TargetInvocationException e)
+                {
+                    throw e.InnerException;
+            }
             }
 
             if (field.Type == SPFieldType.Guid)
@@ -247,8 +266,7 @@ namespace SharepointCommon.Common
                 if (fieldValue == null) return null;
                 if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(IEnumerable<>)) == false)
                 {
-                    var lookup = _proxyGenerator.CreateClassProxy(
-                        propType, new LookupAccessInterceptor(value, list));
+                    var lookup = _proxyGenerator.CreateClassProxy(propType);
                     return lookup;
                 }
                 else
@@ -615,6 +633,103 @@ namespace SharepointCommon.Common
                     throw new SharepointCommonException("Cannot use [Person] as mapped property. Use [User] instead.");
 
                 listItem[spName] = propValue;
+            }
+        }
+        
+        private static T GetLookupItem<T>(SPField field, object value, FieldAttribute attr) where T : Item
+        {
+            if (field.Type == SPFieldType.Lookup)
+            {
+                var spfl = (SPFieldLookup)field;
+                if (string.IsNullOrEmpty(spfl.LookupList))
+                {
+                    throw new SharepointCommonException(string.Format("It seems that {0} in [{1}] is broken",
+                        field.InternalName, field.ParentList.RootFolder.Url));
+                }
+
+                var lookupList = field.ParentList.ParentWeb.Lists[new Guid(spfl.LookupList)];
+
+                // Lookup with picker (ilovesharepoint) returns SPFieldLookupValue
+
+                var lkpValue = value as SPFieldLookupValue ?? new SPFieldLookupValue((string)value ?? string.Empty);
+                if (lkpValue.LookupId == 0) return null;
+
+
+                return ToEntity<T>(lookupList.TryGetItemById(lkpValue.LookupId));
+            }
+            else if (attr.FieldProvider != null)
+            {
+                var providerType = attr.FieldProvider.GetType();
+                var method = providerType.GetMethod("GetLookupItem");
+
+                if (method.DeclaringType == typeof(CustomFieldProvider))
+                {
+                    throw new SharepointCommonException(string.Format("Must override GetLookupItem in {0} to get custom lookups field working.", providerType));
+                }
+
+                return ToEntity<T>(attr.FieldProvider.GetLookupItem(field, value));
+            }
+            else
+            {
+                Assert.Inconsistent();
+                return null;
+            }
+        }
+
+        private static IEnumerable<T> GetLookupItems<T>(SPField field, SPListItem listItem, FieldAttribute attr, bool reloadLookupItem = true) where T : Item
+        {
+            if (field.Type == SPFieldType.Lookup)
+            {
+                var spfl = (SPFieldLookup)field;
+
+                // Reload item, because it may been changed before lazy load requested
+
+                var web = listItem.Web;
+                var item = listItem;
+
+                if (reloadLookupItem)
+                {
+                    var list = web.Lists[listItem.ParentList.ID];
+                    item = list.GetItemById(listItem.ID);
+                }
+                var lkplist = web.Lists[new Guid(spfl.LookupList)];
+
+
+                var lkpValues = new SPFieldLookupValueCollection(item[spfl.InternalName] != null
+                            ? item[spfl.InternalName].ToString() : string.Empty);
+
+                foreach (var lkpValue in lkpValues)
+                {
+                    if (lkpValue.LookupId == 0) yield return null;
+
+                    yield return ToEntity<T>(lkplist.TryGetItemById(lkpValue.LookupId));
+                }
+            }
+            else if (attr.FieldProvider != null)
+            {
+                var providerType = attr.FieldProvider.GetType();
+                var method = providerType.GetMethod("GetLookupItem");
+
+                if (method.DeclaringType == typeof(CustomFieldProvider))
+                {
+                    throw new SharepointCommonException(string.Format("Must override GetLookupItem in {0} to get custom lookups field work.", providerType));
+                }
+
+                var web = listItem.Web;
+                var list = web.Lists[listItem.ParentList.ID];
+                var item = list.GetItemById(listItem.ID);
+
+                var lkpValues = (SPFieldLookupValueCollection)item[field.InternalName];
+
+                foreach (var lkpValue in lkpValues)
+                {
+                    var lookupItem = attr.FieldProvider.GetLookupItem(field, lkpValue);
+                    yield return ToEntity<T>(lookupItem);
+                }
+            }
+            else
+            {
+                Assert.Inconsistent();
             }
         }
     }
