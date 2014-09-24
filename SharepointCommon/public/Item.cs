@@ -63,7 +63,7 @@ namespace SharepointCommon
         /// <returns>inner name of underlying mapped SPField</returns>
         public static string GetFieldName<T>(Expression<Func<T, object>> fieldSelector) where T : Item, new()
         {
-            return ItemExtention.GetFieldName(new T(), fieldSelector);
+            return ItemExtention.GetFieldName(null, fieldSelector);
         }
     }
 }
