@@ -493,13 +493,17 @@ namespace SharepointCommon.Common
                 var list = web.Lists[listItem.ParentList.ID];
                 var item = list.GetItemById(listItem.ID);
 
-                var lkpValues = (SPFieldLookupValueCollection)item[field.InternalName];
+                var val = item[field.InternalName];
 
-                foreach (var lkpValue in lkpValues)
+                if (val is IEnumerable)
                 {
-                    var lookupItem = attr.FieldProvider.GetLookupItem(field, lkpValue);
-                    yield return ToEntity<T>(lookupItem);
+                    foreach (var lkpValue in (IEnumerable)val)
+                    {
+                        var lookupItem = attr.FieldProvider.GetLookupItem(field, lkpValue);
+                        yield return ToEntity<T>(lookupItem);
+                    }
                 }
+                else throw new SharepointCommonException("custom multilookup value not enumerable!");
             }
             else
             {
