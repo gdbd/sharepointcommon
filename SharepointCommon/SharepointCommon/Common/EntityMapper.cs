@@ -235,10 +235,12 @@ namespace SharepointCommon.Common
 
                 // var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), false);
                 var fieldAttrs = Attribute.GetCustomAttributes(prop, typeof(FieldAttribute));
+                CustomFieldProvider customFieldProvider = null;
                 if (fieldAttrs.Length != 0)
                 {
                     spName = ((FieldAttribute)fieldAttrs[0]).Name;
                     if (spName == null) spName = prop.Name;
+                    customFieldProvider = ((FieldAttribute)fieldAttrs[0]).FieldProvider;
                 }
                 else
                 {
@@ -318,8 +320,24 @@ namespace SharepointCommon.Common
                 {
                     Assert.IsPropertyVirtual(prop);
 
-                    var lookup = new SPFieldLookupValue(((Item)propValue).Id, string.Empty);
-                    listItem[spName] = lookup;
+                    if (customFieldProvider == null)
+                    {
+                        var lookup = new SPFieldLookupValue(((Item)propValue).Id, string.Empty);
+                        listItem[spName] = lookup;
+                    }
+                    else
+                    {
+                        var providerType = customFieldProvider.GetType();
+                        var method = providerType.GetMethod("SetLookupItem");
+
+                        if (method.DeclaringType == typeof(CustomFieldProvider))
+                        {
+                            throw new SharepointCommonException(string.Format("Must override 'SetLookupItem' in {0} to get custom lookups field working.", providerType));
+                        }
+
+                        var value = customFieldProvider.SetLookupItem(propValue);
+                        listItem[spName] = value;
+                    }
                     continue;
                 }
 
@@ -382,15 +400,32 @@ namespace SharepointCommon.Common
                     {
                         var lookupvalues = propValue as IEnumerable;
 
-                        var spLookupValues = new SPFieldLookupValueCollection();
-
-                        foreach (Item lookupvalue in lookupvalues)
+                        if (customFieldProvider == null)
                         {
-                            var val = new SPFieldLookupValue();
-                            val.LookupId = lookupvalue.Id;
-                            spLookupValues.Add(val);
+                            var spLookupValues = new SPFieldLookupValueCollection();
+
+                            foreach (Item lookupvalue in lookupvalues)
+                            {
+                                var val = new SPFieldLookupValue();
+                                val.LookupId = lookupvalue.Id;
+                                spLookupValues.Add(val);
+                            }
+
+                            listItem[spName] = spLookupValues;
                         }
-                        listItem[spName] = spLookupValues;
+                        else
+                        {
+                            var providerType = customFieldProvider.GetType();
+                            var method = providerType.GetMethod("SetLookupItem");
+
+                            if (method.DeclaringType == typeof(CustomFieldProvider))
+                            {
+                                throw new SharepointCommonException(string.Format("Must override 'SetLookupItem' in {0} to get custom lookups field working.", providerType));
+                            }
+
+                            var values = customFieldProvider.SetLookupItem(propValue);
+                            listItem[spName] = values;
+                        }
                     }
                     continue;
                 }
@@ -494,6 +529,7 @@ namespace SharepointCommon.Common
                 var item = list.GetItemById(listItem.ID);
 
                 var val = item[field.InternalName];
+                if(val == null) yield break;
 
                 if (val is IEnumerable)
                 {
