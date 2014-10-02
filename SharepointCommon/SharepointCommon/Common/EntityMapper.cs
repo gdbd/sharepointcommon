@@ -97,17 +97,7 @@ namespace SharepointCommon.Common
             if ((field.Type == SPFieldType.Lookup || field.Type == SPFieldType.Invalid) && typeof(Item).IsAssignableFrom(propType))
             {
                 var attr = fieldAttrs[0];
-
-                try
-                {
-                    var meth = typeof(EntityMapper).GetMethod("GetLookupItem", BindingFlags.Static | BindingFlags.NonPublic);
-                    var methGeneric = meth.MakeGenericMethod(propType);
-                    return methGeneric.Invoke(null, new[] { field, fieldValue, attr });
-                }
-                catch (TargetInvocationException e)
-                {
-                    throw e.InnerException;
-                }
+                return GetLookupItemUntype(propType, field, fieldValue, attr);
             }
 
             //multi lookup
@@ -169,6 +159,14 @@ namespace SharepointCommon.Common
                     {
                         return fieldValue == null ? (int?)null : Convert.ToInt32(fieldValue);
                     }
+                }
+
+                if (typeof(Item).IsAssignableFrom(propType))
+                {
+                    if(fieldAttrs.Length == 0 || string.IsNullOrEmpty(fieldAttrs[0].LookupList))
+                        throw  new SharepointCommonException("To map number field as Item it need been marked with 'FieldAttribute' and set 'LookupList' property");
+                    var attr = fieldAttrs[0];
+                    return GetLookupItemUntype(propType, field, fieldValue, attr);
                 }
             }
 
@@ -450,8 +448,22 @@ namespace SharepointCommon.Common
                 listItem[spName] = propValue;
             }
         }
-        
-        private static T GetLookupItem<T>(SPField field, object value, FieldAttribute attr) where T : Item
+
+        private static object GetLookupItemUntype(Type propType, SPField field, object value, FieldAttribute attr)
+        {
+            try
+            {
+                var meth = typeof(EntityMapper).GetMethod("GetLookupItem", BindingFlags.Static | BindingFlags.NonPublic);
+                var methGeneric = meth.MakeGenericMethod(propType);
+                return methGeneric.Invoke(null, new[] { field, value, attr });
+            }
+            catch (TargetInvocationException e)
+            {
+                throw e.InnerException;
+            }
+        }
+
+        private static T GetLookupItem<T>(SPField field, object value, FieldAttribute attr) where T : Item, new()
         {
             if (field.Type == SPFieldType.Lookup)
             {
@@ -471,6 +483,11 @@ namespace SharepointCommon.Common
 
 
                 return ToEntity<T>(lookupList.TryGetItemById(lkpValue.LookupId));
+            }
+            else if (field.Type == SPFieldType.Number)
+            {
+                var lookupList = field.ParentList.ParentWeb.TryGetListByNameOrUrlOrId(attr.LookupList);
+                return ToEntity<T>(lookupList.TryGetItemById(Convert.ToInt32(value)));
             }
             else if (attr.FieldProvider != null)
             {
