@@ -39,10 +39,17 @@ namespace SharepointCommon
             var value = prop.GetValue(self, null);
             var enumType = prop.PropertyType;
 
-            if (!enumType.IsEnum)
+            if (enumType.IsEnum == false)
             {
-                throw new SharepointCommonException("selected property not a choice(must be mapped as enum)");
+                if (CommonHelper.ImplementsOpenGenericInterface(prop.PropertyType, typeof(Nullable<>)))
+                {
+                    Type argumentType = prop.PropertyType.GetGenericArguments()[0];
+                    if (argumentType.IsEnum == false)
+                        throw new SharepointCommonException("selected property not a choice(must be mapped as enum)");
+                    enumType = argumentType;
+                }
             }
+           
 
             var enumField = enumType.GetField(value.ToString());
             var attr = (FieldAttribute)Attribute.GetCustomAttribute(enumField, typeof(FieldAttribute));
@@ -69,9 +76,15 @@ namespace SharepointCommon
             var prop = typeof(T).GetProperty(propName);
             var enumType = prop.PropertyType;
 
-            if (!enumType.IsEnum)
+            if (enumType.IsEnum == false)
             {
-                throw new SharepointCommonException("selected property not a choice(must be mapped as enum)");
+                if (CommonHelper.ImplementsOpenGenericInterface(prop.PropertyType, typeof(Nullable<>)))
+                {
+                    Type argumentType = prop.PropertyType.GetGenericArguments()[0];
+                    if (argumentType.IsEnum == false)
+                        throw new SharepointCommonException("selected property not a choice(must be mapped as enum)");
+                    enumType = argumentType;
+                }
             }
 
             ValueType val = null;
