@@ -1637,6 +1637,23 @@ namespace SharepointCommon.Test
             }
         }
 
+        [Test]
+        public void Map_Number_To_Item_Test()
+        {
+            using (var ts = new TestListScope<NumberAsLookupCreate>("Map_Number_To_Item_Test"))
+            {
+                var entity = new Item { };
+                _listForLookup.Add(entity);
+                ts.List.Add(new NumberAsLookupCreate { CustomLookup = entity.Id, });
+
+                var list = ts.Web.GetById<NumberAsLookupTest>(ts.List.Id);
+                var item = list.Items(CamlQuery.Default).Last();
+                var cl = item.CustomLookup;
+
+                Assert.That(entity.Id, Is.EqualTo(cl.Id));
+            }
+        }
+
         #endregion
 
         #region Fields Tests

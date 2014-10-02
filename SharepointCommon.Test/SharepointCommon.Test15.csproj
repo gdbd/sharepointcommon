@@ -107,6 +107,7 @@
     <Compile Include="CustomFields\CustomMultiLookupProvider.cs" />
     <Compile Include="DocumentTests.cs" />
     <Compile Include="Entity\CascadeLookup.cs" />
+    <Compile Include="Entity\NumberAsLookup.cs" />
     <Compile Include="Entity\LookupWithShowField.cs" />
     <Compile Include="Entity\ItemWithNoMappedProperty.cs" />
     <Compile Include="Entity\NullableItem.cs" />
