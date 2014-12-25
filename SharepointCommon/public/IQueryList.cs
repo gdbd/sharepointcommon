@@ -80,8 +80,8 @@ namespace SharepointCommon
         /// </summary>
         string RelativeUrl { get; }
 
-        void AddEventReciver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>;
-        void RemoveEventReciver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>;
+        void AddEventReceiver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>;
+        void RemoveEventReceiver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>;
 
         /// <summary>
         /// Gets the url of specific list form

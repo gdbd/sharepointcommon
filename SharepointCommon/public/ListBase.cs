@@ -132,12 +132,12 @@ namespace SharepointCommon
         public virtual string Url { get { return ParentWeb.Web.Url + "/" + List.RootFolder.Url; } }
         public virtual string RelativeUrl { get { return List.RootFolder.Url; } }
 
-        public void AddEventReciver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>
+        public void AddEventReceiver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>
         {
             ListEventMgr.RegisterEventReceivers<TEventReceiver>(List);
         }
 
-        public void RemoveEventReciver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>
+        public void RemoveEventReceiver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>
         {
             ListEventMgr.RemoveEventReceiver<TEventReceiver>(List);
         }

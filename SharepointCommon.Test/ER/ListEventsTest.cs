@@ -43,12 +43,12 @@ namespace SharepointCommon.Test.ER
         {
             using (var ts = new TestListScope<AddRemoveTest>("Add_Remove_Receiever_Test"))
             {
-                ts.List.AddEventReciver<AddRemoveReceiver>();
+                ts.List.AddEventReceiver<AddRemoveReceiver>();
                 var entity = new AddRemoveTest { Title = "test1", TheText = "test2" };
                 ts.List.Add(entity);
                 Assert.True(AddRemoveTest.IsAddCalled, "Not fired added receiver!");
 
-                ts.List.RemoveEventReciver<AddRemoveReceiver>();
+                ts.List.RemoveEventReceiver<AddRemoveReceiver>();
                 entity.Title = "asd-asd";
                 ts.List.Update(entity, true);
                 Assert.False(AddRemoveTest.IsUpdateCalled, "Fired after receiver was removed!");
@@ -65,7 +65,7 @@ namespace SharepointCommon.Test.ER
         {
             using (var ts = new TestListScope<AddedItem>("Is_Added_Sync_Called_Test", true))
             {
-                ts.List.AddEventReciver<AddedReceiver>();
+                ts.List.AddEventReceiver<AddedReceiver>();
 
                 var entity = FillCusomItem<AddedItem>(ts);
                 entity.TheText = "test2";
@@ -85,7 +85,7 @@ namespace SharepointCommon.Test.ER
         {
             using (var ts = new TestListScope<AddedItemAsync>("Is_Added_Async_Called_Test", true))
             {
-                ts.List.AddEventReciver<AddedReceiverAsync>();
+                ts.List.AddEventReceiver<AddedReceiverAsync>();
                 var entity = FillCusomItem(ts);
                 ts.List.Add(entity);
 
@@ -105,7 +105,7 @@ namespace SharepointCommon.Test.ER
         {
             using (var ts = new TestListScope<AddingItem>("Is_Adding_Sync_Called_Test", true))
             {
-                ts.List.AddEventReciver<AddingReceiver>();
+                ts.List.AddEventReceiver<AddingReceiver>();
                 var entity = FillCusomItem(ts);
                 ts.List.Add(entity);
                 Assert.True(AddingItem.IsAddCalled, "Not fired added receiver!");
@@ -123,7 +123,7 @@ namespace SharepointCommon.Test.ER
             using (var ts = new TestListScope<AddingItemAsync>("Is_Register_Adding_Async_Throws_Test"))
             {
                 Assert.Throws<SharepointCommonException>(() =>
-                    ts.List.AddEventReciver<AddingReceiverAsync>());
+                    ts.List.AddEventReceiver<AddingReceiverAsync>());
             }
         }
 
@@ -136,7 +136,7 @@ namespace SharepointCommon.Test.ER
         {
             using (var ts = new TestListScope<UpdatedItem>("Is_Updated_Sync_Called_Test", true))
             {
-                ts.List.AddEventReciver<UpdatedReceiver>();
+                ts.List.AddEventReceiver<UpdatedReceiver>();
                 var entity = FillCusomItem(ts);
                 ts.List.Add(entity);
 
@@ -158,7 +158,7 @@ namespace SharepointCommon.Test.ER
         {
             using (var ts = new TestListScope<UpdatedItemAsync>("Is_Updated_Async_Called_Test", true))
             {
-                ts.List.AddEventReciver<UpdatedReceiverAsync>();
+                ts.List.AddEventReceiver<UpdatedReceiverAsync>();
                 var entity = FillCusomItem(ts);
                 ts.List.Add(entity);
 
@@ -183,7 +183,7 @@ namespace SharepointCommon.Test.ER
         {
             using (var ts = new TestListScope<UpdatingItem>("Is_Updating_Sync_Called_Test", true))
             {
-                ts.List.AddEventReciver<UpdatingReceiver>();
+                ts.List.AddEventReceiver<UpdatingReceiver>();
                 var entity = FillCusomItem(ts);
                 ts.List.Add(entity);
 
@@ -209,7 +209,7 @@ namespace SharepointCommon.Test.ER
             using (var ts = new TestListScope<UpdatingItemAsync>("Is_Updating_Async_Called_Test"))
             {
                 Assert.Throws<SharepointCommonException>(
-                    () => ts.List.AddEventReciver<UpdatingReceiverAsync>());
+                    () => ts.List.AddEventReceiver<UpdatingReceiverAsync>());
             }
         }
 
@@ -222,7 +222,7 @@ namespace SharepointCommon.Test.ER
         {
             using (var ts = new TestListScope<DeletedItem>("Is_Deleted_Sync_Called_Test"))
             {
-                ts.List.AddEventReciver<DeletedReceiver>();
+                ts.List.AddEventReceiver<DeletedReceiver>();
                 var entity = new DeletedItem { Title = "test1", TheText = "test2" };
                 ts.List.Add(entity);
                 ts.List.Delete(entity, false);
@@ -239,7 +239,7 @@ namespace SharepointCommon.Test.ER
         {
             using (var ts = new TestListScope<DeletedItemAsync>("Is_Deleted_Async_Called_Test"))
             {
-                ts.List.AddEventReciver<DeletedReceiverAsync>();
+                ts.List.AddEventReceiver<DeletedReceiverAsync>();
                 var entity = new DeletedItemAsync { Title = "test1", TheText = "test2" };
                 ts.List.Add(entity);
                 ts.List.Delete(entity, false);
@@ -259,7 +259,7 @@ namespace SharepointCommon.Test.ER
         {
             using (var ts = new TestListScope<DeletingItem>("Is_Deleteing_Sync_Called_Test", true))
             {
-                ts.List.AddEventReciver<DeletingReceiver>();
+                ts.List.AddEventReceiver<DeletingReceiver>();
                 var entity = FillCusomItem(ts);
                 ts.List.Add(entity);
                 ts.List.Delete(entity,false);
@@ -278,7 +278,7 @@ namespace SharepointCommon.Test.ER
             using (var ts = new TestListScope<DeletingItemAsync>("Is_Deleting_Async_Throws_Test"))
             {
                 Assert.Throws<SharepointCommonException>(
-                    () => ts.List.AddEventReciver<DeletingReceiverAsync>());
+                    () => ts.List.AddEventReceiver<DeletingReceiverAsync>());
             }
         }
 
