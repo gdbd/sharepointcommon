@@ -37,6 +37,9 @@ namespace SharepointCommon
 
             var prop = typeof(T).GetProperty(propName);
             var value = prop.GetValue(self, null);
+
+            if(value == null) return null;
+
             var enumType = prop.PropertyType;
 
             if (enumType.IsEnum == false)
@@ -50,7 +53,6 @@ namespace SharepointCommon
                 }
             }
            
-
             var enumField = enumType.GetField(value.ToString());
             var attr = (FieldAttribute)Attribute.GetCustomAttribute(enumField, typeof(FieldAttribute));
 
