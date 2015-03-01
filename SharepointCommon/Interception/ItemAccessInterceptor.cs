@@ -79,7 +79,7 @@ namespace SharepointCommon.Interception
                 return;
             }
 
-            var value = EntityMapper.ToEntityField(prop, _listItem, _reloadLookupItem);
+            var value = EntityMapper.ToEntityField(prop, _listItem, reloadLookupItem: _reloadLookupItem);
 
             invocation.ReturnValue = value;
         }

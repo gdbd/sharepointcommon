@@ -47,7 +47,8 @@ namespace SharepointCommon.Common
             return (T)entity;
         }
 
-        internal static object ToEntityField(PropertyInfo prop, SPListItem listItem, bool reloadLookupItem = true)
+        internal static object ToEntityField(PropertyInfo prop, SPListItem listItem, SPField field = null,
+            object value = null, bool reloadLookupItem = true)
         {
             string propName = prop.Name;
             Type propType = prop.PropertyType;
@@ -65,9 +66,14 @@ namespace SharepointCommon.Common
                 spPropName = FieldMapper.TranslateToFieldName(propName);
             }
 
-            var field = listItem.Fields.TryGetFieldByStaticName(spPropName);
-            if (field == null) throw new SharepointCommonException(string.Format("Field '{0}' not exist", propName));
-            object fieldValue = listItem[spPropName];
+            if (field == null)
+            {
+                field = listItem.Fields.TryGetFieldByStaticName(spPropName);
+                if (field == null) throw new SharepointCommonException(string.Format("Field '{0}' not exist", propName));
+            }
+            object fieldValue = value ?? listItem[spPropName];
+
+            //------------------------------------
 
             if (field.Type == SPFieldType.User)
             {
@@ -75,11 +81,11 @@ namespace SharepointCommon.Common
                 Assert.NotNull(f);
                 if (f.AllowMultipleValues == false)
                 {
-                    var spUser = CommonHelper.GetUser(listItem, spPropName);
-                    if (spUser == null)
+                    var spUser = CommonHelper.GetUser(field.ParentList, spPropName, fieldValue);
+                    if (spUser == null)//todo: why?
                     {
-                        if (listItem[spPropName] == null) return null;
-                        var userValue = new SPFieldUserValue(listItem.Web, listItem[spPropName].ToString());
+                        if (fieldValue == null) return null;
+                        var userValue = new SPFieldUserValue(field.ParentList.ParentWeb, fieldValue.ToString());
                         return _proxyGenerator.CreateClassProxy<User>(new UserAccessInterceptor(userValue));
                     }
                     else
@@ -89,7 +95,7 @@ namespace SharepointCommon.Common
                 }
                 else
                 {
-                    var spUsers = CommonHelper.GetUsers(listItem, spPropName);
+                    var spUsers = CommonHelper.GetUsers(field.ParentList, spPropName, fieldValue);
                     var users = new UserIterator(spUsers);
                     return users;
                 }
@@ -117,9 +123,9 @@ namespace SharepointCommon.Common
                 (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(IEnumerable<>))))
             {
                 var attr = fieldAttrs[0];
-                    var lookupType = propType.GetGenericArguments()[0];
+                var lookupType = propType.GetGenericArguments()[0];
 
-                if (!typeof(Item).IsAssignableFrom(lookupType)) 
+                if (!typeof(Item).IsAssignableFrom(lookupType))
                 {
                     throw new SharepointCommonException(string.Format("Type {0} cannot be used as lookup", lookupType));
                 }
@@ -128,12 +134,13 @@ namespace SharepointCommon.Common
                 {
                     var meth = typeof(EntityMapper).GetMethod("GetLookupItems", BindingFlags.Static | BindingFlags.NonPublic);
                     var methGeneric = meth.MakeGenericMethod(lookupType);
-                    return methGeneric.Invoke(null, new object[] { field, listItem, attr, reloadLookupItem });
+                    var itmId = listItem == null ? null : (int?)listItem.ID;
+                    return methGeneric.Invoke(null, new[] { field, fieldValue, attr, itmId, reloadLookupItem });
                 }
                 catch (TargetInvocationException e)
                 {
                     throw e.InnerException;
-            }
+                }
             }
 
             if (field.Type == SPFieldType.Guid)
@@ -144,10 +151,11 @@ namespace SharepointCommon.Common
 
             if (field.Type == SPFieldType.Note)
             {
-                var field1 = (SPFieldMultiLineText)field;
                 if (fieldValue == null) return null;
-                var text = field1.GetFieldValueAsText(fieldValue);
+                
+                var text = ((SPFieldMultiLineText)field).GetFieldValueAsText(fieldValue);
                 return text;
+
             }
 
             if (propName == "Version")
@@ -164,12 +172,39 @@ namespace SharepointCommon.Common
                     return val;
                 }
 
+                if (propType == typeof(double))
+                {
+                    var val = Convert.ToDouble(fieldValue);
+                    return val;
+                }
+
                 if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
                 {
                     Type argumentType = propType.GetGenericArguments()[0];
                     if (argumentType == typeof(int))
                     {
                         return fieldValue == null ? (int?)null : Convert.ToInt32(fieldValue);
+                    }
+                    if (argumentType == typeof(double))
+                    {
+                        return fieldValue == null ? (double?)null : Convert.ToDouble(fieldValue);
+                    }
+                }
+            }
+
+            if (field.Type == SPFieldType.Boolean)
+            {
+                if (propType == typeof(bool))
+                {
+                    var val = Convert.ToBoolean(fieldValue);
+                    return val;
+                }
+                if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
+                {
+                    var argumentType = propType.GetGenericArguments()[0];
+                    if (argumentType == typeof(bool))
+                    {
+                        return fieldValue == null ? (bool?)null : Convert.ToBoolean(fieldValue);
                     }
                 }
             }
@@ -209,207 +244,7 @@ namespace SharepointCommon.Common
 
             return fieldValue;
         }
-
-        internal static object ToEntityField(PropertyInfo prop, SPList list, object value)
-        {
-
-            string propName = prop.Name;
-            Type propType = prop.PropertyType;
-
-            var fieldAttrs = prop.GetCustomAttributes(typeof(FieldAttribute), true);
-
-            string spPropName;
-            if (fieldAttrs.Length != 0)
-            {
-                spPropName = ((FieldAttribute)fieldAttrs[0]).Name;
-                if (spPropName == null) spPropName = propName;
-            }
-            else
-            {
-                spPropName = FieldMapper.TranslateToFieldName(propName);
-            }
-
-            var field = list.Fields.TryGetFieldByStaticName(spPropName);
-            if (field == null) throw new SharepointCommonException(string.Format("Field '{0}' not exist", propName));
-            object fieldValue = value;
-
-            if (field.Type == SPFieldType.User)
-            {
-                if (fieldValue == null) return null;
-                var f = field as SPFieldLookup;
-                Assert.NotNull(f);
-                if (f.AllowMultipleValues == false)
-                {
-                    var spUser = CommonHelper.GetUser(list, spPropName, value);
-                    if (spUser == null)
-                    {
-                        if (value == null) return null;
-                        var userValue = new SPFieldUserValue(list.ParentWeb, value.ToString());
-                        return _proxyGenerator.CreateClassProxy<User>(new UserAccessInterceptor(userValue));
-                    }
-                    else
-                    {
-                        return _proxyGenerator.CreateClassProxy<Person>(new UserAccessInterceptor(spUser));
-                    }
-                }
-                else
-                {
-                    var spUsers = CommonHelper.GetUsers(list, spPropName, value);
-                    var users = new UserIterator(spUsers);
-                    return users;
-                }
-            }
-
-            if (field.Type == SPFieldType.Lookup)
-            {
-                //var fieldLookup = (SPFieldLookup)field;
-                if (fieldValue == null) return null;
-                if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(IEnumerable<>)) == false)
-                {
-                    var lookup = _proxyGenerator.CreateClassProxy(propType);
-                    return lookup;
-                }
-                else
-                {
-                    var lookupType = propType.GetGenericArguments()[0];
-
-                    var t = typeof(LookupIterator<>);
-                    var gt = t.MakeGenericType(lookupType);
-
-                    object instance = Activator.CreateInstance(gt, list, field, value);
-
-                    return instance;
-                }
-            }
-
-            if (field.Type == SPFieldType.Guid)
-            {
-                return value != null ? new Guid(fieldValue.ToString()) : Guid.Empty;
-            }
-
-            if (field.Type == SPFieldType.Note)
-            {
-                var field1 = (SPFieldMultiLineText)field;
-                if (fieldValue == null)
-                {
-                    return null;
-                   
-                }
-                return field1.GetFieldValueAsText(fieldValue);
-            }
-
-            if (field.Type == SPFieldType.Integer || field.Type == SPFieldType.Counter)
-            {
-                if (propType == typeof(int))
-                {
-                    return fieldValue != null ? Convert.ToInt32(fieldValue) : 0;
-                }
-
-                if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
-                {
-                    Type argumentType = propType.GetGenericArguments()[0];
-                    if (argumentType == typeof(int))
-                    {
-                        return fieldValue == null ? (int?)null : Convert.ToInt32(fieldValue);
-                    }
-                }
-            }
-
-            if (field.Type == SPFieldType.DateTime)
-            {
-                if (propType == typeof(DateTime))
-                {
-                    return fieldValue != null ? SPUtility.CreateDateTimeFromISO8601DateTimeString(fieldValue.ToString()) : new DateTime();
-                }
-
-                if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
-                {
-                    Type argumentType = propType.GetGenericArguments()[0];
-                    if (argumentType == typeof(DateTime))
-                    {
-                        return fieldValue == null ? (DateTime?)null : SPUtility.CreateDateTimeFromISO8601DateTimeString(fieldValue.ToString());
-                    }
-                }
-            }
-
-            if (field.Type == SPFieldType.Boolean)
-            {
-                if (propType == typeof(bool))
-                {
-                    return fieldValue != null && Convert.ToBoolean(fieldValue);
-                }
-
-                if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
-                {
-                    Type argumentType = propType.GetGenericArguments()[0];
-                    if (argumentType == typeof(bool))
-                    {
-                        return fieldValue == null ? (bool?)null : Convert.ToBoolean(fieldValue);
-                    }
-                }
-            }
-
-            if (propName == "Version")
-            {
-                return fieldValue != null ? new Version(fieldValue.ToString()) : new Version(1,0);
-            }
-
-            if (field.Type == SPFieldType.Number)
-            {
-                if (propType == typeof(double))
-                {
-                    return fieldValue != null ? Convert.ToDouble(fieldValue, CultureInfo.InvariantCulture) : 0.0;
-                }
-
-                if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
-                {
-                    Type argumentType = propType.GetGenericArguments()[0];
-                    if (argumentType == typeof(double))
-                    {
-                        return fieldValue == null ? (double?)null : Convert.ToDouble(fieldValue, CultureInfo.InvariantCulture);
-                    }
-                }
-            }
-
-            if (field.Type == SPFieldType.Currency)
-            {
-                if (propType == typeof(decimal))
-                {
-                    if (fieldValue != null)
-                        return Convert.ToDecimal(fieldValue, CultureInfo.InvariantCulture);
-                    else
-                        return (decimal)0.0;
-                }
-
-                if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
-                {
-                    Type argumentType = propType.GetGenericArguments()[0];
-                    if (argumentType == typeof(decimal))
-                    {
-                        return fieldValue == null ? (decimal?)null : Convert.ToDecimal(fieldValue, CultureInfo.InvariantCulture);
-                    }
-                }
-            }
-
-            if (field.Type == SPFieldType.Choice)
-            {
-                if (propType.IsEnum == false)
-                {
-                    if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
-                    {
-                        Type argumentType = propType.GetGenericArguments()[0];
-                        if (argumentType.IsEnum == false) throw new SharepointCommonException(string.Format("Property '{0}' must be declared as enum with fields corresponds to choices", propName));
-                        propType = argumentType;
-                    }
-                }
-
-                return EnumMapper.ToEntity(propType, fieldValue);
-            }
-
-            
-            return value;
-        }
-
+        
         internal static object ToEntity(Type entityType, SPListItem listItem, bool reloadLookupItem = true)
         {
             var entityMapper = typeof(EntityMapper);
@@ -636,6 +471,7 @@ namespace SharepointCommon.Common
             }
         }
         
+
         private static T GetLookupItem<T>(SPField field, object value, FieldAttribute attr) where T : Item
         {
             if (field.Type == SPFieldType.Lookup)
@@ -676,27 +512,24 @@ namespace SharepointCommon.Common
             }
         }
 
-        private static IEnumerable<T> GetLookupItems<T>(SPField field, SPListItem listItem, FieldAttribute attr, bool reloadLookupItem = true) where T : Item
+        private static IEnumerable<T> GetLookupItems<T>(SPField field, object value, FieldAttribute attr, int? itemId, bool reloadLookupItem) where T : Item
         {
             if (field.Type == SPFieldType.Lookup)
             {
                 var spfl = (SPFieldLookup)field;
+                var web = field.ParentList.ParentWeb;
+                var list = field.ParentList;
 
                 // Reload item, because it may been changed before lazy load requested
-
-                var web = listItem.Web;
-                var item = listItem;
-
-                if (reloadLookupItem)
+                if (itemId != null && reloadLookupItem)
                 {
-                    var list = web.Lists[listItem.ParentList.ID];
-                    item = list.GetItemById(listItem.ID);
+                    var item = list.GetItemById((int)itemId);
+                    value = item[spfl.InternalName] != null ? item[spfl.InternalName].ToString() : string.Empty;
                 }
                 var lkplist = web.Lists[new Guid(spfl.LookupList)];
 
-
-                var lkpValues = new SPFieldLookupValueCollection(item[spfl.InternalName] != null
-                            ? item[spfl.InternalName].ToString() : string.Empty);
+                var lkpValues = new SPFieldLookupValueCollection(
+                    value != null ? value.ToString() : string.Empty);
 
                 foreach (var lkpValue in lkpValues)
                 {
@@ -715,11 +548,11 @@ namespace SharepointCommon.Common
                     throw new SharepointCommonException(string.Format("Must override GetLookupItem in {0} to get custom lookups field work.", providerType));
                 }
 
-                var web = listItem.Web;
-                var list = web.Lists[listItem.ParentList.ID];
-                var item = list.GetItemById(listItem.ID);
+                //var web = listItem.Web;
+              //  var list = web.Lists[listItem.ParentList.ID];
+               // var item = list.GetItemById(listItem.ID);
 
-                var lkpValues = (SPFieldLookupValueCollection)item[field.InternalName];
+                var lkpValues = new SPFieldLookupValueCollection(value != null ? value.ToString() : string.Empty);
 
                 foreach (var lkpValue in lkpValues)
                 {

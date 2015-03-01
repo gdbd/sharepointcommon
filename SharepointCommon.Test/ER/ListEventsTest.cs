@@ -255,7 +255,7 @@ namespace SharepointCommon.Test.ER
         }
 
         [Test]
-        public void Is_Deleteing_Sync_Called_Test()
+        public void Is_Deleting_Sync_Called_Test()
         {
             using (var ts = new TestListScope<DeletingItem>("Is_Deleteing_Sync_Called_Test", true))
             {
@@ -332,12 +332,12 @@ namespace SharepointCommon.Test.ER
 
             Assert.That(recieived.CustomUser.GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
 
+          
+            Assert.That(recieived.CustomUsers.Count(), Is.EqualTo(2));
+
             var users = recieived.CustomUsers.ToList();
             Assert.That(users[0].GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
             Assert.That(users[1].GetType().ToString(), Is.EqualTo("Castle.Proxies.UserProxy"));
-
-
-            Assert.That(recieived.CustomUsers.Count(), Is.EqualTo(2));
             
 
             Assert.That(((Person)recieived.CustomUsers.First()).Login, Is.EqualTo(((Person)orig.CustomUsers.First()).Login));
