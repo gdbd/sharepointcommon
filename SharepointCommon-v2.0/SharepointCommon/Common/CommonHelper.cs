@@ -40,20 +40,27 @@ namespace SharepointCommon.Common
 
         internal static SPFieldUserValueCollection GetUsers(SPList list, string fieldStaticName, object value)
         {
+            if(value == null) return null;
+
             var userField = (SPFieldUser)list.Fields.TryGetFieldByStaticName(fieldStaticName);
             if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
-            var ids = ((string)value).Split(new[] { ";#" }, StringSplitOptions.RemoveEmptyEntries);
+
+            var vv = value as SPFieldUserValueCollection ??
+                     new SPFieldUserValueCollection(list.ParentWeb, value.ToString());
+
+            var ids = vv.Select(v => v.LookupId).ToArray();
+            
             var users = new SPFieldUserValueCollection();
             foreach (var id in ids)
             {
                 try
                 {
-                    var user = list.ParentWeb.AllUsers.GetByID(int.Parse(id));
+                    var user = list.ParentWeb.AllUsers.GetByID(id);
                     users.Add(new SPFieldUserValue(list.ParentWeb, user.ID, user.LoginName));
                 }
                 catch (SPException)
                 {
-                    var group = list.ParentWeb.Groups.GetByID(int.Parse(id));
+                    var group = list.ParentWeb.Groups.GetByID(id);
                     users.Add(new SPFieldUserValue(list.ParentWeb, group.ID, group.Name));
                 }
             }

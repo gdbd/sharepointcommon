@@ -97,7 +97,7 @@ namespace SharepointCommon.Interception
 
             var field = _list.Fields.GetFieldByInternalName(propName);
 
-            var val = EntityMapper.ToEntityField(prop, _list, _afterProperties[propName]);
+            var val = EntityMapper.ToEntityField(prop, null, field: field, value: _afterProperties[propName], reloadLookupItem: true);
                 
            /* invocation.ReturnValue = _list.Fields.GetFieldByInternalName(propName).Type == SPFieldType.Lookup ||
                                         _list.Fields.GetFieldByInternalName(propName).Type == SPFieldType.User
