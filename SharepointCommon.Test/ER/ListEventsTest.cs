@@ -283,7 +283,29 @@ namespace SharepointCommon.Test.ER
         }
 
         #endregion
-        
+
+        #region Document events
+        [Test]
+        public void Doc_Is_Added_Async_Called_Test()
+        {
+            using (var ts = new TestListScope<AddedDocAsync>("Is_Added_Async_Called_Test", true))
+            {
+                ts.List.AddEventReceiver<AddedDocReceiverAsync>();
+              /*  var entity = FillCusomItem(ts);
+                ts.List.Add(entity);
+
+                AddedItemAsync.ManualResetEvent.WaitOne(10000);
+
+                Assert.True(AddedItemAsync.IsAddCalled, "Not fired added receiver!");
+
+                ValidateCustomItem(AddedItemAsync.Received, entity);*/
+
+                if (AddedDocAsync.Exception != null)
+                    throw AddedDocAsync.Exception;
+            }
+        }
+        #endregion
+
         private T FillCusomItem<T>(TestListScope<T> ts) where T : CustomItem, new()
         {
             var lookupItem = new Item { Title = ts.List.Title + "_lkp1" };
