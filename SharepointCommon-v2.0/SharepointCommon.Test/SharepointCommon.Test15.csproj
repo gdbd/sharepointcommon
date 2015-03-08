@@ -66,6 +66,7 @@
     <AssemblyOriginatorKeyFile>SharepointCommonTest.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Internal.Mime, Version=8.0.681.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libraries\15\Microsoft.SharePoint.dll</HintPath>
@@ -108,6 +109,7 @@
     <Compile Include="DocumentTests.cs" />
     <Compile Include="Entity\CascadeLookup.cs" />
     <Compile Include="Entity\LookupWithShowField.cs" />
+    <Compile Include="ER\Entities\AddedDocAsync.cs" />
     <Compile Include="ER\Entities\DeletingItemAsync.cs" />
     <Compile Include="ER\Entities\DeletingItem.cs" />
     <Compile Include="ER\Entities\DeletedItemAsync.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="Entity\CustomDocument.cs" />
     <Compile Include="Entity\OneMoreField.cs" />
     <Compile Include="Entity\TheChoice.cs" />
+    <Compile Include="ER\Receivers\AddedDocReceiverAsync.cs" />
     <Compile Include="ER\Receivers\DeletingReceiverAsync.cs" />
     <Compile Include="ER\Receivers\DeletedReceiverAsync.cs" />
     <Compile Include="ER\Receivers\DeletedReceiver.cs" />

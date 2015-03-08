@@ -209,6 +209,24 @@ namespace SharepointCommon.Common
                 }
             }
 
+            if (field.Type == SPFieldType.DateTime)
+            {
+                if (propType == typeof(DateTime))
+                {
+                    var val = GetDateTimeFieldValue(fieldValue);
+                    return val;
+                }
+                if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
+                {
+                    var argumentType = propType.GetGenericArguments()[0];
+                    if (argumentType == typeof(DateTime))
+                    {
+                        var v = fieldValue == null ? (DateTime?)null : GetDateTimeFieldValue(fieldValue);
+                        return v;
+                    }
+                }
+            }
+
             if (field.Type == SPFieldType.Currency)
             {
                 if (propType == typeof(decimal))
@@ -225,6 +243,13 @@ namespace SharepointCommon.Common
                         return fieldValue == null ? (decimal?)null : Convert.ToDecimal(fieldValue);
                     }
                 }
+            }
+
+            if (field.Type == SPFieldType.Text)
+            {
+                if ((string)fieldValue == string.Empty)
+                    return null;
+                return fieldValue;
             }
 
             if (field.Type == SPFieldType.Choice)
@@ -244,7 +269,7 @@ namespace SharepointCommon.Common
 
             return fieldValue;
         }
-        
+
         internal static object ToEntity(Type entityType, SPListItem listItem, bool reloadLookupItem = true)
         {
             var entityMapper = typeof(EntityMapper);
@@ -564,6 +589,17 @@ namespace SharepointCommon.Common
             {
                 Assert.Inconsistent();
             }
+        }
+
+        private static DateTime? GetDateTimeFieldValue(object fieldValue)
+        {
+            if (fieldValue == null) return null;
+            DateTime res;
+            if (DateTime.TryParse(fieldValue.ToString(), null, DateTimeStyles.AdjustToUniversal, out res))
+            {
+                return res;
+            }
+            return null;
         }
     }
 }

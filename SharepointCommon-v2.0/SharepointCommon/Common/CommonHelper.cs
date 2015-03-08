@@ -6,7 +6,8 @@ using SharepointCommon.Attributes;
 using SharepointCommon.Expressions;
 using SharepointCommon.Impl;
     using System;
-    using System.Linq;
+using System.Collections.Generic;
+using System.Linq;
     using Microsoft.SharePoint;
 
 namespace SharepointCommon.Common
@@ -45,11 +46,18 @@ namespace SharepointCommon.Common
             var userField = (SPFieldUser)list.Fields.TryGetFieldByStaticName(fieldStaticName);
             if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
 
-            var vv = value as SPFieldUserValueCollection ??
-                     new SPFieldUserValueCollection(list.ParentWeb, value.ToString());
+            IEnumerable<int> ids;
+            if (value is SPFieldUserValueCollection)
+            {
+                var vv = value as SPFieldUserValueCollection;
+                ids = vv.Select(v => v.LookupId);
+            }
+            else
+            {
+                var vv = value.ToString().Split(new[] { ";#" }, StringSplitOptions.RemoveEmptyEntries);
+                ids = vv.Select(int.Parse);
+            }
 
-            var ids = vv.Select(v => v.LookupId).ToArray();
-            
             var users = new SPFieldUserValueCollection();
             foreach (var id in ids)
             {
