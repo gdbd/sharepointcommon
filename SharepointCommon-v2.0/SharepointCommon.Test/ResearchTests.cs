@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using Microsoft.Exchange.Data.Globalization;
-using Microsoft.SharePoint;
-using Microsoft.SharePoint.Utilities;
 using NUnit.Framework;
 
 namespace SharepointCommon.Test

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Microsoft.SharePoint;
 using SharepointCommon.Common;
 
@@ -81,6 +82,10 @@ namespace SharepointCommon.Events
                     receiverMethod.Invoke(receiver, new[] { (object)properties.ListItemId });
                     break;
                 default:
+
+#warning remove sleep!
+                    Thread.Sleep(1000);
+
                     var entityType = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem);
                     receiverMethod.Invoke(receiver, new[] { entityType });
                     break;
