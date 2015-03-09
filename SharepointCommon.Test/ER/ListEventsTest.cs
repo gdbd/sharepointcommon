@@ -291,22 +291,42 @@ namespace SharepointCommon.Test.ER
             using (var ts = new TestListScope<AddedDocAsync>("Is_Added_Async_Called_Test", true))
             {
                 ts.List.AddEventReceiver<AddedDocReceiverAsync>();
-              /*  var entity = FillCusomItem(ts);
+                var entity = FillCusomItem(ts);
                 ts.List.Add(entity);
 
-                AddedItemAsync.ManualResetEvent.WaitOne(10000);
+                AddedDocAsync.ManualResetEvent.WaitOne(10000);
 
-                Assert.True(AddedItemAsync.IsAddCalled, "Not fired added receiver!");
+                Assert.True(AddedDocAsync.IsAddCalled, "Not fired added receiver!");
 
-                ValidateCustomItem(AddedItemAsync.Received, entity);*/
+                ValidateCustomItem(AddedDocAsync.Received, entity);
 
                 if (AddedDocAsync.Exception != null)
                     throw AddedDocAsync.Exception;
             }
         }
+
+        [Test]
+        public void Doc_Is_Added_Sync_Called_Test()
+        {
+            using (var ts = new TestListScope<AddedDocSync>("Is_Added_Async_Called_Test", true))
+            {
+                ts.List.AddEventReceiver<AddedDocReceiverSync>();
+                var entity = FillCusomItem(ts);
+                ts.List.Add(entity);
+
+                AddedDocSync.ManualResetEvent.WaitOne(10000);
+
+                Assert.True(AddedDocSync.IsAddCalled, "Not fired added receiver!");
+
+                ValidateCustomItem(AddedDocSync.Received, entity);
+
+                if (AddedDocSync.Exception != null)
+                    throw AddedDocSync.Exception;
+            }
+        }
         #endregion
 
-        private T FillCusomItem<T>(TestListScope<T> ts) where T : CustomItem, new()
+        private T FillCusomItem<T>(TestListScope<T> ts) where T : Item, new()
         {
             var lookupItem = new Item { Title = ts.List.Title + "_lkp1" };
             ts.LookupList.Add(lookupItem);
@@ -314,24 +334,54 @@ namespace SharepointCommon.Test.ER
             var lookupItem2 = new Item { Title = ts.List.Title + "_lkp2" };
             ts.LookupList.Add(lookupItem2);
 
-            var ci = new T {
-                Title = ts.List.Title,
-                CustomField1 = ts.List.Title + "_1",
-                CustomField2 = ts.List.Title + "_2",
-                CustomFieldNumber = 123.5,
-                CustomBoolean = true,
-                CustomUser = new Person(_firstUser.LoginName),
-                CustomUsers = new List<User> { new Person(_firstUser.LoginName), new User(_spGroup.Name) },
-                CustomLookup = lookupItem,
-                CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
-                CustomDate = DateTime.Now,
-                CustomChoice = TheChoice.Choice2,
-            };
+            var nt = new T();
 
-            return ci;
+            if (nt is CustomItem)
+            {
+                var ci = nt as CustomItem;
+
+                ci.Title = ts.List.Title;
+                ci.CustomField1 = ts.List.Title + "_1";
+                ci.CustomField2 = ts.List.Title + "_2";
+                ci.CustomFieldNumber = 123.5;
+                ci.CustomBoolean = true;
+                ci.CustomUser = new Person(_firstUser.LoginName);
+                ci.CustomUsers = new List<User> { new Person(_firstUser.LoginName), new User(_spGroup.Name) };
+                ci.CustomLookup = lookupItem;
+                ci.CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 };
+                ci.CustomDate = DateTime.Now;
+                ci.CustomChoice = TheChoice.Choice2;
+
+
+                return (T)(Item)ci;
+            }
+            if (nt is CustomDocument)
+            {
+                var cd = nt as CustomDocument;
+
+                cd.Title = ts.List.Title;
+                cd.Name = ts.List.Title + ".bin";
+                cd.Content = new byte[] { 10, 20, 48 };
+
+
+                cd.CustomField1 = ts.List.Title + "_1";
+                cd.CustomField2 = ts.List.Title + "_2";
+                cd.CustomFieldNumber = 123.5;
+                cd.CustomBoolean = true;
+                cd.CustomUser = new Person(_firstUser.LoginName);
+                cd.CustomUsers = new List<User> { new Person(_firstUser.LoginName), new User(_spGroup.Name) };
+                cd.CustomLookup = lookupItem;
+                cd.CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 };
+                cd.CustomDate = DateTime.Now;
+                cd.CustomChoice = TheChoice.Choice2;
+
+                return (T)(Item)cd;
+            }
+            Assert.Fail();
+            return null;
         }
 
-        private void ValidateCustomItem<T>(T recieived, T orig, bool isAfterProprtyMapped = false) where T : CustomItem
+        private void ValidateCustomItem<T>(T recieived, T orig, bool isAfterProprtyMapped = false) where T : Item
         {
             Assert.IsNotNull(recieived);
 
@@ -344,33 +394,71 @@ namespace SharepointCommon.Test.ER
                 Assert.That(recieived.Id, Is.EqualTo(orig.Id));
             }
 
-            
-            Assert.That(recieived.Title, Is.EqualTo(orig.Title));
-            Assert.That(recieived.CustomField1, Is.EqualTo(orig.CustomField1));
-            Assert.That(recieived.CustomField2, Is.EqualTo(orig.CustomField2));
-            Assert.That(recieived.CustomFieldNumber, Is.EqualTo(orig.CustomFieldNumber));
-            Assert.That(recieived.CustomBoolean, Is.EqualTo(orig.CustomBoolean));
-            Assert.That(recieived.CustomUser.Id, Is.Not.EqualTo(0));
+            if (recieived is CustomItem)
+            {
+                var ci = recieived as CustomItem;
+                var co = orig as CustomItem;
 
-            Assert.That(recieived.CustomUser.GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
+                Assert.That(ci.Title, Is.EqualTo(orig.Title));
+                Assert.That(ci.CustomField1, Is.EqualTo(co.CustomField1));
+                Assert.That(ci.CustomField2, Is.EqualTo(co.CustomField2));
+                Assert.That(ci.CustomFieldNumber, Is.EqualTo(co.CustomFieldNumber));
+                Assert.That(ci.CustomBoolean, Is.EqualTo(co.CustomBoolean));
+                Assert.That(ci.CustomUser.Id, Is.Not.EqualTo(0));
 
-          
-            Assert.That(recieived.CustomUsers.Count(), Is.EqualTo(2));
+                Assert.That(ci.CustomUser.GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
 
-            var users = recieived.CustomUsers.ToList();
-            Assert.That(users[0].GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
-            Assert.That(users[1].GetType().ToString(), Is.EqualTo("Castle.Proxies.UserProxy"));
-            
 
-            Assert.That(((Person)recieived.CustomUsers.First()).Login, Is.EqualTo(((Person)orig.CustomUsers.First()).Login));
-            Assert.That(recieived.CustomLookup, Is.Not.Null);
-            Assert.That(recieived.CustomLookup.Id, Is.EqualTo(orig.CustomLookup.Id));
-            Assert.That(recieived.CustomMultiLookup, Is.Not.Null);
-            Assert.That(recieived.CustomMultiLookup.Count(), Is.EqualTo(2));
-            Assert.That(recieived.CustomMultiLookup.First().Title, Is.EqualTo(orig.CustomMultiLookup.First().Title));
-            Assert.That(recieived.CustomChoice, Is.EqualTo(orig.CustomChoice));
-            Assert.That(recieived.CustomDate.ToString(), Is.EqualTo(orig.CustomDate.ToString()));
-            Assert.That(recieived.Тыдыщ, Is.EqualTo(orig.Тыдыщ));
+                Assert.That(ci.CustomUsers.Count(), Is.EqualTo(2));
+
+                var users = ci.CustomUsers.ToList();
+                Assert.That(users[0].GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
+                Assert.That(users[1].GetType().ToString(), Is.EqualTo("Castle.Proxies.UserProxy"));
+
+
+                Assert.That(((Person)ci.CustomUsers.First()).Login, Is.EqualTo(((Person)co.CustomUsers.First()).Login));
+                Assert.That(ci.CustomLookup, Is.Not.Null);
+                Assert.That(ci.CustomLookup.Id, Is.EqualTo(co.CustomLookup.Id));
+                Assert.That(ci.CustomMultiLookup, Is.Not.Null);
+                Assert.That(ci.CustomMultiLookup.Count(), Is.EqualTo(2));
+                Assert.That(ci.CustomMultiLookup.First().Title, Is.EqualTo(co.CustomMultiLookup.First().Title));
+                Assert.That(ci.CustomChoice, Is.EqualTo(co.CustomChoice));
+                Assert.That(ci.CustomDate.ToString(), Is.EqualTo(co.CustomDate.ToString()));
+                Assert.That(ci.Тыдыщ, Is.EqualTo(co.Тыдыщ));
+            }
+
+            if (recieived is CustomDocument)
+            {
+                var ci = recieived as CustomDocument;
+                var co = orig as CustomDocument;
+
+                Assert.That(ci.Title, Is.EqualTo(orig.Title));
+                Assert.That(ci.CustomField1, Is.EqualTo(co.CustomField1));
+                Assert.That(ci.CustomField2, Is.EqualTo(co.CustomField2));
+                Assert.That(ci.CustomFieldNumber, Is.EqualTo(co.CustomFieldNumber));
+                Assert.That(ci.CustomBoolean, Is.EqualTo(co.CustomBoolean));
+                Assert.That(ci.CustomUser.Id, Is.Not.EqualTo(0));
+
+                Assert.That(ci.CustomUser.GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
+
+
+                Assert.That(ci.CustomUsers.Count(), Is.EqualTo(2));
+
+                var users = ci.CustomUsers.ToList();
+                Assert.That(users[0].GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
+                Assert.That(users[1].GetType().ToString(), Is.EqualTo("Castle.Proxies.UserProxy"));
+
+
+                Assert.That(((Person)ci.CustomUsers.First()).Login, Is.EqualTo(((Person)co.CustomUsers.First()).Login));
+                Assert.That(ci.CustomLookup, Is.Not.Null);
+                Assert.That(ci.CustomLookup.Id, Is.EqualTo(co.CustomLookup.Id));
+                Assert.That(ci.CustomMultiLookup, Is.Not.Null);
+                Assert.That(ci.CustomMultiLookup.Count(), Is.EqualTo(2));
+                Assert.That(ci.CustomMultiLookup.First().Title, Is.EqualTo(co.CustomMultiLookup.First().Title));
+                Assert.That(ci.CustomChoice, Is.EqualTo(co.CustomChoice));
+                Assert.That(ci.CustomDate.ToString(), Is.EqualTo(co.CustomDate.ToString()));
+                Assert.That(ci.Тыдыщ, Is.EqualTo(co.Тыдыщ));
+            }
         }
 
         private void ModifyCustomItem<T>(T entity) where T : CustomItem

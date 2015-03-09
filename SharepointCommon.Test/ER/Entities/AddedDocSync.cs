@@ -5,9 +5,9 @@ using SharepointCommon.Test.Entity;
 
 namespace SharepointCommon.Test.ER.Entities
 {
-    public class AddedDocAsync : CustomDocument
+    public class AddedDocSync : CustomDocument
     {
-        public static AddedDocAsync Received;
+        public static AddedDocSync Received;
 
         public static ManualResetEvent ManualResetEvent = new ManualResetEvent(false);
 
