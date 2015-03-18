@@ -239,6 +239,8 @@ namespace SharepointCommon
                 EntityMapper.ToItem(entity, forUpdate);
                 if (incrementVersion) forUpdate.Update();
                 else forUpdate.SystemUpdate(false);
+
+                InvalidateProperties(entity, null, forUpdate);
                 return;
             }
 
@@ -258,6 +260,8 @@ namespace SharepointCommon
 
             if (incrementVersion) forUpdate.Update();
             else forUpdate.SystemUpdate(false);
+
+            InvalidateProperties(entity, propertiesToSet, forUpdate);
         }
 
         public virtual void Delete(T entity, bool recycle)
@@ -586,6 +590,25 @@ namespace SharepointCommon
                     ViewFieldsOnly = viewFields.Length != 0,
                     QueryThrottleMode = SPQueryThrottleOption.Override,
                 });
+        }
+
+        private static void InvalidateProperties(T entity, List<string> propertiesToSet, SPListItem forUpdate)
+        {
+            var type = entity.GetType();
+
+            if (propertiesToSet == null)
+            {
+                propertiesToSet = type.GetProperties()
+                    .Where(p => Attribute.GetCustomAttribute(p, typeof(NotMappedAttribute)) == null)
+                    .Select(p => p.Name).ToList();
+            }
+
+            foreach (var propWasSetName in propertiesToSet)
+            {
+                var propWasSet = type.GetProperty(propWasSetName);
+                var valueWasSet = EntityMapper.ToEntityField(propWasSet, forUpdate);
+                propWasSet.SetValue(entity, valueWasSet, null);
+            }
         }
 
         private bool ContainsFieldImpl(PropertyInfo prop)
