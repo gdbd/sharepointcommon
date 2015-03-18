@@ -50,7 +50,8 @@ namespace SharepointCommon.Common
             string propName = prop.Name;
             Type propType = prop.PropertyType;
 
-            var fieldAttrs = (FieldAttribute[])prop.GetCustomAttributes(typeof(FieldAttribute), true);
+          //  var fieldAttrs = (FieldAttribute[])prop.GetCustomAttributes(typeof(FieldAttribute), true);
+            var fieldAttrs = (FieldAttribute[])Attribute.GetCustomAttributes(prop, typeof(FieldAttribute), true);
 
             string spPropName;
             if (fieldAttrs.Length != 0)

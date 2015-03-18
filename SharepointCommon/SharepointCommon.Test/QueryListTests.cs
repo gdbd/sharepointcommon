@@ -895,6 +895,23 @@ namespace SharepointCommon.Test
             }
         }
 
+        [Test]
+        public void Update_Replace_Person_With_Saved_Test()
+        {
+            using (var ts = new TestListScope<CustomItem>("Update_Replace_Person_With_Saved_Test"))
+            {
+                var ci = new CustomItem { };
+                ts.List.Add(ci);
+
+                var ciGet = ts.List.ById(ci.Id);
+                ciGet.CustomUser = new Person(_firstUser.LoginName);
+                ts.List.Update(ciGet, false, f => f.CustomUser);
+
+                Assert.NotNull(ciGet.CustomUser);
+                Assert.That(ciGet.CustomUser.Id != 0);
+            }
+        }
+
         #endregion
 
         #region Delete Tests

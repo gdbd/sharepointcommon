@@ -1,3 +1,3 @@
-nuget push SharepointCommon.1.7.2.nupkg
+nuget push SharepointCommon.1.7.3.nupkg
 
 pause
