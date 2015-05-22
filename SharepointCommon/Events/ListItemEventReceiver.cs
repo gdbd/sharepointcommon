@@ -59,7 +59,8 @@ namespace SharepointCommon.Events
         private EventReceiverProperties GetEventReceiverType(SPItemEventProperties properties, SPEventReceiverType receiverType)
         {
             var er = properties.List.EventReceivers.Cast<SPEventReceiverDefinition>()
-                .FirstOrDefault(e => e.HostId == properties.ListId && e.Type == receiverType);
+                .FirstOrDefault(e => e.HostId == properties.ListId && e.Type == receiverType 
+                    && !string.IsNullOrEmpty(e.Data));
 
             Assert.NotNull(er);
             
@@ -83,8 +84,10 @@ namespace SharepointCommon.Events
                     break;
                 default:
 
-#warning remove sleep!
-                    Thread.Sleep(1000);
+//#warning remove sleep!
+                    
+                   // Thread.Sleep(2000);
+                   // var li = properties.List.GetItemById(properties.ListItemId);
 
                     var entityType = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem);
                     receiverMethod.Invoke(receiver, new[] { entityType });

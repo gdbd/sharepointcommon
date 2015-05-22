@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -197,6 +198,12 @@ namespace SharepointCommon
                 folder = EnsureFolder(entity.Folder);
             }
 
+
+            var ct = GetContentType(entity, false);
+            SPContentTypeId ctId;
+            if (ct == null) ctId = SPBuiltInContentTypeId.Item;
+            else ctId = ct.Id;
+
             if (entity is Document)
             {
                 var doc = entity as Document;
@@ -207,32 +214,35 @@ namespace SharepointCommon
                 if (doc.RenameIfExists)
                 {
                     using (var wf = WebFactory.Elevated(SiteId, WebId))
-                {
+                    {
                         var elevatedList = wf.Web.GetList(Url);
                         doc.Name = FilenameOrganizer.AppendSuffix(doc.Name, newName => !FileExists(newName, elevatedList), 500);
-                }
+                    }
                 }
 
-                var file = folder.Files.Add(doc.Name, doc.Content, true);
+
+                var ht = FieldMapper.ToHashTable(entity, ParentWeb.Web);
+
+
+
+                var file = folder.Files.Add(doc.Name, doc.Content, ht, true);
                 newitem = file.Item;
+
+                
+              
+
             }
             else
             {
-                //newitem = List.AddItem();
+                newitem = List.AddItem(folder.Url, SPFileSystemObjectType.File, null);
+                EntityMapper.ToItem(entity, newitem);
 
-                newitem = List.AddItem(folder.Url, SPFileSystemObjectType.File, null);             
+                newitem[SPBuiltInFieldId.ContentTypeId] = ctId;
+
+                newitem.SystemUpdate(false);
             }
 
-            EntityMapper.ToItem(entity, newitem);
-
-            var ct = GetContentType(entity, false);
-            SPContentTypeId ctId;
-            if (ct == null) ctId = SPBuiltInContentTypeId.Item;
-            else ctId = ct.Id;
-
-            newitem[SPBuiltInFieldId.ContentTypeId] = ctId;
-
-            newitem.SystemUpdate(false);
+          
             entity.Id = newitem.ID;
             entity.Guid = new Guid(newitem[SPBuiltInFieldId.GUID].ToString());
 

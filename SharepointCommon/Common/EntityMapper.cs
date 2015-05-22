@@ -8,6 +8,7 @@ using Castle.DynamicProxy;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Utilities;
 using SharepointCommon.Attributes;
+using SharepointCommon.Entities;
 using SharepointCommon.Interception;
 
 namespace SharepointCommon.Common
@@ -213,7 +214,7 @@ namespace SharepointCommon.Common
             {
                 if (propType == typeof(DateTime))
                 {
-                    var val = GetDateTimeFieldValue(fieldValue);
+                    var val = CommonHelper.GetDateTimeFieldValue(fieldValue);
                     return val;
                 }
                 if (CommonHelper.ImplementsOpenGenericInterface(propType, typeof(Nullable<>)))
@@ -221,7 +222,7 @@ namespace SharepointCommon.Common
                     var argumentType = propType.GetGenericArguments()[0];
                     if (argumentType == typeof(DateTime))
                     {
-                        var v = fieldValue == null ? (DateTime?)null : GetDateTimeFieldValue(fieldValue);
+                        var v = fieldValue == null ? (DateTime?)null : CommonHelper.GetDateTimeFieldValue(fieldValue);
                         return v;
                     }
                 }
@@ -355,42 +356,11 @@ namespace SharepointCommon.Common
 
                     var user = (User)propValue;
 
-                    if (user is Person)
-                    {
-                        var person = (Person)propValue;
+                    SPFieldUserValue spUserValue = FieldMapper.ToUserValue(user, listItem.Web);
 
-                        SPUser spUser = null;
-                        try
-                        {
-                            spUser = listItem.ParentList.ParentWeb.SiteUsers[person.Login];
-                        }
-                        catch (SPException)
-                        {
-                            throw new SharepointCommonException(string.Format("User {0} not found.", user.Id));
-                        }
+                    listItem[spName] = spUserValue;
 
-                        var spUserValue = new SPFieldUserValue { LookupId = spUser.ID, };
-                        listItem[spName] = spUserValue;
-
-                        continue;
-                    }
-                    else
-                    {   // sharepoint group
-                        SPGroup spUser = null;
-                        try
-                        {
-                            spUser = listItem.ParentList.ParentWeb.SiteGroups[user.Name];
-                        }
-                        catch (SPException)
-                        {
-                            throw new SharepointCommonException(string.Format("Group {0} not found.", user.Name));
-                        }
-
-                        var spUserValue = new SPFieldUserValue {LookupId = spUser.ID,};
-                        listItem[spName] = spUserValue;
-
-                        continue;
-                    }
+                    continue;
                 }
 
                 // handle lookup fields
@@ -495,7 +465,8 @@ namespace SharepointCommon.Common
                 listItem[spName] = propValue;
             }
         }
-        
+
+       
 
         private static T GetLookupItem<T>(SPField field, object value, FieldAttribute attr) where T : Item
         {
@@ -512,7 +483,10 @@ namespace SharepointCommon.Common
 
                 // Lookup with picker (ilovesharepoint) returns SPFieldLookupValue
 
-                var lkpValue = value as SPFieldLookupValue ?? new SPFieldLookupValue((string)value ?? string.Empty);
+                var lkpValue = value as SPFieldLookupValue ?? 
+                    (value is int
+                    ? new SPFieldLookupValue((int)value, string.Empty)
+                    : new SPFieldLookupValue((string)value ?? string.Empty));
                 if (lkpValue.LookupId == 0) return null;
 
 
@@ -591,15 +565,8 @@ namespace SharepointCommon.Common
             }
         }
 
-        private static DateTime? GetDateTimeFieldValue(object fieldValue)
-        {
-            if (fieldValue == null) return null;
-            DateTime res;
-            if (DateTime.TryParse(fieldValue.ToString(), null, DateTimeStyles.AdjustToUniversal, out res))
-            {
-                return res;
-            }
-            return null;
-        }
+        
+
+        
     }
 }

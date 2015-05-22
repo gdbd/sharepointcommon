@@ -72,34 +72,16 @@ namespace SharepointCommon.Events
             ret.Synchronization = SPEventReceiverSynchronization.Default;
             ret.Sequence = 10000;
 
-            switch (method.Name)
+            SPEventReceiverType res;
+            if (Enum.TryParse(method.Name, out res))
             {
-                case "ItemAdded":
-                    ret.Type = SPEventReceiverType.ItemAdded;
-                    break;
-
-                case "ItemAdding":
-                    ret.Type = SPEventReceiverType.ItemAdding;
-                    break;
-
-                case "ItemUpdating":
-                    ret.Type = SPEventReceiverType.ItemUpdating;
-                    break;
-
-                case "ItemUpdated":
-                    ret.Type = SPEventReceiverType.ItemUpdated;
-                    break;
-
-                case "ItemDeleting":
-                    ret.Type = SPEventReceiverType.ItemDeleting;
-                    break;
-
-                case "ItemDeleted":
-                    ret.Type = SPEventReceiverType.ItemDeleted;
-                    break;
-                    
-                default: throw new SharepointCommonException(string.Format("Cannot determine event type: {0}", method.Name));
+                ret.Type = res;
             }
+            else
+            {
+                throw new SharepointCommonException(string.Format("Cannot determine event type: {0}", method.Name));
+            }
+         
 
             var async = (AsyncAttribute) Attribute.GetCustomAttribute(method, typeof (AsyncAttribute));
 

@@ -5,10 +5,11 @@ using Microsoft.SharePoint.Utilities;
 using SharepointCommon.Attributes;
 using SharepointCommon.Expressions;
 using SharepointCommon.Impl;
-    using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-    using Microsoft.SharePoint;
+using Microsoft.SharePoint;
+using System.Globalization;
 
 namespace SharepointCommon.Common
 {
@@ -29,10 +30,12 @@ namespace SharepointCommon.Common
 
         internal static SPUser GetUser(SPList list, string fieldStaticName, object value)
         {
+            if (value == null) return null;
+
             var userField = (SPFieldUser)list.Fields.TryGetFieldByStaticName(fieldStaticName);
             if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
-
-            var fieldValue = (SPFieldUserValue)userField.GetFieldValue((string)value);
+            
+            var fieldValue = (SPFieldUserValue)userField.GetFieldValue(value.ToString());
 
             if (fieldValue == null) return null;
 
@@ -54,8 +57,9 @@ namespace SharepointCommon.Common
             }
             else
             {
-                var vv = value.ToString().Split(new[] { ";#" }, StringSplitOptions.RemoveEmptyEntries);
-                ids = vv.Select(int.Parse);
+                var mlv = new SPFieldLookupValueCollection((string)value);
+             
+                ids = mlv.Select(v => v.LookupId);
             }
 
             var users = new SPFieldUserValueCollection();
@@ -214,6 +218,18 @@ namespace SharepointCommon.Common
             if (t.IsValueType)
             {
                 return Activator.CreateInstance(t);
+            }
+            return null;
+        }
+
+        internal static DateTime? GetDateTimeFieldValue(object fieldValue)
+        {
+#warning check time value in UI !
+            if (fieldValue == null) return null;
+            DateTime res;
+            if (DateTime.TryParse(fieldValue.ToString(), null, DateTimeStyles.AdjustToUniversal, out res))
+            {
+                return res;
             }
             return null;
         }

@@ -87,7 +87,25 @@ namespace SharepointCommon.Interception
                 return;
             }
 
-            if (!_afterProperties.ContainsKey(propName))
+            if (_afterProperties.ContainsKey(propName))
+            {
+                var field = _list.Fields.GetFieldByInternalName(propName);
+
+                var val = EntityMapper.ToEntityField(prop, null, field: field, value: _afterProperties[propName], reloadLookupItem: true);
+                
+                invocation.ReturnValue = val;
+                return;
+            }
+            else if (_afterProperties.ContainsKey("vti_" + propName.ToLower()))
+            {
+                var field = _list.Fields.GetFieldByInternalName(propName);
+
+                var val = EntityMapper.ToEntityField(prop, null, field: field, value: _afterProperties["vti_" + propName.ToLower()], reloadLookupItem: true);
+
+                invocation.ReturnValue = val;
+                return;
+            }
+            else
             {
                 var defaultValue = CommonHelper.GetDefaultValue(invocation.Method.ReturnType);
                 invocation.ReturnValue = defaultValue;
@@ -95,109 +113,8 @@ namespace SharepointCommon.Interception
             }
 
 
-            var field = _list.Fields.GetFieldByInternalName(propName);
-
-            var val = EntityMapper.ToEntityField(prop, null, field: field, value: _afterProperties[propName], reloadLookupItem: true);
-                
-           /* invocation.ReturnValue = _list.Fields.GetFieldByInternalName(propName).Type == SPFieldType.Lookup ||
-                                        _list.Fields.GetFieldByInternalName(propName).Type == SPFieldType.User
-                ? GetLookupItem(invocation, prop)
-                : EntityMapper.ToEntityField(prop, _list, _mappedProperties[propName]);*/
-
-            invocation.ReturnValue = val;
-            return;
-       
            
         }
-
-        /*
-
-        private object GetLookupItem(IInvocation invocation, PropertyInfo prop)
-        {
-            var wf = new QueryWeb(_list.ParentWeb);
-            var ft = FieldMapper.ToFieldType(invocation.Method);
-            var lookupField = _list.Fields.TryGetFieldByStaticName(ft.Name) as SPFieldLookup;
-
-            if (lookupField == null)
-            {
-                throw new SharepointCommonException(string.Format("cant find '{0}' field in list '{1}'", ft.Name,
-                    _list.Title));
-            }
-
-            var lookupList = wf.Web.Lists[new Guid(lookupField.LookupList)];
-            // Lookup with picker (ilovesharepoint) returns SPFieldLookupValue
-            var fieldValue = _mappedProperties[ft.Name];
-            
-            var lkpValue = fieldValue as SPFieldLookupValue ??
-                           new SPFieldLookupValue((string)fieldValue ?? string.Empty);
-            if (lkpValue.LookupId == 0) return null;
-            var lookupItem = lookupList.GetItemById(lkpValue.LookupId);
-
-            if (typeof (Item).IsAssignableFrom(invocation.Method.ReturnType))
-            {
-                return lookupItem == null
-                ? EntityMapper.ToEntityField(prop, _list, fieldValue)
-                : EntityMapper.ToEntity(invocation.Method.ReturnType, lookupItem);
-            }
-            return EntityMapper.ToEntityField(prop, _list, fieldValue);
-
-
-        }
-        
-        private string GetFieldValue(object value, SPField field)
-        {
-            var result = new StringBuilder();
-            if (field is SPFieldLookup)
-            {
-                var lookupField = field as SPFieldLookup;
-                if (!lookupField.AllowMultipleValues)
-                {
-                    if (value is Item)
-                    {
-                        var item = value as Item;
-                        result.Append(item.Id);
-                    }
-                    else if (value is User)
-                    {
-                        var item = value as User;
-                        result.Append(item.Id);
-                    }
-
-                }
-                else
-                {
-                    var multipleLookupValues = value as IEnumerable;
-                    if (multipleLookupValues != null)
-                    {
-                        var multilookupValueCollection = new SPFieldLookupValueCollection();
-                        foreach (var val in multipleLookupValues)
-                        {
-                            var item = val as Item;
-                            if (item != null)
-                                multilookupValueCollection.Add(new SPFieldLookupValue(item.Id, string.Empty));
-                            else
-                            {
-                                var user = val as User;
-                                if (user != null)
-                                    multilookupValueCollection.Add(new SPFieldLookupValue(user.Id, string.Empty));
-                            }
-                        }
-                        result.Append(multilookupValueCollection);
-                    }
-                }
-            }
-            else if(field is SPFieldDateTime)
-            {
-                if (value != null)
-                    return SPUtility.CreateISO8601DateTimeFromSystemDateTime(DateTime.Parse(value.ToString()));
-            }
-            else
-            {
-                result.Append(value);
-            }
-            return result.ToString();
-        }
-         */
          
     }
 }
