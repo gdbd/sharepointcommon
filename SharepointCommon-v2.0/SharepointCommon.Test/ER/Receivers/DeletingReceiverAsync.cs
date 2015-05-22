@@ -9,5 +9,13 @@ namespace SharepointCommon.Test.ER.Receivers
         public override void ItemDeleting(DeletingItemAsync addedItem)
         {
         }
+    }  
+    
+    public class DeletingDocReceiverAsync : ListEventReceiver<DeletingDocAsync>
+    {
+        [Async(true)]
+        public override void ItemDeleting(DeletingDocAsync addedItem)
+        {
+        }
     }
 }

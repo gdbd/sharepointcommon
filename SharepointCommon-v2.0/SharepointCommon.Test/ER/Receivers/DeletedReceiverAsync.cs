@@ -20,5 +20,22 @@ namespace SharepointCommon.Test.ER.Receivers
                 DeletedItemAsync.Exception = e;
             }
         }
+    }    
+    public class DeletedDocReceiverAsync : ListEventReceiver<DeletedDocAsync>
+    {
+        [Async(true)]
+        public override void ItemDeleted(int id)
+        {
+            try
+            {
+                DeletedDocAsync.DeletedId = id;
+                DeletedDocAsync.IsDeleteCalled = true;
+                DeletedDocAsync.ManualResetEvent.Set();
+            }
+            catch (Exception e)
+            {
+                DeletedDocAsync.Exception = e;
+            }
+        }
     }
 }

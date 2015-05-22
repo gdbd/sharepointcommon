@@ -4,9 +4,9 @@ using SharepointCommon.Test.Entity;
 
 namespace SharepointCommon.Test.ER.Entities
 {
-    public class AddingDoc : CustomDocument
+    public class AddingItem : CustomItem
     {
-        public static AddingDoc Received;
+        public static AddingItem Received;
         public static Exception Exception;
 
         [NotMapped]

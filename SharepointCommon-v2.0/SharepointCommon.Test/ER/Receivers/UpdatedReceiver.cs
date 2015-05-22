@@ -20,5 +20,22 @@ namespace SharepointCommon.Test.ER.Receivers
                 UpdatedItem.Exception = e;
             }
         }
+    }    
+    
+    public class UpdatedDocReceiver : ListEventReceiver<UpdatedDoc>
+    {
+        [Async(false)]
+        public override void ItemUpdated(UpdatedDoc addedItem)
+        {
+            try
+            {
+                UpdatedDoc.IsUpdateCalled = true;
+                UpdatedDoc.Recieved = addedItem;
+            }
+            catch (Exception e)
+            {
+                UpdatedDoc.Exception = e;
+            }
+        }
     }
 }

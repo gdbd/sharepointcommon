@@ -123,7 +123,7 @@ namespace SharepointCommon.Test
                         CustomUser = new Person(_firstUser.LoginName),
                         CustomUsers = new List<User> { new Person(_firstUser.LoginName), new User(_spGroup.Name) },
                         CustomLookup = lookupItem,
-                    CustomMultiLookup = new List<Item> {lookupItem, lookupItem2},
+                        CustomMultiLookup = new List<Item> {lookupItem, lookupItem2},
                         CustomDate = DateTime.Now,
                         CustomChoice = TheChoice.Choice2,
                         Тыдыщ = "тест",

@@ -9,7 +9,7 @@ using SharepointCommon.Test.ER.Receivers;
 
 namespace SharepointCommon.Test.ER
 {
-    public class ListEventsTest
+    public class DoclibEventsTest
     {
         private SPUser _firstUser;
         private SPGroup _spGroup;
@@ -38,105 +38,81 @@ namespace SharepointCommon.Test.ER
         }
 
 
+        
+        #region Document events
         [Test]
-        public void Add_Remove_Receiever_Test()
+        public void Doc_Is_Added_Async_Called_Test()
         {
-            using (var ts = new TestListScope<AddRemoveTest>("Add_Remove_Receiever_Test"))
+            using (var ts = new TestListScope<AddedDocAsync>("Is_Added_Async_Called_Test", true))
             {
-                ts.List.AddEventReceiver<AddRemoveReceiver>();
-                var entity = new AddRemoveTest { Title = "test1", TheText = "test2" };
-                ts.List.Add(entity);
-                Assert.True(AddRemoveTest.IsAddCalled, "Not fired added receiver!");
-
-                ts.List.RemoveEventReceiver<AddRemoveReceiver>();
-                entity.Title = "asd-asd";
-                ts.List.Update(entity, true);
-                Assert.False(AddRemoveTest.IsUpdateCalled, "Fired after receiver was removed!");
-
-                if (AddRemoveTest.Exception != null)
-                    throw AddRemoveTest.Exception;
-            }
-        }
-
-        #region Add, Adding
-
-        [Test]
-        public void Is_Added_Sync_Called_Test()
-        {
-            using (var ts = new TestListScope<AddedItem>("Is_Added_Sync_Called_Test", true))
-            {
-                ts.List.AddEventReceiver<AddedReceiver>();
-
-                var entity = FillCusomItem<AddedItem>(ts);
-                entity.TheText = "test2";
-
-                ts.List.Add(entity);
-                Assert.True(AddedItem.IsAddCalled, "Not fired added receiver!");
-
-                ValidateCustomItem(AddedItem.Received, entity);
-
-                if (AddedItem.Exception != null)
-                    throw AddedItem.Exception;
-            }
-        } 
-
-        [Test]
-        public void Is_Added_Async_Called_Test()
-        {
-            using (var ts = new TestListScope<AddedItemAsync>("Is_Added_Async_Called_Test", true))
-            {
-                ts.List.AddEventReceiver<AddedReceiverAsync>();
+                ts.List.AddEventReceiver<AddedDocReceiverAsync>();
                 var entity = FillCusomItem(ts);
                 ts.List.Add(entity);
 
-                AddedItemAsync.ManualResetEvent.WaitOne(10000);
+                AddedDocAsync.ManualResetEvent.WaitOne(10000);
 
-                Assert.True(AddedItemAsync.IsAddCalled, "Not fired added receiver!");
+                Assert.True(AddedDocAsync.IsAddCalled, "Not fired added receiver!");
 
-                ValidateCustomItem(AddedItemAsync.Received, entity);
+                ValidateCustomItem(AddedDocAsync.Received, entity);
 
-                if (AddedItemAsync.Exception != null)
-                    throw AddedItemAsync.Exception;
+                if (AddedDocAsync.Exception != null)
+                    throw AddedDocAsync.Exception;
             }
         }
 
         [Test]
-        public void Is_Adding_Sync_Called_Test()
+        public void Doc_Is_Added_Sync_Called_Test()
         {
-            using (var ts = new TestListScope<AddingItem>("Is_Adding_Sync_Called_Test", true))
+            using (var ts = new TestListScope<AddedDocSync>("Is_Added_Async_Called_Test", true))
             {
-                ts.List.AddEventReceiver<AddingReceiver>();
+                ts.List.AddEventReceiver<AddedDocReceiverSync>();
                 var entity = FillCusomItem(ts);
                 ts.List.Add(entity);
-                Assert.True(AddingItem.IsAddCalled, "Not fired added receiver!");
+
+                AddedDocSync.ManualResetEvent.WaitOne(10000);
+
+                Assert.True(AddedDocSync.IsAddCalled, "Not fired added receiver!");
+
+                ValidateCustomItem(AddedDocSync.Received, entity);
+
+                if (AddedDocSync.Exception != null)
+                    throw AddedDocSync.Exception;
+            }
+        }
+
+        [Test]
+        public void Doc_Adding_Sync_Called_Test()
+        {
+            using (var ts = new TestListScope<AddingDoc>("Doc_Adding_Sync_Called_Test", true))
+            {
+                ts.List.AddEventReceiver<AddingDocReceiver>();
+                var entity = FillCusomItem(ts);
+                ts.List.Add(entity);
+                Assert.True(AddingDoc.IsAddCalled, "Not fired added receiver!");
 
                 if (AddingItem.Exception != null)
-                    throw AddingItem.Exception;
+                    throw AddingDoc.Exception;
 
-                ValidateCustomItem(AddingItem.Received, entity, true);
+                ValidateCustomItem(AddingDoc.Received, entity, true);
             }
         }
 
         [Test]
-        public void Is_Adding_Async_Throws_Test()
+        public void Doc_Adding_Async_Throws_Test()
         {
-            using (var ts = new TestListScope<AddingItemAsync>("Is_Register_Adding_Async_Throws_Test"))
+            using (var ts = new TestListScope<AddingDocAsync>("Doc_Adding_Async_Throws_Test"))
             {
                 Assert.Throws<SharepointCommonException>(() =>
-                    ts.List.AddEventReceiver<AddingReceiverAsync>());
+                    ts.List.AddEventReceiver<AddingDocReceiverAsync>());
             }
         }
 
-        #endregion
-
-        #region Update, Updating
-
         [Test]
-        public void Is_Updated_Sync_Called_Test()
+        public void Doc_Updated_Sync_Called_Test()
         {
-            using (var ts = new TestListScope<UpdatedItem>("Is_Updated_Sync_Called_Test", true))
+            using (var ts = new TestListScope<UpdatedDoc>("Doc_Updated_Sync_Called_Test", true))
             {
-                ts.List.AddEventReceiver<UpdatedReceiver>();
+                ts.List.AddEventReceiver<UpdatedDocReceiver>();
                 var entity = FillCusomItem(ts);
                 ts.List.Add(entity);
 
@@ -144,141 +120,138 @@ namespace SharepointCommon.Test.ER
 
                 ModifyCustomItem(entity);
                 ts.List.Update(entity, true);
-                Assert.True(UpdatedItem.IsUpdateCalled, "Not fired updated receiver!");
+                Assert.True(UpdatedDoc.IsUpdateCalled, "Not fired updated receiver!");
 
-                if (UpdatedItem.Exception != null)
-                    throw UpdatedItem.Exception;
+                if (UpdatedDoc.Exception != null)
+                    throw UpdatedDoc.Exception;
 
-                ValidateCustomItem(UpdatedItem.Recieved, entity);
+                ValidateCustomItem(UpdatedDoc.Recieved, entity);
             }
         }
 
         [Test]
-        public void Is_Updated_Async_Called_Test()
+        public void Doc_Updated_Async_Called_Test()
         {
-            using (var ts = new TestListScope<UpdatedItemAsync>("Is_Updated_Async_Called_Test", true))
+            using (var ts = new TestListScope<UpdatedDocAsync>("Doc_Updated_Async_Called_Test", true))
             {
-                ts.List.AddEventReceiver<UpdatedReceiverAsync>();
+                ts.List.AddEventReceiver<UpdatedDocReceiverAsync>();
                 var entity = FillCusomItem(ts);
                 ts.List.Add(entity);
 
                 entity = ts.List.ById(entity.Id);
-                
+
                 ModifyCustomItem(entity);
                 ts.List.Update(entity, true);
 
-                UpdatedItemAsync.ManualResetEvent.WaitOne(10000);
+                UpdatedDocAsync.ManualResetEvent.WaitOne(10000);
 
-                Assert.True(UpdatedItemAsync.IsUpdateCalled, "Not fired updated receiver!");
+                Assert.True(UpdatedDocAsync.IsUpdateCalled, "Not fired updated receiver!");
 
-                if (UpdatedItemAsync.Exception != null)
-                    throw UpdatedItemAsync.Exception;
+                if (UpdatedDocAsync.Exception != null)
+                    throw UpdatedDocAsync.Exception;
 
-                ValidateCustomItem(UpdatedItemAsync.Received, entity);
+                ValidateCustomItem(UpdatedDocAsync.Received, entity);
             }
         }
 
         [Test]
-        public void Is_Updating_Sync_Called_Test()
+        public void Doc_Updating_Sync_Called_Test()
         {
-            using (var ts = new TestListScope<UpdatingItem>("Is_Updating_Sync_Called_Test", true))
+            using (var ts = new TestListScope<UpdatingDoc>("Doc_Updating_Sync_Called_Test", true))
             {
-                ts.List.AddEventReceiver<UpdatingReceiver>();
+                ts.List.AddEventReceiver<UpdatingDocReceiver>();
                 var entity = FillCusomItem(ts);
                 ts.List.Add(entity);
 
-                var origCopy = new UpdatingItem(entity);
+                var origCopy = new UpdatingDoc(entity);
 
                 entity = ts.List.ById(entity.Id);
                 ModifyCustomItem(entity);
                 ts.List.Update(entity, true);
 
-                Assert.True(UpdatingItem.IsUpdateCalled, "Not fired updating receiver!");
+                Assert.True(UpdatingDoc.IsUpdateCalled, "Not fired updating receiver!");
 
-                if (UpdatingItem.Exception != null)
-                    throw UpdatingItem.Exception;
+                if (UpdatingDoc.Exception != null)
+                    throw UpdatingDoc.Exception;
 
-                ValidateCustomItem(UpdatingItem.ReceivedOrig, origCopy);
-                ValidateCustomItem(UpdatingItem.ReceivedChanged, entity, true);
+                ValidateCustomItem(UpdatingDoc.ReceivedOrig, origCopy);
+                ValidateCustomItem(UpdatingDoc.ReceivedChanged, entity, true);
             }
         }
 
         [Test]
-        public void Is_Updating_Async_Throws_Test()
+        public void Doc_Updating_Async_Throws_Test()
         {
-            using (var ts = new TestListScope<UpdatingItemAsync>("Is_Updating_Async_Called_Test"))
+            using (var ts = new TestListScope<UpdatingDocAsync>("Is_Updating_Async_Called_Test"))
             {
                 Assert.Throws<SharepointCommonException>(
-                    () => ts.List.AddEventReceiver<UpdatingReceiverAsync>());
-            }
-        }
-
-        #endregion
-
-        #region Delete, Deleting
-
-        [Test]
-        public void Is_Deleted_Sync_Called_Test()
-        {
-            using (var ts = new TestListScope<DeletedItem>("Is_Deleted_Sync_Called_Test"))
-            {
-                ts.List.AddEventReceiver<DeletedReceiver>();
-                var entity = new DeletedItem { Title = "test1", TheText = "test2" };
-                ts.List.Add(entity);
-                ts.List.Delete(entity, false);
-                Assert.True(DeletedItem.IsDeleteCalled, "Not fired deleted receiver!");
-                Assert.That(entity.Id, Is.EqualTo(DeletedItem.DeletedId));
-
-                if (DeletedItem.Exception != null)
-                    throw DeletedItem.Exception;
+                    () => ts.List.AddEventReceiver<UpdatingDocReceiverAsync>());
             }
         }
 
         [Test]
-        public void Is_Deleted_Async_Called_Test()
+        public void Doc_Deleting_Sync_Called_Test()
         {
-            using (var ts = new TestListScope<DeletedItemAsync>("Is_Deleted_Async_Called_Test"))
+            using (var ts = new TestListScope<DeletingDoc>("Doc_Deleting_Sync_Called_Test", true))
             {
-                ts.List.AddEventReceiver<DeletedReceiverAsync>();
-                var entity = new DeletedItemAsync { Title = "test1", TheText = "test2" };
-                ts.List.Add(entity);
-                ts.List.Delete(entity, false);
-
-                DeletedItemAsync.ManualResetEvent.WaitOne(10000);
-
-                Assert.True(DeletedItemAsync.IsDeleteCalled, "Not fired deleted receiver!");
-                Assert.That(entity.Id, Is.EqualTo(DeletedItemAsync.DeletedId));
-
-                if (DeletedItemAsync.Exception != null)
-                    throw DeletedItemAsync.Exception;
-            }
-        }
-
-        [Test]
-        public void Is_Deleting_Sync_Called_Test()
-        {
-            using (var ts = new TestListScope<DeletingItem>("Is_Deleteing_Sync_Called_Test", true))
-            {
-                ts.List.AddEventReceiver<DeletingReceiver>();
+                ts.List.AddEventReceiver<DeletingDocReceiver>();
                 var entity = FillCusomItem(ts);
                 ts.List.Add(entity);
-                ts.List.Delete(entity,false);
-                Assert.True(DeletingItem.IsDeleteCalled, "Not fired added receiver!");
+                ts.List.Delete(entity, false);
+                Assert.True(DeletingDoc.IsDeleteCalled, "Not fired added receiver!");
 
                 if (DeletingItem.Exception != null)
-                    throw DeletingItem.Exception;
+                    throw DeletingDoc.Exception;
 
-                ValidateCustomItem(DeletingItem.Received, entity);
+                ValidateCustomItem(DeletingDoc.Received, entity);
             }
         }
 
         [Test]
-        public void Is_Deleting_Async_Throws_Test()
+        public void Doc_Deleting_Async_Throws_Test()
         {
-            using (var ts = new TestListScope<DeletingItemAsync>("Is_Deleting_Async_Throws_Test"))
+            using (var ts = new TestListScope<DeletingDocAsync>("Doc_Deleting_Async_Throws_Test"))
             {
                 Assert.Throws<SharepointCommonException>(
-                    () => ts.List.AddEventReceiver<DeletingReceiverAsync>());
+                    () => ts.List.AddEventReceiver<DeletingDocReceiverAsync>());
+            }
+        }
+
+
+        [Test]
+        public void Doc_Deleted_Sync_Called_Test()
+        {
+            using (var ts = new TestListScope<DeletedDoc>("Doc_Deleted_Sync_Called_Test", true))
+            {
+                ts.List.AddEventReceiver<DeletedDocReceiver>();
+                var entity = FillCusomItem(ts);
+                ts.List.Add(entity);
+                ts.List.Delete(entity, false);
+                Assert.True(DeletedDoc.IsDeleteCalled, "Not fired deleted receiver!");
+                Assert.That(entity.Id, Is.EqualTo(DeletedDoc.DeletedId));
+
+                if (DeletedDoc.Exception != null)
+                    throw DeletedDoc.Exception;
+            }
+        }
+
+        [Test]
+        public void Doc_Deleted_Async_Called_Test()
+        {
+            using (var ts = new TestListScope<DeletedDocAsync>("Doc_Deleted_Async_Called_Test", true))
+            {
+                ts.List.AddEventReceiver<DeletedDocReceiverAsync>();
+                var entity = FillCusomItem(ts);
+                ts.List.Add(entity);
+                ts.List.Delete(entity, false);
+
+                DeletedDocAsync.ManualResetEvent.WaitOne(10000);
+
+                Assert.True(DeletedDocAsync.IsDeleteCalled, "Not fired deleted receiver!");
+                Assert.That(entity.Id, Is.EqualTo(DeletedDocAsync.DeletedId));
+
+                if (DeletedDocAsync.Exception != null)
+                    throw DeletedDocAsync.Exception;
             }
         }
 
@@ -419,25 +392,51 @@ namespace SharepointCommon.Test.ER
             }
         }
 
-        private void ModifyCustomItem<T>(T entity) where T : CustomItem
+        private void ModifyCustomItem<T>(T entity) where T : Item
         {
-            entity.Title = "new title";
+            if (entity is CustomItem)
+            {
+                var ci = entity as CustomItem;
+                ci.Title = "new title";
 
-            entity.CustomField1 = "new CustomField1";
-            entity.CustomField2 = "new CustomField2";
-            entity.CustomFieldNumber = 778.1;
-            entity.CustomBoolean = false;
-            entity.CustomUser = new Person(_secondUser.LoginName);
-            entity.CustomUsers = new List<User> { new Person(_secondUser.LoginName), new User(_spGroup.Name) };
-         
-            entity.CustomLookup = entity.CustomMultiLookup.Last();
+                ci.CustomField1 = "new CustomField1";
+                ci.CustomField2 = "new CustomField2";
+                ci.CustomFieldNumber = 778.1;
+                ci.CustomBoolean = false;
+                ci.CustomUser = new Person(_secondUser.LoginName);
+                ci.CustomUsers = new List<User> { new Person(_secondUser.LoginName), new User(_spGroup.Name) };
 
-            var old = entity.CustomMultiLookup.ToList();
-            old.Reverse();
+                ci.CustomLookup = ci.CustomMultiLookup.Last();
 
-            entity.CustomMultiLookup = old;
-            entity.CustomDate = DateTime.Now.AddDays(-2);
-            entity.CustomChoice = TheChoice.Choice3;
+                var old = ci.CustomMultiLookup.ToList();
+                old.Reverse();
+
+                ci.CustomMultiLookup = old;
+                ci.CustomDate = DateTime.Now.AddDays(-2);
+                ci.CustomChoice = TheChoice.Choice3;
+            }
+
+            else if (entity is CustomDocument)
+            {
+                var ci = entity as CustomDocument;
+                ci.Title = "new title";
+
+                ci.CustomField1 = "new CustomField1";
+                ci.CustomField2 = "new CustomField2";
+                ci.CustomFieldNumber = 778.1;
+                ci.CustomBoolean = false;
+                ci.CustomUser = new Person(_secondUser.LoginName);
+                ci.CustomUsers = new List<User> { new Person(_secondUser.LoginName), new User(_spGroup.Name) };
+
+                ci.CustomLookup = ci.CustomMultiLookup.Last();
+
+                var old = ci.CustomMultiLookup.ToList();
+                old.Reverse();
+
+                ci.CustomMultiLookup = old;
+                ci.CustomDate = DateTime.Now.AddDays(-2);
+                ci.CustomChoice = TheChoice.Choice3;
+            }
         }
     }
 }

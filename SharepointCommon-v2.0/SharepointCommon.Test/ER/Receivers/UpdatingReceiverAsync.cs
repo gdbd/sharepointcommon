@@ -10,5 +10,14 @@ namespace SharepointCommon.Test.ER.Receivers
         {
             
         }
+    }  
+    
+    public class UpdatingDocReceiverAsync : ListEventReceiver<UpdatingDocAsync>
+    {
+        [Async(true)]
+        public override void ItemUpdating(UpdatingDocAsync addedItem, UpdatingDocAsync second)
+        {
+            
+        }
     }
 }
