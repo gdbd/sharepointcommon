@@ -115,9 +115,9 @@
     <Compile Include="ER\Entities\AddedDocSync.cs" />
     <Compile Include="ER\Entities\AddedItem.cs" />
     <Compile Include="ER\Entities\AddedItemAsync.cs" />
-    <Compile Include="ER\Entities\AddingDoc.cs" />
-    <Compile Include="ER\Entities\AddingDocAsync.cs" />
     <Compile Include="ER\Entities\AddingItem.cs" />
+    <Compile Include="ER\Entities\AddingDocAsync.cs" />
+    <Compile Include="ER\Entities\AddingDoc.cs" />
     <Compile Include="ER\Entities\AddingItemAsync.cs" />
     <Compile Include="ER\Entities\AddRemoveTest.cs" />
     <Compile Include="ER\Entities\DeletedItem.cs" />

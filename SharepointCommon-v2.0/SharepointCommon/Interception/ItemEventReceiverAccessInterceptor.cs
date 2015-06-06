@@ -56,6 +56,10 @@ namespace SharepointCommon.Interception
             
             switch (invocation.Method.Name)
             {
+                case "get_ParentWeb":
+                    invocation.ReturnValue = new QueryWeb(_list.ParentWeb);
+                    return;
+
                 case "get_ParentList":
                     var qWeb = new QueryWeb(_list.ParentWeb);
                     invocation.ReturnValue = qWeb.GetById<Item>(_list.ID);
