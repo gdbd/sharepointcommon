@@ -86,12 +86,6 @@ namespace SharepointCommon.Events
                     receiverMethod.Invoke(receiver, new[] { (object)properties.ListItemId });
                     break;
                 default:
-
-//#warning remove sleep!
-                    
-                   // Thread.Sleep(2000);
-                   // var li = properties.List.GetItemById(properties.ListItemId);
-
                     var entityType = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem);
                     receiverMethod.Invoke(receiver, new[] { entityType });
                     break;

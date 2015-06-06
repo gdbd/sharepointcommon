@@ -107,6 +107,7 @@
     <Compile Include="Entity\LookupWithShowField.cs" />
     <Compile Include="Entity\NullableItem.cs" />
     <Compile Include="Entity\CustomDocument.cs" />
+    <Compile Include="Entity\NumberAsLookup.cs" />
     <Compile Include="Entity\OneMoreField.cs" />
     <Compile Include="Entity\TheChoice.cs" />
     <Compile Include="ER\DoclibEventsTest.cs" />

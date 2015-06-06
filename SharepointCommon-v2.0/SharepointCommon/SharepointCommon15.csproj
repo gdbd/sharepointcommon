@@ -315,7 +315,9 @@
     <Compile Include="Entities\Folder.cs" />
     <Compile Include="Expressions\MemberAccessVisitor.cs" />
     <Compile Include="Interception\AppBaseAccessInterceptor.cs" />
-    <Compile Include="Interception\DocumentAccessInterceptor.cs" />
+    <Compile Include="Interception\DocumentAccessInterceptor.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Interception\ItemAccessInterceptor.cs" />
     <Compile Include="Interception\ItemEventReceiverAccessInterceptor.cs" />
     <Compile Include="Interception\UserAccessInterceptor.cs" />
