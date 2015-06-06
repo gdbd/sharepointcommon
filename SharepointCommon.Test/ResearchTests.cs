@@ -4,6 +4,7 @@ using Castle.Core.Internal;
 using Microsoft.SharePoint;
 using NUnit.Framework;
 using SharepointCommon.Entities;
+using SharepointCommon.Test.CustomFields;
 
 namespace SharepointCommon.Test
 {

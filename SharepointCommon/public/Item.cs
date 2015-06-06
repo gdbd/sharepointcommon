@@ -24,6 +24,8 @@ namespace SharepointCommon
         public virtual Version Version { get; protected internal set; }
         public virtual Guid Guid { get; protected internal set; }
 
+        [NotMapped]
+        public virtual IQueryWeb ParentWeb { get; set; }
 
         /// <summary>
         /// Gets or sets the folder of file in document library.

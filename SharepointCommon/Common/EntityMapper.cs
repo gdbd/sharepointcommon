@@ -182,6 +182,14 @@ namespace SharepointCommon.Common
                         return fieldValue == null ? (double?)null : Convert.ToDouble(fieldValue);
                     }
                 }
+
+                if (typeof(Item).IsAssignableFrom(propType))
+                {
+                    if (fieldAttrs.Length == 0 || string.IsNullOrEmpty(fieldAttrs[0].LookupList))
+                        throw new SharepointCommonException("To map number field as Item it need been marked with 'FieldAttribute' and set 'LookupList' property");
+                    var attr = fieldAttrs[0];
+                    return GetLookupItemUntype(propType, field, fieldValue, attr);
+                }
             }
 
             if (field.Type == SPFieldType.Boolean)
