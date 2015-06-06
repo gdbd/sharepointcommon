@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>SharepointCommon</id>
-    <version>1.7.1</version>
+    <version>2.0</version>
     <authors>devi_ous</authors>
     <owners>devi_ous</owners>
     <licenseUrl>http://sharepointcommon.codeplex.com/license</licenseUrl>
@@ -16,22 +16,24 @@
 - ability to unit test
     </description>
 
-    <summary>Framework for Microsoft SharePoint© 2010 and 2013. Allows to map list items to simple hand-writen POCO classes and perform actions by manipulating with entities.
-GOALS:
-- strong typed operations with items
-- abstract layer on Sharepoint object model
-- simplifying recurring routine actions
-- ability to unit test
-FEATURES:
-- create wrappers on a SPSite,SPWeb,SPList
-- create repositories for lists
-- get items by typed query, Id, Guid or specified field
-- create, update, delete items by typed entity
-- lazy access to any entity property(Castle Proxy)
-- typed CAML queries(Caml.NET with extentions)
-- many other features upcoming</summary>
+    <summary>
+      Framework for Microsoft SharePoint© 2010 and 2013. Allows to map list items to simple hand-writen POCO classes and perform actions by manipulating with entities.
+      GOALS:
+      - strong typed operations with items
+      - abstract layer on Sharepoint object model
+      - simplifying recurring routine actions
+      - ability to unit test
+      FEATURES:
+      - create wrappers on a SPSite,SPWeb,SPList
+      - create repositories for lists
+      - get items by typed query, Id, Guid or specified field
+      - create, update, delete items by typed entity
+      - lazy access to any entity property(Castle Proxy)
+      - typed CAML queries(Caml.NET with extentions)
+      - version 2.0 allow to map event receivers
+      - many other features upcoming</summary>
 
-    <copyright>Copyright © devi_ous 2012-2013</copyright>
+    <copyright>Copyright © devi_ous 2012-2015</copyright>
     <tags>Sharepoint Framework ORM POCO UnitTest Wrapper</tags>
   </metadata>
 </package>

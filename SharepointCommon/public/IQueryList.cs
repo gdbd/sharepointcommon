@@ -80,7 +80,17 @@ namespace SharepointCommon
         /// </summary>
         string RelativeUrl { get; }
 
+        /// <summary>
+        /// Registers list event receiver
+        /// </summary>
+        /// <typeparam name="TEventReceiver">Type inherited from <see cref="ListEventReceiver{T}"/></typeparam>
         void AddEventReceiver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>;
+
+
+        /// <summary>
+        /// Removes list event receiver
+        /// </summary>
+        /// <typeparam name="TEventReceiver">Type inherited from <see cref="ListEventReceiver{T}"/></typeparam>
         void RemoveEventReceiver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>;
 
         /// <summary>

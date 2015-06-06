@@ -72,12 +72,11 @@ namespace SharepointCommon.Events
             ret.Synchronization = SPEventReceiverSynchronization.Default;
             ret.Sequence = 10000;
 
-            SPEventReceiverType res;
-            if (Enum.TryParse(method.Name, out res))
+            try
             {
-                ret.Type = res;
+                ret.Type = (SPEventReceiverType)Enum.Parse(typeof(SPEventReceiverType), method.Name);
             }
-            else
+            catch
             {
                 throw new SharepointCommonException(string.Format("Cannot determine event type: {0}", method.Name));
             }

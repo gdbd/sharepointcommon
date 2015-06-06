@@ -5,6 +5,10 @@ using System.Text;
 
 namespace SharepointCommon.Attributes
 {
+    /// <summary>
+    /// Mark <see cref="ListEventReceiver{T}"/> methods to
+    /// set event receiver is synchronous or asynchronous
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class AsyncAttribute : Attribute
     {
