@@ -24,9 +24,9 @@ namespace Castle.Core.Internal
 #endif
 
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	public static class CollectionExtensions
+	internal static class CollectionExtensions
 	{
-		public static TResult[] ConvertAll<T, TResult>(this T[] items, Converter<T, TResult> transformation)
+        internal static TResult[] ConvertAll<T, TResult>(this T[] items, Converter<T, TResult> transformation)
 		{
 #if SILVERLIGHT
 			return items.Select(transformation.Invoke).ToArray();
@@ -35,7 +35,7 @@ namespace Castle.Core.Internal
 #endif
 		}
 
-		public static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
+        internal static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
 		{
 			if (items == null) return;
 
@@ -45,7 +45,7 @@ namespace Castle.Core.Internal
 			}
 		}
 
-		public static T Find<T>(this T[] items, Predicate<T> predicate)
+        internal static T Find<T>(this T[] items, Predicate<T> predicate)
 		{
 #if SILVERLIGHT
 			if (items == null)
@@ -59,7 +59,7 @@ namespace Castle.Core.Internal
 #endif
 		}
 
-		public static T[] FindAll<T>(this T[] items, Predicate<T> predicate)
+		internal static T[] FindAll<T>(this T[] items, Predicate<T> predicate)
 		{
 #if SILVERLIGHT
 			return items.Where(predicate.Invoke).ToArray();
@@ -73,7 +73,7 @@ namespace Castle.Core.Internal
 		/// </summary>
 		/// <param name = "this"></param>
 		/// <returns></returns>
-		public static bool IsNullOrEmpty(this IEnumerable @this)
+		internal static bool IsNullOrEmpty(this IEnumerable @this)
 		{
 			return @this == null || @this.GetEnumerator().MoveNext() == false;
 		}

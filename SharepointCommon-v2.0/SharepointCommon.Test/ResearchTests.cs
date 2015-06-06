@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Castle.Core.Internal;
 using Microsoft.SharePoint;
 using NUnit.Framework;
 using SharepointCommon.Entities;
@@ -21,9 +22,6 @@ namespace SharepointCommon.Test
             var mlv = new SPFieldLookupValueCollection(s1);
 
             var mlv2 = new SPFieldLookupValueCollection(s2);
-
-
-            
         }
     }
 }

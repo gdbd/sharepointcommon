@@ -8,6 +8,9 @@ using SharepointCommon.Common;
 
 namespace SharepointCommon.Events
 {
+    /// <summary>
+    /// For internal use only
+    /// </summary>
     public class ListItemEventReceiver : SPItemEventReceiver
     {
         #region overriden receiver methods

@@ -2,6 +2,10 @@
 
 namespace SharepointCommon.Attributes
 {
+    /// <summary>
+    /// Mark <see cref="ListEventReceiver{T}"/> methods to
+    /// set event receiver sequence.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class SequenceAttribute : Attribute
     {
