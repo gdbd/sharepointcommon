@@ -1,5 +1,7 @@
-﻿using System.Globalization;
+﻿using System.Collections;
+using System.Globalization;
 using System.Threading;
+using Microsoft.SharePoint.Utilities;
 
 namespace SharepointCommon.Common
 {
@@ -73,6 +75,97 @@ namespace SharepointCommon.Common
                 }
             }
             return fields;
+        }
+
+        internal static Dictionary<Field, object> ToFieldsWithValue<T>(T item) where T : Item
+        {
+            var itemType = typeof(T);
+            var props = itemType.GetProperties();
+
+            var ht = new Dictionary<Field, object>();
+            foreach (PropertyInfo prop in props)
+            {
+                if (CommonHelper.IsPropertyNotMapped(prop)) continue;
+                var ft = ToFieldType(prop);
+
+                var value = prop.GetValue(item, null);
+             
+                ht.Add(ft, value);
+            }
+            return ht;
+        }
+
+        internal static Hashtable ToHashTable<T>(T item, SPWeb web) where T : Item
+        {
+            var fields = ToFieldsWithValue(item);
+
+            var ht = new Hashtable();
+
+            foreach (var field in fields)
+            {
+                if (!IsReadOnlyField(field.Key.Name)) continue;
+
+                if(field.Value == null) continue;
+
+                object val = "";
+
+                if (field.Key.Type == SPFieldType.Lookup)
+                {
+                    if (!field.Key.IsMultiValue)
+                    {
+                        var asLkp = field.Value as Item;
+                        val = asLkp.Id.ToString();
+                    }
+                    else
+                    {
+                        var asLkp = ((IEnumerable) field.Value).Cast<Item>();
+                        foreach (var itm in asLkp)
+                        {
+                            //1;#a;#2;#b
+                            val += itm.Id + ";#asd;#";
+                        }
+                        
+                    }
+                }
+                else if (field.Key.Type == SPFieldType.User)
+                {
+
+                    if (!field.Key.IsMultiValue)
+                    {
+                        var asLkp = field.Value as User;
+                        var uv = ToUserValue(asLkp, web);
+                        val = uv.LookupId.ToString();
+                    }
+                    else
+                    {
+                        var asLkp = ((IEnumerable)field.Value).Cast<User>();
+                        foreach (var itm in asLkp)
+                        {
+                            //1;#a;#2;#b
+                            var uv = ToUserValue(itm, web);
+                            val += uv.LookupId + ";#asd;#" ;
+                        }
+
+                    }
+                }
+
+                else if(field.Key.Type == SPFieldType.DateTime)
+                {
+                    var dt = DateTime.Parse(field.Value.ToString());
+                    var dtUtc = SPUtility.CreateISO8601DateTimeFromSystemDateTime(dt);
+                    val = dtUtc;
+                }
+                else
+                {
+                    val = field.Value.ToString();
+                }
+
+                
+
+                ht.Add(TranslateToHashPropertyName(field.Key.Name), val);
+            }
+
+            return ht;
         }
 
         internal static Field ToFieldType(MemberInfo member)
@@ -255,6 +348,19 @@ namespace SharepointCommon.Common
             return dic.ContainsKey(propName) ? dic[propName] : propName;
         }
 
+        internal static string TranslateToHashPropertyName(string propName)
+        {
+            var dic = new Dictionary<string, string>
+                          {
+                              { "Title", "vti_title" },
+                          };
+
+            return dic.ContainsKey(propName) ? dic[propName] : propName;
+        }
+
+        /// <summary>
+        /// read method name as: IsNotReadOnlyField. Must been refactored later
+        /// </summary>
         internal static bool IsReadOnlyField(string spName)
         {
             var fields = new List<string>
@@ -340,6 +446,41 @@ namespace SharepointCommon.Common
             return true;
         }
 
+        internal static SPFieldUserValue ToUserValue(User user, SPWeb web)
+        {
+            if (user is Person)
+            {
+                var person = (Person)user;
+
+                SPUser spUser = null;
+                try
+                {
+                    spUser = web.SiteUsers[person.Login];
+                }
+                catch (SPException)
+                {
+                    throw new SharepointCommonException(string.Format("User {0} not found.", user.Id));
+                }
+
+
+                return new SPFieldUserValue { LookupId = spUser.ID, };
+            }
+            else
+            {   // sharepoint group
+                SPGroup spUser = null;
+                try
+                {
+                    spUser = web.SiteGroups[user.Name];
+                }
+                catch (SPException)
+                {
+                    throw new SharepointCommonException(string.Format("Group {0} not found.", user.Name));
+                }
+
+                return new SPFieldUserValue { LookupId = spUser.ID, };
+            }
+        }
+
         private static string ToDefaultValue(object defaultValue)
         {
             switch (defaultValue.GetType().ToString())
@@ -365,6 +506,6 @@ namespace SharepointCommon.Common
                 "LinkFilename2",
             };
             return SPBuiltInFieldId.Contains(field.Id) || excludedFields.Contains(field.InternalName);
-        }
+        } 
     }
 }

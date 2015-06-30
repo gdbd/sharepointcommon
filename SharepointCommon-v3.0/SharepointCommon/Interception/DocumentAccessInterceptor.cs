@@ -17,6 +17,13 @@ namespace SharepointCommon.Interception
 
         public void Intercept(IInvocation invocation)
         {
+           /* if (invocation.Method.DeclaringType != typeof(Document)) 
+            { 
+                invocation.Proceed(); 
+                return;
+            }*/
+
+
             switch (invocation.Method.Name)
             {
                 case "get_Name":

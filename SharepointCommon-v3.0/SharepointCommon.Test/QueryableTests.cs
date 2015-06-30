@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Moq;
+using SharepointCommon.Linq;
 
 namespace SharepointCommon.Test
 {
@@ -17,6 +19,21 @@ namespace SharepointCommon.Test
                 var coll = query.ToList();
                 var one = query.First();
             }
+        }
+
+        [NUnit.Framework.Test]
+        public void Create_Query_Mock_Test()
+        {
+            var list = new Mock<IQueryList<Item>>(MockBehavior.Strict);
+
+
+            list.Setup(l => l.Items()).Returns(new CamlableQuery<Item>());
+
+
+            var query = list.Object.Items().Where(i => i.Id == 1);
+
+            var coll = query.ToList();
+            var one = query.First();
         }
     }
 }

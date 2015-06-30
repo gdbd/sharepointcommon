@@ -1,0 +1,26 @@
+﻿Sharepoint List
+Event			BeforeProperties	AfterProperties		ListItem
+
+ItemAdding		Null				New  Value			Null
+ItemAdded		Null				New Value			New Value
+ItemUpdating	Null				Changed Value		Original Value
+ItemUpdated		Null				Changed Value		Changed Value		
+ItemDeleting	Null				Null				Original Value
+ItemDeleted		Null				Null				Null
+
+Sharepoint Document Libraray
+Event			BeforeProperties	AfterProperties		ListItem
+
+ItemAdding		Null				Null				Null
+ItemAdded		Null				Null				New Value
+ItemUpdating	Original Value		Changed Value		Original Value
+ItemUpdated		Original Value		Changed Value		Changed Value		
+ItemDeleting	Null				Null				Original Value
+ItemDeleted		Null				Null				Null
+
+
+ 
+
+ 
+ 
+ 

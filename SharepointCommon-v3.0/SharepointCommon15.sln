@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharepointCommon15", "SharepointCommon\SharepointCommon15.csproj", "{84F70ECA-0B60-4452-ADE3-1A9ABC7B765E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharepointCommon.Test15", "SharepointCommon.Test\SharepointCommon.Test15.csproj", "{862730D3-4233-46D1-B8CC-E0C828943AF8}"

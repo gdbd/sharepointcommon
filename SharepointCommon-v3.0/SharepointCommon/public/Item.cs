@@ -24,6 +24,8 @@ namespace SharepointCommon
         public virtual Version Version { get; protected internal set; }
         public virtual Guid Guid { get; protected internal set; }
 
+        [NotMapped]
+        public virtual IQueryWeb ParentWeb { get; set; }
 
         /// <summary>
         /// Gets or sets the folder of file in document library.
@@ -63,7 +65,7 @@ namespace SharepointCommon
         /// <returns>inner name of underlying mapped SPField</returns>
         public static string GetFieldName<T>(Expression<Func<T, object>> fieldSelector) where T : Item, new()
         {
-            return ItemExtention.GetFieldName(new T(), fieldSelector);
+            return ItemExtention.GetFieldName(null, fieldSelector);
         }
     }
 }
