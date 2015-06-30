@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Castle.DynamicProxy;
 using Microsoft.SharePoint;
 using SharepointCommon.Common;
@@ -9,19 +10,23 @@ namespace SharepointCommon.Interception
     internal class ItemAccessInterceptor : IInterceptor
     {
         private readonly SPListItem _listItem;
+        private readonly bool _reloadLookupItem;
         private List<string> _changedFields;
-
-        public ItemAccessInterceptor(SPListItem listItem)
+        
+        public ItemAccessInterceptor(SPListItem listItem, bool reloadLookupItem = true)
         {
             _listItem = listItem;
+            _reloadLookupItem = reloadLookupItem;
             _changedFields = new List<string>();
         }
-
+        
+        
         public void Intercept(IInvocation invocation)
         {
             if (invocation.Method.Name.StartsWith("set_"))
             {
-                _changedFields.Add(invocation.Method.Name.Substring(4));
+                var methodName = invocation.Method.Name.Substring(4);
+                _changedFields.Add(methodName);
                 invocation.Proceed();
                 return;
             }
@@ -41,6 +46,10 @@ namespace SharepointCommon.Interception
 
             switch (invocation.Method.Name)
             {
+                case "get_ParentWeb":
+                    invocation.ReturnValue = new QueryWeb(_listItem.ParentList.ParentWeb);
+                    return;
+
                 case "get_ParentList":
                     var qWeb = new QueryWeb(_listItem.ParentList.ParentWeb);
                     invocation.ReturnValue = qWeb.GetById<Item>(_listItem.ParentList.ID);
@@ -74,7 +83,7 @@ namespace SharepointCommon.Interception
                 return;
             }
 
-            var value = EntityMapper.ToEntityField(prop, _listItem);
+            var value = EntityMapper.ToEntityField(prop, _listItem, reloadLookupItem: _reloadLookupItem);
 
             invocation.ReturnValue = value;
         }

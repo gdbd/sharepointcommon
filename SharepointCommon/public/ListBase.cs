@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -12,7 +13,9 @@ using Microsoft.SharePoint;
 using SharepointCommon.Attributes;
 using SharepointCommon.Common;
 using SharepointCommon.Entities;
+using SharepointCommon.Events;
 using SharepointCommon.Expressions;
+using SharepointCommon.Impl;
 using SharepointCommon.Linq;
 
 namespace SharepointCommon
@@ -131,27 +134,37 @@ namespace SharepointCommon
         public virtual string Url { get { return ParentWeb.Web.Url + "/" + List.RootFolder.Url; } }
         public virtual string RelativeUrl { get { return List.RootFolder.Url; } }
 
+        public void AddEventReceiver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>
+        {
+            ListEventMgr.RegisterEventReceivers<TEventReceiver>(List);
+        }
+
+        public void RemoveEventReceiver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>
+        {
+            ListEventMgr.RemoveEventReceiver<TEventReceiver>(List);
+        }
+
         public virtual string FormUrl(PageType pageType, int id = 0, bool isDlg = false)
         {
             string formUrl;
 
-            switch (pageType)
-            {
-                case PageType.Display:
+                switch (pageType)
+                {
+                    case PageType.Display:
                     formUrl = List.DefaultDisplayFormUrl;
                     break;
 
-                case PageType.Edit:
+                    case PageType.Edit:
                     formUrl = List.DefaultEditFormUrl;
                     break;
 
-                case PageType.New:
+                    case PageType.New:
                     formUrl = List.DefaultNewFormUrl;
                     break;
 
-                default:
-                    throw new ArgumentOutOfRangeException("pageType");
-            }
+                    default:
+                        throw new ArgumentOutOfRangeException("pageType");
+                }
 
             if (id != 0)
             {
@@ -165,7 +178,7 @@ namespace SharepointCommon
             else if (isDlg)
             {
                 formUrl += "&isDlg=1";
-            }
+        }
 
             return formUrl;
         }
@@ -186,6 +199,12 @@ namespace SharepointCommon
                 folder = EnsureFolder(entity.Folder);
             }
 
+
+            var ct = GetContentType(entity, false);
+            SPContentTypeId ctId;
+            if (ct == null) ctId = SPBuiltInContentTypeId.Item;
+            else ctId = ct.Id;
+
             if (entity is Document)
             {
                 var doc = entity as Document;
@@ -202,26 +221,29 @@ namespace SharepointCommon
                     }
                 }
 
-                var file = folder.Files.Add(doc.Name, doc.Content, true);
+
+                var ht = FieldMapper.ToHashTable(entity, ParentWeb.Web);
+
+
+
+                var file = folder.Files.Add(doc.Name, doc.Content, ht, true);
                 newitem = file.Item;
+
+                
+              
+
             }
             else
             {
-                //newitem = List.AddItem();
+                newitem = List.AddItem(folder.Url, SPFileSystemObjectType.File, null);
+                EntityMapper.ToItem(entity, newitem);
 
-                newitem = List.AddItem(folder.Url, SPFileSystemObjectType.File, null);             
+                newitem[SPBuiltInFieldId.ContentTypeId] = ctId;
+
+                newitem.SystemUpdate(false);
             }
 
-            EntityMapper.ToItem(entity, newitem);
-
-            var ct = GetContentType(entity, false);
-            SPContentTypeId ctId;
-            if (ct == null) ctId = SPBuiltInContentTypeId.Item;
-            else ctId = ct.Id;
-
-            newitem[SPBuiltInFieldId.ContentTypeId] = ctId;
-
-            newitem.SystemUpdate(false);
+          
             entity.Id = newitem.ID;
             entity.Guid = new Guid(newitem[SPBuiltInFieldId.GUID].ToString());
 
@@ -240,13 +262,15 @@ namespace SharepointCommon
                 EntityMapper.ToItem(entity, forUpdate);
                 if (incrementVersion) forUpdate.Update();
                 else forUpdate.SystemUpdate(false);
+
+                InvalidateProperties(entity, null, forUpdate);
                 return;
             }
 
             if (entity == null)
                 throw new SharepointCommonException(
                     string.Format("cant found item with ID={0} in List={1}", entity.Id, List.Title));
-            
+
             var propertiesToSet = new List<string>();
             var memberAccessor = new MemberAccessVisitor();
             foreach (var selector in selectors)
@@ -259,6 +283,8 @@ namespace SharepointCommon
 
             if (incrementVersion) forUpdate.Update();
             else forUpdate.SystemUpdate(false);
+
+            InvalidateProperties(entity, propertiesToSet, forUpdate);
         }
 
         public virtual void Delete(T entity, bool recycle)
@@ -592,6 +618,25 @@ namespace SharepointCommon
                     ViewFieldsOnly = viewFields.Length != 0,
                     QueryThrottleMode = SPQueryThrottleOption.Override,
                 });
+        }
+
+        private static void InvalidateProperties(T entity, List<string> propertiesToSet, SPListItem forUpdate)
+        {
+            var type = entity.GetType();
+
+            if (propertiesToSet == null)
+            {
+                propertiesToSet = type.GetProperties()
+                    .Where(p => Attribute.GetCustomAttribute(p, typeof(NotMappedAttribute)) == null)
+                    .Select(p => p.Name).ToList();
+            }
+
+            foreach (var propWasSetName in propertiesToSet)
+            {
+                var propWasSet = type.GetProperty(propWasSetName);
+                var valueWasSet = EntityMapper.ToEntityField(propWasSet, forUpdate);
+                propWasSet.SetValue(entity, valueWasSet, null);
+            }
         }
 
         private bool ContainsFieldImpl(PropertyInfo prop)

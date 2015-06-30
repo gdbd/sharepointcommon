@@ -6,8 +6,10 @@ using SharepointCommon.Attributes;
 using SharepointCommon.Expressions;
 using SharepointCommon.Impl;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.SharePoint;
+using System.Globalization;
 
 namespace SharepointCommon.Common
 {
@@ -24,6 +26,57 @@ namespace SharepointCommon.Common
             if (fieldValue == null) return null;
 
             return fieldValue.User;
+        }
+
+        internal static SPUser GetUser(SPList list, string fieldStaticName, object value)
+        {
+            if (value == null) return null;
+
+            var userField = (SPFieldUser)list.Fields.TryGetFieldByStaticName(fieldStaticName);
+            if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
+            
+            var fieldValue = (SPFieldUserValue)userField.GetFieldValue(value.ToString());
+
+            if (fieldValue == null) return null;
+
+            return fieldValue.User;
+        }
+
+        internal static SPFieldUserValueCollection GetUsers(SPList list, string fieldStaticName, object value)
+        {
+            if(value == null) return null;
+
+            var userField = (SPFieldUser)list.Fields.TryGetFieldByStaticName(fieldStaticName);
+            if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
+
+            IEnumerable<int> ids;
+            if (value is SPFieldUserValueCollection)
+            {
+                var vv = value as SPFieldUserValueCollection;
+                ids = vv.Select(v => v.LookupId);
+            }
+            else
+            {
+                var mlv = new SPFieldLookupValueCollection((string)value);
+             
+                ids = mlv.Select(v => v.LookupId);
+            }
+
+            var users = new SPFieldUserValueCollection();
+            foreach (var id in ids)
+            {
+                try
+                {
+                    var user = list.ParentWeb.AllUsers.GetByID(id);
+                    users.Add(new SPFieldUserValue(list.ParentWeb, user.ID, user.LoginName));
+                }
+                catch (SPException)
+                {
+                    var group = list.ParentWeb.Groups.GetByID(id);
+                    users.Add(new SPFieldUserValue(list.ParentWeb, group.ID, group.Name));
+                }
+            }
+            return users;
         }
 
         internal static SPFieldUserValueCollection GetUsers(SPListItem item, string fieldStaticName)
@@ -158,6 +211,27 @@ namespace SharepointCommon.Common
             }
 
             return false;
+        }
+
+        internal static object GetDefaultValue(Type t)
+        {
+            if (t.IsValueType)
+            {
+                return Activator.CreateInstance(t);
+            }
+            return null;
+        }
+
+        internal static DateTime? GetDateTimeFieldValue(object fieldValue)
+        {
+#warning check time value in UI !
+            if (fieldValue == null) return null;
+            DateTime res;
+            if (DateTime.TryParse(fieldValue.ToString(), null, DateTimeStyles.AdjustToUniversal, out res))
+            {
+                return res;
+            }
+            return null;
         }
     }
 }

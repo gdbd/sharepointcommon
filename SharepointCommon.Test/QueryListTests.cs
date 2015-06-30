@@ -25,11 +25,11 @@ namespace SharepointCommon.Test
         private SPUser _secondUser;
         private SPUser _domainGroup;
         private SPGroup _spGroup;
-
+        
         private IQueryList<Item> _list;
         private IQueryList<Item> _listForLookup;
         private IQueryWeb _queryWeb;
-
+        
         [TestFixtureSetUp]
         public void Start()
         {
@@ -114,26 +114,26 @@ namespace SharepointCommon.Test
                 list = CreateCustomList();
 
                 var customItem = new CustomItem
-                {
-                    Title = "Items_ReturnsColectionOfCustomItemsTest",
-                    CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
-                    CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
-                    CustomFieldNumber = 123.5,
-                    CustomBoolean = true,
-                    CustomUser = new Person(_firstUser.LoginName),
-                    CustomUsers = new List<User> { new Person(_firstUser.LoginName), new User(_spGroup.Name) },
-                    CustomLookup = lookupItem,
-                    CustomMultiLookup = new List<Item> {lookupItem, lookupItem2},
-                    CustomDate = DateTime.Now,
-                    CustomChoice = TheChoice.Choice2,
-                    Тыдыщ = "тест",
-                };
+                    {
+                        Title = "Items_ReturnsColectionOfCustomItemsTest",
+                        CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
+                        CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
+                        CustomFieldNumber = 123.5,
+                        CustomBoolean = true,
+                        CustomUser = new Person(_firstUser.LoginName),
+                        CustomUsers = new List<User> { new Person(_firstUser.LoginName), new User(_spGroup.Name) },
+                        CustomLookup = lookupItem,
+                        CustomMultiLookup = new List<Item> {lookupItem, lookupItem2},
+                        CustomDate = DateTime.Now,
+                        CustomChoice = TheChoice.Choice2,
+                        Тыдыщ = "тест",
+                    };
                 list.Add(customItem);
                 var item = list.Items(new CamlQuery()
                     .Query(
                         Q.Where(Q.Eq(Q.FieldRef<CustomItem>(i => i.Title),
                             Q.Value("Items_ReturnsColectionOfCustomItemsTest")))))
-                    .FirstOrDefault();
+                .FirstOrDefault();
 
                 Assert.IsNotNull(item);
                 Assert.That(item.Id, Is.EqualTo(customItem.Id));
@@ -160,6 +160,7 @@ namespace SharepointCommon.Test
                 Assert.That(item.CustomMultiLookup.First().Title, Is.EqualTo(lookupItem.Title));
                 Assert.That(item.CustomChoice, Is.EqualTo(customItem.CustomChoice));
                 Assert.That(item.Тыдыщ, Is.EqualTo(customItem.Тыдыщ));
+                Assert.That(item.CustomDate.ToString(), Is.EqualTo(customItem.CustomDate.ToString()));
             }
             finally
             {
@@ -175,7 +176,7 @@ namespace SharepointCommon.Test
             return !_queryWeb.ExistsByName("Add_AddsCustomItem") ? _queryWeb.Create<CustomItem>("Add_AddsCustomItem") : _queryWeb.GetByName<CustomItem>("Add_AddsCustomItem");
         }
 
-    [Test]
+        [Test]
         public void Ensure_Lookup_Sets_ShowField_Test()
         {
             IQueryList<LookupWithShowField> list = null;
@@ -895,6 +896,23 @@ namespace SharepointCommon.Test
             }
         }
 
+        [Test]
+        public void Update_Replace_Person_With_Saved_Test()
+        {
+            using (var ts = new TestListScope<CustomItem>("Update_Replace_Person_With_Saved_Test"))
+            {
+                var ci = new CustomItem { };
+                ts.List.Add(ci);
+
+                var ciGet = ts.List.ById(ci.Id);
+                ciGet.CustomUser = new Person(_firstUser.LoginName);
+                ts.List.Update(ciGet, false, f => f.CustomUser);
+
+                Assert.NotNull(ciGet.CustomUser);
+                Assert.That(ciGet.CustomUser.Id != 0);
+            }
+        }
+
         #endregion
 
         #region Delete Tests
@@ -1428,8 +1446,8 @@ namespace SharepointCommon.Test
                 ts.List.Add(item3);
                 ts.List.Add(item4);
 
-                Assert.That(item1.Id, Is.Not.EqualTo(0));
-                Assert.That(item2.Id, Is.Not.EqualTo(0));
+            Assert.That(item1.Id, Is.Not.EqualTo(0));
+            Assert.That(item2.Id, Is.Not.EqualTo(0));
                 Assert.That(item3.Id, Is.Not.EqualTo(0));
 
                 var items = ts.List.ByField(i => i.Title, "ByField_Returns_Entity_Test").ToList();
@@ -1487,7 +1505,7 @@ namespace SharepointCommon.Test
                 Assert.That(items.First().Id, Is.EqualTo(item4.Id));
 
                 items = ts.List.ByField(i => i.CustomLookup, null).ToList();
-                CollectionAssert.IsNotEmpty(items);
+            CollectionAssert.IsNotEmpty(items);
                 Assert.That(items.Count(), Is.EqualTo(3));
                 Assert.That(items.First().Id, Is.EqualTo(item1.Id));
                 Assert.That(items.Last().Id, Is.EqualTo(item4.Id));
@@ -1634,6 +1652,23 @@ namespace SharepointCommon.Test
                 {
                     list.DeleteList(false);
                 }
+            }
+        }
+
+        [Test]
+        public void Map_Number_To_Item_Test()
+        {
+            using (var ts = new TestListScope<NumberAsLookupCreate>("Map_Number_To_Item_Test"))
+            {
+                var entity = new Item { };
+                _listForLookup.Add(entity);
+                ts.List.Add(new NumberAsLookupCreate { CustomLookup = entity.Id, });
+
+                var list = ts.Web.GetById<NumberAsLookupTest>(ts.List.Id);
+                var item = list.Items(CamlQuery.Default).Last();
+                var cl = item.CustomLookup;
+
+                Assert.That(entity.Id, Is.EqualTo(cl.Id));
             }
         }
 
