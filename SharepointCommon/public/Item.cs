@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq.Expressions;
 using Microsoft.SharePoint;
+using Microsoft.SharePoint.Utilities;
 using SharepointCommon.Attributes;
 
 // ReSharper disable once CheckNamespace
@@ -66,6 +67,18 @@ namespace SharepointCommon
         public static string GetFieldName<T>(Expression<Func<T, object>> fieldSelector) where T : Item, new()
         {
             return ItemExtention.GetFieldName(null, fieldSelector);
+        }
+
+        /// <summary>
+        /// Gets display form url for item
+        /// </summary>
+        public string FormUrl(PageType pageType = PageType.Display, bool isDlg = false)
+        {
+            var serverRelative = ParentList.FormUrl(pageType, Id, isDlg);
+
+            var serverurl = ParentWeb.Web.Url.Replace(ParentWeb.Web.ServerRelativeUrl, "");
+
+            return SPUtility.ConcatUrls(serverurl, serverRelative);
         }
     }
 }

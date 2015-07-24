@@ -1672,6 +1672,29 @@ namespace SharepointCommon.Test
             }
         }
 
+        [Test]
+        public void Map_Choice_To_String_Test()
+        {
+            using (var ts = new TestListScope<ChoiceAsStringCreate>("Map_Choice_To_String_Test"))
+            {
+                //get choice as string
+                ts.List.Add(new ChoiceAsStringCreate { CustomChoice = TheChoice.Choice3, });
+                var list = ts.Web.GetById<ChoiceAsStringTest>(ts.List.Id);
+                var item = list.Items(CamlQuery.Default).Last();
+                var cl = item.CustomChoice;
+
+                Assert.That(cl, Is.EqualTo("Choice3"));
+
+                //set choice as string
+                var list2 = ts.Web.GetById<ChoiceAsStringTest>(ts.List.Id);
+                list2.Add(new ChoiceAsStringTest { CustomChoice = "Choice3" });
+                item = list.Items(CamlQuery.Default).Last();
+                cl = item.CustomChoice;
+                Assert.That(cl, Is.EqualTo("Choice3"));
+            }
+        }
+
+
         #endregion
 
         #region Fields Tests

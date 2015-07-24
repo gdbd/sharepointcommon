@@ -270,6 +270,11 @@ namespace SharepointCommon.Common
                         if (argumentType.IsEnum == false) throw new SharepointCommonException(string.Format("Property '{0}' must be declared as enum with fields corresponds to choices", propName));
                         propType = argumentType;
                     }
+
+                    if (propType == typeof (string))
+                    {
+                        return fieldValue;
+                    }
                 }
 
                 return EnumMapper.ToEntity(propType, fieldValue);
@@ -610,10 +615,17 @@ namespace SharepointCommon.Common
               //  var list = web.Lists[listItem.ParentList.ID];
                // var item = list.GetItemById(listItem.ID);
 
-                var lkpValues = new SPFieldLookupValueCollection(value != null ? value.ToString() : string.Empty);
+                //var lkpValues = new SPFieldLookupValueCollection(value != null ? value.ToString() : string.Empty);
 
                 //var val = item[field.InternalName];
                 if (value == null) yield break;
+
+                var method2 = providerType.GetMethod("ParseFieldValue");
+
+                if (method2.DeclaringType != typeof(CustomFieldProvider))
+                {
+                    value = attr.FieldProvider.ParseFieldValue(value);
+                }
 
                 if (value is IEnumerable)
                 {
