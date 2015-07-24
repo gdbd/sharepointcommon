@@ -364,6 +364,12 @@ namespace SharepointCommon
 
             
             var fieldInfo = FieldMapper.ToFields<T>().FirstOrDefault(f => f.Name.Equals(fieldName));
+
+            if (fieldInfo == null && fieldName == "Name")
+            {
+                fieldInfo = new Field { Type = SPFieldType.Text, Name = "FileLeafRef", };
+            }
+
             if (fieldInfo == null) throw new SharepointCommonException(string.Format("Field '{0}' not exist in '{1}'", fieldName, List.Title));
 
             string fieldType = fieldInfo.Type.ToString();

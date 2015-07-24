@@ -76,54 +76,71 @@ namespace SharepointCommon.Events
         //Invoke Added/Updated/Deleted receivers
         private void InvokeEdReceiver(SPItemEventProperties properties, SPEventReceiverType eventReceiverType, string methodName)
         {
-            var receiverProps = GetEventReceiverType(properties, eventReceiverType);
-            var receiver = Activator.CreateInstance(receiverProps.EventReceiverType);
-            var receiverMethod = receiverProps.EventReceiverType.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
-            var receiverParam = receiverMethod.GetParameters().First();
-            switch (eventReceiverType)
+            try
             {
-                case SPEventReceiverType.ItemDeleted:
-                    receiverMethod.Invoke(receiver, new[] { (object)properties.ListItemId });
-                    break;
-                default:
-                    var entityType = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem);
-                    receiverMethod.Invoke(receiver, new[] { entityType });
-                    break;
+                var receiverProps = GetEventReceiverType(properties, eventReceiverType);
+                var receiver = Activator.CreateInstance(receiverProps.EventReceiverType);
+                var receiverMethod = receiverProps.EventReceiverType.GetMethod(methodName,
+                    BindingFlags.Instance | BindingFlags.Public);
+                var receiverParam = receiverMethod.GetParameters().First();
+                switch (eventReceiverType)
+                {
+                    case SPEventReceiverType.ItemDeleted:
+                        receiverMethod.Invoke(receiver, new[] {(object) properties.ListItemId});
+                        break;
+                    default:
+                        var entityType = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem);
+                        receiverMethod.Invoke(receiver, new[] {entityType});
+                        break;
+                }
+            }
+            catch (TargetInvocationException tex)
+            {
+                throw tex.InnerException;
             }
         }
         
         //Invoke Adding/Updating/Deleting receivers
         private void InvokeIngReceiver(SPItemEventProperties properties, SPEventReceiverType eventReceiverType, string methodName)
         {
-            var afterProperties = new Hashtable();
-            foreach (DictionaryEntry afterProperty in properties.AfterProperties)
+            try
             {
-                afterProperties.Add(afterProperty.Key, afterProperty.Value);
+                var afterProperties = new Hashtable();
+                foreach (DictionaryEntry afterProperty in properties.AfterProperties)
+                {
+                    afterProperties.Add(afterProperty.Key, afterProperty.Value);
+                }
+
+                var receiverProps = GetEventReceiverType(properties, eventReceiverType);
+                var receiver = Activator.CreateInstance(receiverProps.EventReceiverType);
+                var method = receiverProps.EventReceiverType.GetMethod(methodName,
+                    BindingFlags.Instance | BindingFlags.Public);
+                var receiverParam = method.GetParameters().First();
+
+                switch (eventReceiverType)
+                {
+                    case SPEventReceiverType.ItemAdding:
+                        var entity = EntityMapper.ToEntity(receiverParam.ParameterType, afterProperties, properties.List);
+                        method.Invoke(receiver, new[] {entity});
+                        break;
+
+                    case SPEventReceiverType.ItemUpdating:
+                        entity = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem, false);
+                        var changedItem = EntityMapper.ToEntity(receiverParam.ParameterType, afterProperties,
+                            properties.List);
+
+                        method.Invoke(receiver, new[] {entity, changedItem});
+                        break;
+
+                    case SPEventReceiverType.ItemDeleting:
+                        entity = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem, false);
+                        method.Invoke(receiver, new[] {entity});
+                        break;
+                }
             }
-
-            var receiverProps = GetEventReceiverType(properties, eventReceiverType);
-            var receiver = Activator.CreateInstance(receiverProps.EventReceiverType);
-            var method = receiverProps.EventReceiverType.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
-            var receiverParam = method.GetParameters().First();
-        
-            switch (eventReceiverType)
+            catch (TargetInvocationException tex)
             {
-                case SPEventReceiverType.ItemAdding:
-                    var entity = EntityMapper.ToEntity(receiverParam.ParameterType, afterProperties, properties.List);
-                    method.Invoke(receiver, new[] { entity });
-                    break;
-
-                case SPEventReceiverType.ItemUpdating:
-                    entity = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem, false);
-                    var changedItem = EntityMapper.ToEntity(receiverParam.ParameterType, afterProperties, properties.List);
-                    
-                    method.Invoke(receiver, new[] { entity, changedItem });
-                    break;
-
-                case SPEventReceiverType.ItemDeleting:
-                    entity = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem, false);
-                    method.Invoke(receiver, new[] { entity });
-                    break;
+                throw tex.InnerException;
             }
         }
     }
