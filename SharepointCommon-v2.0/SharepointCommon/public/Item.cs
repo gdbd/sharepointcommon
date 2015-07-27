@@ -76,9 +76,11 @@ namespace SharepointCommon
         {
             var serverRelative = ParentList.FormUrl(pageType, Id, isDlg);
 
-            var serverurl = ParentWeb.Web.Url.Replace(ParentWeb.Web.ServerRelativeUrl, "");
+            //var serverurl = ParentWeb.Web.Url.Replace(ParentWeb.Web.ServerRelativeUrl, "");
 
-            return SPUtility.ConcatUrls(serverurl, serverRelative);
+           // return SPUtility.ConcatUrls(serverurl, serverRelative);
+
+            return serverRelative;
         }
     }
 }
