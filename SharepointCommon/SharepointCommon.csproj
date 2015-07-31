@@ -342,7 +342,6 @@
     <EmbeddedResource Include="Castle\DynamicProxy\DynProxy.snk" />
     <None Include="SharepointCommon.pfx" />
     <None Include="temp.snk" />
-    <None Include="temp2.snk" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -364,9 +363,7 @@
   <ItemGroup>
     <Content Include="todo.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Common\Interceptors\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

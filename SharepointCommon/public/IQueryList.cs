@@ -117,6 +117,15 @@ namespace SharepointCommon
         void Update(T entity, bool incrementVersion, params Expression<Func<T, object>>[] selectors);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="fieldSelector"></param>
+        /// <param name="valueToSet"></param>
+        /// <param name="incrementVersion"></param>
+        void UpdateField(T entity, Expression<Func<T, object>> fieldSelector, object valueToSet, bool incrementVersion = true);
+
+        /// <summary>
         /// Deletes the specified entity.
         /// </summary>
         /// <param name="entity">The entity.</param>

@@ -286,6 +286,18 @@ namespace SharepointCommon
             InvalidateProperties(entity, propertiesToSet, forUpdate);
         }
 
+        public virtual void UpdateField(T entity, Expression<Func<T, object>> fieldSelector, object valueToSet, bool incrementVersion = true)
+        {
+            if (fieldSelector == null) throw new ArgumentNullException("fieldSelector");
+            var memberAccessor = new MemberAccessVisitor();
+            var propName = memberAccessor.GetMemberName(fieldSelector);
+
+            var prop = entity.GetType().GetProperty(propName);
+            prop.SetValue(entity, valueToSet, null);
+
+            Update(entity, incrementVersion, fieldSelector);
+        }
+
         public virtual void Delete(T entity, bool recycle)
         {
             if (entity == null) throw new ArgumentNullException("entity");
