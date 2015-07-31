@@ -69,18 +69,5 @@ namespace SharepointCommon
             return ItemExtention.GetFieldName(null, fieldSelector);
         }
 
-        /// <summary>
-        /// Gets display form url for item
-        /// </summary>
-        public string FormUrl(PageType pageType = PageType.Display, bool isDlg = false)
-        {
-            var serverRelative = ParentList.FormUrl(pageType, Id, isDlg);
-
-            //var serverurl = ParentWeb.Web.Url.Replace(ParentWeb.Web.ServerRelativeUrl, "");
-
-           // return SPUtility.ConcatUrls(serverurl, serverRelative);
-
-            return serverRelative;
-        }
     }
 }
