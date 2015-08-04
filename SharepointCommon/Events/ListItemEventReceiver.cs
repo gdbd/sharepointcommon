@@ -93,6 +93,8 @@ namespace SharepointCommon.Events
                         receiverMethod.Invoke(receiver, new[] {entityType});
                         break;
                 }
+
+                ProccessCancel(receiver, properties);
             }
             catch (TargetInvocationException tex)
             {
@@ -137,10 +139,27 @@ namespace SharepointCommon.Events
                         method.Invoke(receiver, new[] {entity});
                         break;
                 }
+
+                ProccessCancel(receiver, properties);
             }
             catch (TargetInvocationException tex)
             {
                 throw tex.InnerException;
+            }
+        }
+
+        private void ProccessCancel(object receiver, SPItemEventProperties properties)
+        {
+            var cancelledField = receiver.GetType().GetField("Cancelled", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var messageField = receiver.GetType().GetField("Message", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+            var cancelled = (bool)cancelledField.GetValue(receiver);
+
+            if (cancelled)
+            {
+                var message = (string)messageField.GetValue(receiver);
+                properties.ErrorMessage = message;
+                properties.Cancel = true;
             }
         }
     }
