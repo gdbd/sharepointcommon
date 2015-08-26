@@ -208,13 +208,14 @@ namespace SharepointCommon.Common
                     }
                 }
 
-                if (typeof(Item).IsAssignableFrom(propType))
+                if (typeof (Item).IsAssignableFrom(propType))
                 {
-                    if(fieldAttrs.Length == 0 || string.IsNullOrEmpty(fieldAttrs[0].LookupList))
-                        throw  new SharepointCommonException("To map number field as Item it need been marked with 'FieldAttribute' and set 'LookupList' property");
+                    if (fieldAttrs.Length == 0 || string.IsNullOrEmpty(fieldAttrs[0].LookupList))
+                        throw new SharepointCommonException(
+                            "To map number field as Item it need been marked with 'FieldAttribute' and set 'LookupList' property");
                     var attr = fieldAttrs[0];
                     return GetLookupItemUntype(propType, field, fieldValue, attr);
-            }
+                }
             }
 
             if (field.Type == SPFieldType.DateTime)
@@ -278,6 +279,11 @@ namespace SharepointCommon.Common
                 }
 
                 return EnumMapper.ToEntity(propType, fieldValue);
+            }
+
+            if (field.Type == SPFieldType.Calculated)
+            {
+                fieldValue = field.GetFieldValueAsText(fieldValue);
             }
 
             return fieldValue;

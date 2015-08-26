@@ -1710,6 +1710,19 @@ namespace SharepointCommon.Test
         }
 
         [Test]
+        public void EnsureField_Custom_Property_Adds_Field_Test()
+        {
+            var list = _queryWeb.GetByName<ItemCustomHyperlink>(ListName1);
+            list.EnsureField(e => e.CustomField1);
+
+            Assert.That(list.ContainsField(e => e.CustomField1));
+
+            var f = list.GetField(l => l.CustomField1);
+            Assert.NotNull(f);
+            Assert.That(f.Type, Is.EqualTo(SPFieldType.URL));
+        }
+
+        [Test]
         public void EnsureField_Sets_Default_Value_Test()
         {
             var list = _queryWeb.GetByName<CustomItem>(ListName1);

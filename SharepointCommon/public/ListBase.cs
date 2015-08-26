@@ -686,7 +686,7 @@ namespace SharepointCommon
 
                 List.Fields.AddLookup(fieldInfo.Name, lookupList.ID, false);
             }
-            else if (fieldInfo.Type == SPFieldType.Invalid && fieldInfo.FieldAttribute.FieldProvider != null)
+            else
             {
                 var customPropAttrs = (CustomPropertyAttribute[])Attribute.GetCustomAttributes(fieldInfo.Property, typeof(CustomPropertyAttribute));
 
@@ -695,10 +695,31 @@ namespace SharepointCommon
                 xv.WriteStartElement("Field");
 
                 xv.WriteAttributeString("ID", Guid.NewGuid().ToString());
-                xv.WriteAttributeString("Type", fieldInfo.FieldAttribute.FieldProvider.FieldTypeAsString);
-                xv.WriteAttributeString("DisplayName", fieldInfo.Name);
 
-                foreach (var customProp in customPropAttrs)
+                var type = "";
+                if (fieldInfo.Type == SPFieldType.Invalid && fieldInfo.FieldAttribute.FieldProvider != null)
+                {
+                    type = fieldInfo.FieldAttribute.FieldProvider.FieldTypeAsString;
+                }
+                else
+                {
+                    var typeAttr = customPropAttrs.FirstOrDefault(cp => cp.Name == "Type");
+                    if (typeAttr != null)
+                    {
+                        type = typeAttr.Value;
+                    }
+                    else
+                    {
+                        type = fieldInfo.Type.ToString();
+                    }
+                }
+                xv.WriteAttributeString("Type", type);
+
+
+                xv.WriteAttributeString("DisplayName", fieldInfo.Name);
+                xv.WriteAttributeString("Name", fieldInfo.Name);
+
+                foreach (var customProp in customPropAttrs.Where(cp => cp.Name != "Type"))
                 {
                     xv.WriteAttributeString(customProp.Name, customProp.Value);
                 }
@@ -709,10 +730,12 @@ namespace SharepointCommon
 
               //  List.Fields.AddFieldAsXml(sb.ToString());
             }
-            else
+           /* else
             {
+               
+
                 List.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
-            }
+            }*/
             
             //var field = List.Fields.GetFieldByInternalName(fieldInfo.Name);
             var field = Mockable.GetFieldByInternalName(List.Fields, fieldInfo.Name);
