@@ -102,6 +102,7 @@
     <Compile Include="CustomFields\CustomLookupProvider.cs" />
     <Compile Include="CustomFields\CustomLookupProviderBad.cs" />
     <Compile Include="DocumentTests.cs" />
+    <Compile Include="Entity\ItemCustomHyperlink.cs" />
     <Compile Include="Entity\ItemWithNoMappedProperty.cs" />
     <Compile Include="Entity\CascadeLookup.cs" />
     <Compile Include="Entity\LookupWithShowField.cs" />
