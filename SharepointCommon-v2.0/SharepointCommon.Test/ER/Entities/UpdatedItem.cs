@@ -9,6 +9,7 @@ namespace SharepointCommon.Test.ER.Entities
     {
         public static UpdatedItem Recieved;
         public static Exception Exception;
+        public static int CalledCount;
         
         [NotMapped]
         public static bool IsUpdateCalled { get; set; }

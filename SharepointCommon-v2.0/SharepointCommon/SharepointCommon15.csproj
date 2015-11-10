@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="Attributes\AsyncAttribute.cs" />
     <Compile Include="Attributes\CustomPropertyAttribute.cs" />
+    <Compile Include="Attributes\DisableEventFiringAttribute.cs" />
     <Compile Include="Attributes\ListAttribute.cs" />
     <Compile Include="Attributes\NotMappedAttribute.cs" />
     <Compile Include="Attributes\SequenceAttribute.cs" />
@@ -335,6 +336,7 @@
     <Compile Include="public\Item.cs" />
     <Compile Include="public\ListBase.cs" />
     <Compile Include="public\ListEventReceiver.cs" />
+    <Compile Include="public\ListItemEventsScope.cs" />
     <Compile Include="public\PageType.cs" />
     <Compile Include="public\Person.cs" />
     <Compile Include="public\Q.cs" />
