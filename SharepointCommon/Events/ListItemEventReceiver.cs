@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Microsoft.SharePoint;
+using SharepointCommon.Attributes;
 using SharepointCommon.Common;
 
 namespace SharepointCommon.Events
@@ -17,44 +18,32 @@ namespace SharepointCommon.Events
 
         public override void ItemAdding(SPItemEventProperties properties)
         {
-            EventFiringEnabled = false;
             InvokeIngReceiver(properties, SPEventReceiverType.ItemAdding, "ItemAdding");
-            EventFiringEnabled = true;
         }
 
         public override void ItemAdded(SPItemEventProperties properties)
         {
-            EventFiringEnabled = false;
             InvokeEdReceiver(properties, SPEventReceiverType.ItemAdded, "ItemAdded");
-            EventFiringEnabled = true;
         }
 
         public override void ItemUpdating(SPItemEventProperties properties)
         {
-            EventFiringEnabled = false;
             InvokeIngReceiver(properties, SPEventReceiverType.ItemUpdating, "ItemUpdating");
-            EventFiringEnabled = true;
         }
 
         public override void ItemUpdated(SPItemEventProperties properties)
         {
-            EventFiringEnabled = false;
             InvokeEdReceiver(properties, SPEventReceiverType.ItemUpdated, "ItemUpdated");
-            EventFiringEnabled = true;
         }
 
         public override void ItemDeleting(SPItemEventProperties properties)
         {
-            EventFiringEnabled = false;
             InvokeIngReceiver(properties, SPEventReceiverType.ItemDeleting, "ItemDeleting");
-            EventFiringEnabled = true;
         }
 
         public override void ItemDeleted(SPItemEventProperties properties)
         {
-            EventFiringEnabled = false;
             InvokeEdReceiver(properties, SPEventReceiverType.ItemDeleted, "ItemDeleted");
-            EventFiringEnabled = true;
         }
 
         #endregion
@@ -66,10 +55,13 @@ namespace SharepointCommon.Events
                     && !string.IsNullOrEmpty(e.Data));
 
             Assert.NotNull(er);
-            
+
+
+            var eventReceiverType = Type.GetType(er.Data);
+
             return new EventReceiverProperties
             {
-                EventReceiverType = Type.GetType(er.Data),
+                EventReceiverType = eventReceiverType,
             };
         }
 
@@ -80,18 +72,38 @@ namespace SharepointCommon.Events
             {
                 var receiverProps = GetEventReceiverType(properties, eventReceiverType);
                 var receiver = Activator.CreateInstance(receiverProps.EventReceiverType);
-                var receiverMethod = receiverProps.EventReceiverType.GetMethod(methodName,
-                    BindingFlags.Instance | BindingFlags.Public);
-                var receiverParam = receiverMethod.GetParameters().First();
-                switch (eventReceiverType)
+                var method = receiverProps.EventReceiverType.GetMethod(methodName,BindingFlags.Instance | BindingFlags.Public);
+                var receiverParam = method.GetParameters().First();
+
+                var eventDisabled = GetEventFiringDisabled(method);
+
+                bool origDisabledValue = false;
+                try
                 {
-                    case SPEventReceiverType.ItemDeleted:
-                        receiverMethod.Invoke(receiver, new[] {(object) properties.ListItemId});
-                        break;
-                    default:
-                        var entityType = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem);
-                        receiverMethod.Invoke(receiver, new[] {entityType});
-                        break;
+                    if (eventDisabled)
+                    {
+                        origDisabledValue = base.EventFiringEnabled;
+                        base.EventFiringEnabled = false;
+                    }
+
+
+                    switch (eventReceiverType)
+                    {
+                        case SPEventReceiverType.ItemDeleted:
+                            method.Invoke(receiver, new[] {(object) properties.ListItemId});
+                            break;
+                        default:
+                            var entityType = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem);
+                            method.Invoke(receiver, new[] {entityType});
+                            break;
+                    }
+                }
+                finally
+                {
+                    if (eventDisabled)
+                    {
+                        base.EventFiringEnabled = origDisabledValue;
+                    }
                 }
 
                 ProccessCancel(receiver, properties);
@@ -119,25 +131,45 @@ namespace SharepointCommon.Events
                     BindingFlags.Instance | BindingFlags.Public);
                 var receiverParam = method.GetParameters().First();
 
-                switch (eventReceiverType)
+                var eventDisabled = GetEventFiringDisabled(method);
+
+                bool origDisabledValue = false;
+                try
                 {
-                    case SPEventReceiverType.ItemAdding:
-                        var entity = EntityMapper.ToEntity(receiverParam.ParameterType, afterProperties, properties.List);
-                        method.Invoke(receiver, new[] {entity});
-                        break;
+                    if (eventDisabled)
+                    {
+                        origDisabledValue = base.EventFiringEnabled;
+                        base.EventFiringEnabled = false;
+                    }
 
-                    case SPEventReceiverType.ItemUpdating:
-                        entity = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem, false);
-                        var changedItem = EntityMapper.ToEntity(receiverParam.ParameterType, afterProperties,
-                            properties.List);
+                    switch (eventReceiverType)
+                    {
+                        case SPEventReceiverType.ItemAdding:
+                            var entity = EntityMapper.ToEntity(receiverParam.ParameterType, afterProperties,
+                                properties.List);
+                            method.Invoke(receiver, new[] {entity});
+                            break;
 
-                        method.Invoke(receiver, new[] {entity, changedItem});
-                        break;
+                        case SPEventReceiverType.ItemUpdating:
+                            entity = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem, false);
+                            var changedItem = EntityMapper.ToEntity(receiverParam.ParameterType, afterProperties,
+                                properties.List);
 
-                    case SPEventReceiverType.ItemDeleting:
-                        entity = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem, false);
-                        method.Invoke(receiver, new[] {entity});
-                        break;
+                            method.Invoke(receiver, new[] {entity, changedItem});
+                            break;
+
+                        case SPEventReceiverType.ItemDeleting:
+                            entity = EntityMapper.ToEntity(receiverParam.ParameterType, properties.ListItem, false);
+                            method.Invoke(receiver, new[] {entity});
+                            break;
+                    }
+                }
+                finally
+                {
+                    if (eventDisabled)
+                    {
+                        base.EventFiringEnabled = origDisabledValue;
+                    }
                 }
 
                 ProccessCancel(receiver, properties);
@@ -146,6 +178,12 @@ namespace SharepointCommon.Events
             {
                 throw tex.InnerException;
             }
+        }
+
+        private bool GetEventFiringDisabled(MethodInfo method)
+        {
+            var attr = (DisableEventFiringAttribute)Attribute.GetCustomAttribute(method, typeof (DisableEventFiringAttribute));
+            return attr != null;
         }
 
         private void ProccessCancel(object receiver, SPItemEventProperties properties)

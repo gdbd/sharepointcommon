@@ -108,6 +108,8 @@
     <Compile Include="CustomFields\CustomMultiLookupProvider.cs" />
     <Compile Include="DocumentTests.cs" />
     <Compile Include="Entity\CascadeLookup.cs" />
+    <Compile Include="Entity\ItemCustomHyperlink.cs" />
+    <Compile Include="Entity\NumberAsLookup - Copy.cs" />
     <Compile Include="Entity\NumberAsLookup.cs" />
     <Compile Include="Entity\LookupWithShowField.cs" />
     <Compile Include="ER\Entities\AddedDocSync.cs" />
