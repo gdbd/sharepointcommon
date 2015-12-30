@@ -7,6 +7,7 @@
 
     using Microsoft.SharePoint;
 
+    /*
     internal sealed class LookupIterator<T> : IEnumerable<T> where T : Item, new()
     {
         private readonly SPFieldLookup _fieldLookup;
@@ -93,4 +94,5 @@
          
         }
     }
+    */
 }

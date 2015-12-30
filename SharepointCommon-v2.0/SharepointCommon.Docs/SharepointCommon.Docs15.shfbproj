@@ -8,7 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{03f011f7-993d-47f4-8906-d02fa02c684f}</ProjectGuid>
-    <SHFBSchemaVersion>1.9.9.0</SHFBSchemaVersion>
+    <SHFBSchemaVersion>2015.6.5.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
          Studio adds them anyway -->
     <AssemblyName>SharepointCommon.Docs</AssemblyName>
@@ -24,7 +24,8 @@
     <SccLocalPath>SAK</SccLocalPath>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\BUILD\15\SharepointCommon.dll" />
-<DocumentationSource sourceFile="..\BUILD\15\SharepointCommon.xml" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\BUILD\15\SharepointCommon.xml" />
+    </DocumentationSources>
     <SyntaxFilters>CSharp, VisualBasic</SyntaxFilters>
     <SdkLinkTarget>Blank</SdkLinkTarget>
     <RootNamespaceContainer>False</RootNamespaceContainer>
@@ -35,16 +36,17 @@
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="Castle.Core.Internal" isDocumented="False" />
-<NamespaceSummaryItem name="Castle.Core.Logging" isDocumented="False" />
-<NamespaceSummaryItem name="Castle.DynamicProxy" isDocumented="False" />
-<NamespaceSummaryItem name="Castle.DynamicProxy.Contributors" isDocumented="False" />
-<NamespaceSummaryItem name="Castle.DynamicProxy.Generators" isDocumented="False" />
-<NamespaceSummaryItem name="Castle.DynamicProxy.Generators.Emitters" isDocumented="False" />
-<NamespaceSummaryItem name="Castle.DynamicProxy.Generators.Emitters.CodeBuilders" isDocumented="False" />
-<NamespaceSummaryItem name="Castle.DynamicProxy.Generators.Emitters.SimpleAST" isDocumented="False" />
-<NamespaceSummaryItem name="Castle.DynamicProxy.Internal" isDocumented="False" />
-<NamespaceSummaryItem name="Castle.DynamicProxy.Serialization" isDocumented="False" />
-<NamespaceSummaryItem name="Castle.DynamicProxy.Tokens" isDocumented="False" /></NamespaceSummaries>
+      <NamespaceSummaryItem name="Castle.Core.Logging" isDocumented="False" />
+      <NamespaceSummaryItem name="Castle.DynamicProxy" isDocumented="False" />
+      <NamespaceSummaryItem name="Castle.DynamicProxy.Contributors" isDocumented="False" />
+      <NamespaceSummaryItem name="Castle.DynamicProxy.Generators" isDocumented="False" />
+      <NamespaceSummaryItem name="Castle.DynamicProxy.Generators.Emitters" isDocumented="False" />
+      <NamespaceSummaryItem name="Castle.DynamicProxy.Generators.Emitters.CodeBuilders" isDocumented="False" />
+      <NamespaceSummaryItem name="Castle.DynamicProxy.Generators.Emitters.SimpleAST" isDocumented="False" />
+      <NamespaceSummaryItem name="Castle.DynamicProxy.Internal" isDocumented="False" />
+      <NamespaceSummaryItem name="Castle.DynamicProxy.Serialization" isDocumented="False" />
+      <NamespaceSummaryItem name="Castle.DynamicProxy.Tokens" isDocumented="False" />
+    </NamespaceSummaries>
     <BuildAssemblerVerbosity>AllMessages</BuildAssemblerVerbosity>
     <HelpFileFormat>HtmlHelp1</HelpFileFormat>
     <IndentHtml>False</IndentHtml>
@@ -87,9 +89,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Win32' ">
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CommandLine, Version=2.7.0.0, Culture=neutral, PublicKeyToken=c8895f0c125eff20">
-      <HintPath>C:\Program Files (x86)\Sandcastle\ProductionTools\CommandLine.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.SharePoint.Security, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
       <HintPath>..\Libraries\15\Microsoft.SharePoint.Security.dll</HintPath>
     </Reference>

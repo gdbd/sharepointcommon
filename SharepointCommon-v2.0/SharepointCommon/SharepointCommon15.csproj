@@ -78,7 +78,6 @@
   <ItemGroup>
     <Compile Include="Attributes\AsyncAttribute.cs" />
     <Compile Include="Attributes\CustomPropertyAttribute.cs" />
-    <Compile Include="Attributes\DisableEventFiringAttribute.cs" />
     <Compile Include="Attributes\ListAttribute.cs" />
     <Compile Include="Attributes\NotMappedAttribute.cs" />
     <Compile Include="Attributes\SequenceAttribute.cs" />
@@ -87,7 +86,6 @@
     <Compile Include="Events\EventReceiverProperties.cs" />
     <Compile Include="Events\ListEventMgr.cs" />
     <Compile Include="Events\ListItemEventReceiver.cs" />
-    <Compile Include="Common\Mockable.cs" />
     <Compile Include="Extentions\ItemExtention.cs" />
     <Compile Include="Castle\Core\Internal\AttributesUtil.cs" />
     <Compile Include="Castle\Core\Internal\CollectionExtensions.cs" />
@@ -298,22 +296,16 @@
     <Compile Include="Common\CommonHelper.cs" />
     <Compile Include="Common\EnumMapper.cs" />
     <Compile Include="Common\FilenameOrganizer.cs" />
-    <Compile Include="Entities\Category.cs" />
-    <Compile Include="Entities\Form.cs" />
     <Compile Include="Entities\UserInfoList.cs" />
-    <Compile Include="Common\LookupIterator.cs" />
     <Compile Include="Common\UserIterator.cs" />
-    <Compile Include="Entities\Holiday.cs" />
     <Compile Include="Extentions\ListExtention.cs" />
     <Compile Include="Extentions\WebExtention.cs" />
     <Compile Include="Impl\AppFac.cs" />
     <Compile Include="Expressions\ExpressionVisitor.cs" />
     <Compile Include="Common\FieldMapper.cs" />
     <Compile Include="Attributes\ContentTypeAttribute.cs" />
-    <Compile Include="Entities\Announcement.cs" />
-    <Compile Include="Entities\Document.cs" />
+    <Compile Include="public\Document.cs" />
     <Compile Include="Common\EntityMapper.cs" />
-    <Compile Include="Entities\Folder.cs" />
     <Compile Include="Expressions\MemberAccessVisitor.cs" />
     <Compile Include="Interception\AppBaseAccessInterceptor.cs" />
     <Compile Include="Interception\DocumentAccessInterceptor.cs">
@@ -336,7 +328,7 @@
     <Compile Include="public\Item.cs" />
     <Compile Include="public\ListBase.cs" />
     <Compile Include="public\ListEventReceiver.cs" />
-    <Compile Include="public\ListItemEventsScope.cs" />
+    <Compile Include="public\Mapper.cs" />
     <Compile Include="public\PageType.cs" />
     <Compile Include="public\Person.cs" />
     <Compile Include="public\Q.cs" />

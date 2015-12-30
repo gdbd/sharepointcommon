@@ -1,7 +1,5 @@
-﻿// ReSharper disable once CheckNamespace
-
-using SharepointCommon.Attributes;
-
+﻿using SharepointCommon.Attributes;
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
     /// <summary>

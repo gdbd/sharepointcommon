@@ -1,8 +1,8 @@
-﻿namespace SharepointCommon.Entities
-{
-    using Attributes;
+﻿using SharepointCommon.Attributes;
 
-    /// <summary>
+// ReSharper disable once CheckNamespace
+namespace SharepointCommon
+{// <summary>
     /// Base entity for present files in document library (items of content type 'Document')
     /// Used as root of inheritance for all custom entities and content types for doc libraries.
     /// </summary>
