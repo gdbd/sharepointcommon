@@ -542,6 +542,7 @@
     <Compile Include="Linq\CamlableExecutor.cs" />
     <Compile Include="Linq\CamlableQuery.cs" />
     <Compile Include="Linq\CamlableVisitor.cs" />
+    <Compile Include="Linq\CamlModel.cs" />
     <Compile Include="Properties\NamespaceDoc.cs" />
     <Compile Include="Attributes\NotFieldAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
