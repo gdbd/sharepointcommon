@@ -22,14 +22,14 @@ namespace SharepointCommon.Common
             _proxyGenerator = new ProxyGenerator();
         }
 
-        internal static IEnumerable<T> ToEntities<T>(SPListItemCollection items) where T : Item
+        internal static IEnumerable<T> ToEntities<T>(SPListItemCollection items) 
         {
             return items.Cast<SPListItem>().Select(i => ToEntity<T>(i));
         }
 
-        internal static T ToEntity<T>(SPListItem listItem, bool reloadLookupItem = true) where T : Item
+        internal static T ToEntity<T>(SPListItem listItem, bool reloadLookupItem = true)
         {
-            if (listItem == null) return null;
+            if (listItem == null) return default(T);
 
             var itemType = typeof(T);
             var props = itemType.GetProperties();

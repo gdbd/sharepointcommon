@@ -10,8 +10,12 @@ namespace SharepointCommon.Linq
 {
     internal class CamlableQuery<T> : QueryableBase<T>
     {
-        public CamlableQuery()
-            : base(QueryParser.CreateDefault(), new CamlableExecutor())
+        public CamlableQuery(IEnumerable<T> data) : base(QueryParser.CreateDefault(), new CamlableExecutor(data))
+        {
+            
+        }
+
+        public CamlableQuery() : base(QueryParser.CreateDefault(), new CamlableExecutor())
         {
             
         }

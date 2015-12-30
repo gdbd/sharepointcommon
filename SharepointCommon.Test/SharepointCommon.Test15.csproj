@@ -159,8 +159,9 @@
     <Compile Include="ER\Entities\AddedItem.cs" />
     <Compile Include="ER\ListEventsTest.cs" />
     <Compile Include="ExtentionsTests.cs" />
+    <Compile Include="Linq\CamlableVisitorTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />
-    <Compile Include="QueryableTests.cs" />
+    <Compile Include="Linq\QueryableTests.cs" />
     <Compile Include="Repository\TestRepository.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TestListScope.cs" />
