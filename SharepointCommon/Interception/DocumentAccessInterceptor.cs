@@ -1,4 +1,5 @@
-﻿using Microsoft.SharePoint.Utilities;
+﻿using System;
+using Microsoft.SharePoint.Utilities;
 using SharepointCommon.Entities; 
 using Castle.DynamicProxy;
 using Microsoft.SharePoint;
@@ -8,11 +9,19 @@ namespace SharepointCommon.Interception
 
     internal class DocumentAccessInterceptor : IInterceptor
     {
+        private readonly int _itemId;
+        private readonly string _itemTitle;
         private readonly SPListItem _item;
 
         public DocumentAccessInterceptor(SPListItem item)
         {
             _item = item;
+        }
+
+        public DocumentAccessInterceptor(int itemId, string itemTitle, SPList parentList)
+        {
+            _itemId = itemId;
+            _itemTitle = itemTitle;
         }
 
         public void Intercept(IInvocation invocation)

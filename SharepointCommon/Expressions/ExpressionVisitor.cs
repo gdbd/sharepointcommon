@@ -1,10 +1,10 @@
-﻿namespace SharepointCommon.Expressions
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq.Expressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 
+namespace SharepointCommon.Expressions
+{
     internal abstract class ExpressionVisitor
     {
         protected virtual Expression Visit(Expression exp)

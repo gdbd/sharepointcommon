@@ -2,19 +2,15 @@
 using System.Globalization;
 using System.Threading;
 using Microsoft.SharePoint.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Microsoft.SharePoint;
+using SharepointCommon.Attributes;
 
 namespace SharepointCommon.Common
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-
-    using Microsoft.SharePoint;
-
-    using Attributes;
-
-
     internal sealed class FieldMapper
     {
         internal static IEnumerable<Field> ToFields<T>()
@@ -122,7 +118,7 @@ namespace SharepointCommon.Common
                         foreach (var itm in asLkp)
                         {
                             //1;#a;#2;#b
-                            val += itm.Id + ";#asd;#";
+                            val +=  $"{itm.Id};#{itm.Title};#";
                         }
                         
                     }

@@ -34,13 +34,15 @@ using System.Linq.Expressions;
 using System.Text;
 using SharepointCommon.Attributes;
 using SharepointCommon.Expressions;
+using System.Collections.Generic;
+using System.Linq;
+using SharepointCommon.Common;
+
 
 // ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using Common;
+
 
     /// <summary>
     /// A helper class for working with CAML queries.

@@ -245,9 +245,11 @@ namespace SharepointCommon
           
             entity.Id = newitem.ID;
             entity.Guid = new Guid(newitem[SPBuiltInFieldId.GUID].ToString());
+            entity.ListItem = newitem;
 
             entity.ParentList = new ListBase<Item>(List, ParentWeb);
             entity.ConcreteParentList = CommonHelper.MakeParentList(typeof(T), ParentWeb, List.ID);
+            
         }
         
         public virtual void Update(T entity, bool incrementVersion, params Expression<Func<T, object>>[] selectors)
@@ -726,21 +728,16 @@ namespace SharepointCommon
 
                 xv.WriteEndElement();
 
-                Mockable.AddFieldAsXml(List.Fields, sb.ToString());
-
-              //  List.Fields.AddFieldAsXml(sb.ToString());
+              //  Mockable.AddFieldAsXml(List.Fields, sb.ToString());
+                List.Fields.AddFieldAsXml(sb.ToString());
             }
-           /* else
-            {
-               
 
-                List.Fields.Add(fieldInfo.Name, fieldInfo.Type, false);
-            }*/
-            
-            //var field = List.Fields.GetFieldByInternalName(fieldInfo.Name);
-            var field = Mockable.GetFieldByInternalName(List.Fields, fieldInfo.Name);
+            // var field = Mockable.GetFieldByInternalName(List.Fields, fieldInfo.Name);
+            var field = List.Fields.GetFieldByInternalName(fieldInfo.Name);
 
-            Mockable.FieldMapper_SetFieldProperties(field, fieldInfo);
+
+            //Mockable.FieldMapper_SetFieldProperties(field, fieldInfo);
+            FieldMapper.SetFieldProperties(field, fieldInfo);
         }
 
         private SPListItem GetItemByEntity(T entity)

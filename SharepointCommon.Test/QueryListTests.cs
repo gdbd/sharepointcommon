@@ -941,7 +941,7 @@ namespace SharepointCommon.Test
         }
 
         [Test]
-        public void Delete_With_Disable_Recucle_Test()
+        public void Delete_With_Disable_Recycle_Test()
         {
             _queryWeb.Web.Site.WebApplication.RecycleBinEnabled = false;
             _queryWeb.Web.Site.WebApplication.Update();
@@ -1644,7 +1644,13 @@ namespace SharepointCommon.Test
                 item = list.ById(item.Id);
 
                 Assert.DoesNotThrow(() => { var cl = item.CustomLookup; });
+
+             //   var id = item.CustomLookup.Id;
+             //   var title = item.CustomLookup.Title;
+
+
                 Assert.Null(item.CustomLookup);
+               
             }
             finally
             {
@@ -1694,6 +1700,40 @@ namespace SharepointCommon.Test
             }
         }
 
+        [Test]
+        public void Access_To_Id_And_Title_Not_Load_LookupItem_Test()
+        {
+            using (var ts = new TestListScope<CustomItem>("Access_To_Id_And_Title_Not_Load_LookupItem_Test", true))
+            {
+                var lkpItm = new Item { Title = "Lookup_Item_Title", };
+                ts.LookupList.Add(lkpItm);
+                
+                var itm = new CustomItem { CustomLookup = lkpItm, };
+                ts.List.Add(itm);
+
+                lkpItm = ts.LookupList.ById(lkpItm.Id);
+
+                var item = ts.List.ById(itm.Id);
+
+                var cl = item.CustomLookup;
+                var intc = Helper.GetInterceptor<Interception.ItemAccessInterceptor>(cl).First();
+
+                Assert.IsNull(intc.ListItem);
+
+                var id = cl.Id;
+                var title = cl.Title;
+
+                Assert.That(id, Is.EqualTo(lkpItm.Id));
+                Assert.That(title, Is.EqualTo(lkpItm.Title));
+
+                Assert.IsNull(intc.ListItem);
+
+                var author = cl.Author;
+                Assert.That(author, Is.EqualTo(lkpItm.Author));
+
+                Assert.NotNull(intc.ListItem);
+            }
+        }
 
         #endregion
 
