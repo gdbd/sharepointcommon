@@ -2,39 +2,35 @@
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using System.Linq.Expressions;
+using CodeToCaml;
 
 namespace SharepointCommon.Linq
 {
-    internal class CamlableVisitor : QueryModelVisitorBase
+    internal class CamlableVisitor<T> : QueryModelVisitorBase
     {
-        private CamlModel _camlModel;
+        private Caml<T> _caml;
+
 
         public CamlableVisitor()
         {
-            _camlModel = new CamlModel();
+            _caml = new Caml<T>();
         }
 
-        public CamlModel VisitQuery(QueryModel queryModel)
+        public string VisitQuery(QueryModel queryModel)
         {
             VisitQueryModel(queryModel);
-            return _camlModel;
+            return _caml.ToString();
         }
 
         public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
         {
             base.VisitWhereClause(whereClause, queryModel, index);
+            
+            var ex = Expression.Lambda(whereClause.Predicate, Expression.Parameter(typeof(T), "i"));
 
-            var op = whereClause.Predicate.NodeType;
+            var tex = (Expression<Func<T, bool>>)ex;
 
-            var left = ((BinaryExpression)whereClause.Predicate).Left;
-            var right = ((BinaryExpression)whereClause.Predicate).Right;
-
-            var fieldRef = GetFieldRef(left);
-            var value = GetValue(right);
-
-            var comapreType = GetCompareType(op);
-
-            _camlModel.AddWhere(comapreType, fieldRef, value);
+            _caml.AndAlso(tex);
         }
 
         public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
@@ -50,42 +46,6 @@ namespace SharepointCommon.Linq
         public override void VisitOrderByClause(OrderByClause orderByClause, QueryModel queryModel, int index)
         {
             base.VisitOrderByClause(orderByClause, queryModel, index);
-        }
-
-        private static object GetValue(Expression right)
-        {
-            switch (right.NodeType)
-            {
-                case ExpressionType.Constant:
-                    return ((ConstantExpression)right).Value;
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        private static string GetFieldRef(Expression left)
-        {
-            switch (left.NodeType)
-            {
-                case ExpressionType.MemberAccess:
-                    return ((MemberExpression)left).Member.Name;
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        private CompareType GetCompareType(ExpressionType op)
-        {
-            switch (op)
-            {
-                case ExpressionType.Equal:
-                    return CompareType.Eq;
-
-                default:
-                    throw new NotImplementedException();
-            }
         }
     }
 }

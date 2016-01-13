@@ -1,10 +1,9 @@
 ﻿using System.Reflection;
+using System;
+using Microsoft.SharePoint;
 
 namespace SharepointCommon.Common
 {
-    using System;
-    using Microsoft.SharePoint;
-
     internal static class Assert
     {
         internal static void That(bool condition)

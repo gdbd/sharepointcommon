@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using Microsoft.SharePoint.Utilities;
 using SharepointCommon.Attributes;
 using SharepointCommon.Common;
 using SharepointCommon.Expressions;
@@ -117,6 +118,16 @@ namespace SharepointCommon
             }
 
             prop.SetValue(self, val, null);
+        }
+
+        /// <summary>
+        /// Gets display form url for item
+        /// </summary>
+        public static string FormUrl(this Item self, PageType pageType = PageType.Display, bool isDlg = false)
+        {
+            var siteRelative = self.ParentList.FormUrl(pageType, self.Id, isDlg);
+            var url = self.ParentWeb.Site.MakeFullUrl(siteRelative);
+            return url;
         }
     }
 }

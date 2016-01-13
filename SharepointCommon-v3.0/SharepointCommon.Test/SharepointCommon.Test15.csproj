@@ -78,6 +78,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libraries\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="SharepointCommon, Version=2.0.0.0, Culture=neutral, PublicKeyToken=627269ce210281c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>oldBuild\2.0\15\SharepointCommon.dll</HintPath>
+      <Aliases>ver2</Aliases>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -107,7 +112,13 @@
     <Compile Include="CustomFields\CustomLookupProviderBad.cs" />
     <Compile Include="CustomFields\CustomMultiLookupProvider.cs" />
     <Compile Include="DocumentTests.cs" />
+    <Compile Include="Entity\Announcement.cs" />
     <Compile Include="Entity\CascadeLookup.cs" />
+    <Compile Include="Entity\Category.cs" />
+    <Compile Include="Entity\ChoiceAsString.cs" />
+    <Compile Include="Entity\Form.cs" />
+    <Compile Include="Entity\Holiday.cs" />
+    <Compile Include="Entity\ItemCustomHyperlink.cs" />
     <Compile Include="Entity\NumberAsLookup.cs" />
     <Compile Include="Entity\LookupWithShowField.cs" />
     <Compile Include="ER\Entities\AddedDocSync.cs" />
@@ -159,9 +170,12 @@
     <Compile Include="ER\Entities\AddedItem.cs" />
     <Compile Include="ER\ListEventsTest.cs" />
     <Compile Include="ExtentionsTests.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="MiscTests.cs" />
     <Compile Include="Linq\CamlableVisitorTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />
     <Compile Include="Linq\QueryableTests.cs" />
+    <Compile Include="PerfTest.cs" />
     <Compile Include="Repository\TestRepository.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TestListScope.cs" />

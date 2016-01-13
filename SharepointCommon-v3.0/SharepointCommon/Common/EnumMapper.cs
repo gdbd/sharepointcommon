@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using System;
+using System.Linq;
+using System.Reflection;
+
+using SharepointCommon.Attributes;
 
 namespace SharepointCommon.Common
 {
-    using System;
-    using System.Linq;
-    using System.Reflection;
 
-    using SharepointCommon.Attributes;
 
     internal static class EnumMapper
     {

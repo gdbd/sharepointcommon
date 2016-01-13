@@ -60,7 +60,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>temp.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>SharepointCommon.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
@@ -276,6 +276,18 @@
     <Compile Include="App_Packages\Castle\DynamicProxy\Tokens\TypeBuilderMethods.cs" />
     <Compile Include="App_Packages\Castle\DynamicProxy\Tokens\TypeMethods.cs" />
     <Compile Include="App_Packages\Castle\DynamicProxy\Tokens\TypeUtilMethods.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\Caml.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\Constant.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\Sort.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpElement.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpExtension.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpTypes\DateRange.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpTypes\MembershipType.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpTypes\SpAbstract.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpTypes\SpDataAttribute.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpTypes\SpModerationStatus.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpTypes\SpViewScope.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\Tags.cs" />
     <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\AssertionConditionAttribute.cs" />
     <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\AssertionConditionType.cs" />
     <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\AssertionMethodAttribute.cs" />
@@ -495,6 +507,7 @@
     <Compile Include="App_Packages\Re-linq\Utilities\TypeExtensions.cs" />
     <Compile Include="App_Packages\Re-linq\Utilities\TypeInfo.cs" />
     <Compile Include="Attributes\AsyncAttribute.cs" />
+    <Compile Include="Attributes\DisableEventFiringAttribute.cs" />
     <Compile Include="Attributes\SequenceAttribute.cs" />
     <Compile Include="Attributes\CustomPropertyAttribute.cs" />
     <Compile Include="Common\InvariantCultureScope.cs" />
@@ -502,7 +515,6 @@
     <Compile Include="Events\EventReceiverProperties.cs" />
     <Compile Include="Events\ListEventMgr.cs" />
     <Compile Include="Interception\ItemEventReceiverAccessInterceptor.cs" />
-    <Compile Include="Common\Mockable.cs" />
     <Compile Include="Extentions\ListExtention.cs" />
     <Compile Include="Extentions\WebExtention.cs" />
     <Compile Include="Linq\CamlableExecutor.cs" />
@@ -526,25 +538,21 @@
     <Compile Include="Common\XmlSerializator.cs" />
     <Compile Include="Interception\DocumentAccessInterceptor.cs" />
     <Compile Include="Interception\ItemAccessInterceptor.cs" />
-    <Compile Include="Entities\Category.cs" />
-    <Compile Include="Entities\Form.cs" />
+    <Compile Include="public\Document.cs" />
     <Compile Include="public\ListEventReceiver.cs" />
     <Compile Include="public\Field.cs" />
-    <Compile Include="Common\LookupIterator.cs" />
     <Compile Include="Interception\UserAccessInterceptor.cs" />
     <Compile Include="Common\UserIterator.cs" />
-    <Compile Include="Entities\Holiday.cs" />
     <Compile Include="public\IAppFac.cs" />
     <Compile Include="public\CustomFieldProvider.cs" />
+    <Compile Include="public\ListItemEventsScope.cs" />
+    <Compile Include="public\Mapper.cs" />
     <Compile Include="public\SharepointCommonException.cs" />
     <Compile Include="Expressions\ExpressionVisitor.cs" />
     <Compile Include="Common\FieldMapper.cs" />
     <Compile Include="public\Q.cs" />
     <Compile Include="Attributes\ContentTypeAttribute.cs" />
-    <Compile Include="Entities\Announcement.cs" />
-    <Compile Include="Entities\Document.cs" />
     <Compile Include="Common\EntityMapper.cs" />
-    <Compile Include="Entities\Folder.cs" />
     <Compile Include="public\Item.cs" />
     <Compile Include="Expressions\MemberAccessVisitor.cs" />
     <Compile Include="Properties\NamespaceDoc.cs" />
@@ -588,11 +596,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Packages\Castle\License.txt" />
+    <Content Include="Events\BeforeAndAfterProps.txt" />
     <Content Include="todo.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Common\Interceptors\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

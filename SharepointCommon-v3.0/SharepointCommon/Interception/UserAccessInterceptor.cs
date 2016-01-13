@@ -24,14 +24,32 @@ namespace SharepointCommon.Interception
             switch (invocation.Method.Name)
             {
                 case "get_Id":
-                    if (_user != null) invocation.ReturnValue = _user.ID;
-                    if (_userValue != null) invocation.ReturnValue = _userValue.LookupId;
-                    return;
+                    if (_user != null)
+                    {
+                        invocation.ReturnValue = _user.ID;
+                        return;
+                    }
+                    if (_userValue != null)
+                    {
+                        invocation.ReturnValue = _userValue.LookupId;
+                        return;
+                    }
+                    break;
 
                 case "get_Name":
-                    if (_user != null) invocation.ReturnValue = _user.Name;
-                    if (_userValue != null) invocation.ReturnValue = _userValue.LookupValue;
-                    return;
+                    if (_user != null)
+                    {
+                        invocation.ReturnValue = _user.Name;
+                        return;
+                    }
+
+                    if (_userValue != null)
+                    {
+                        invocation.ReturnValue = _userValue.LookupValue;
+                        return;
+                    }
+                    break;
+
 
                 case "get_Email":
                     invocation.ReturnValue = _user.Email;

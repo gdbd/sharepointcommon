@@ -7,17 +7,14 @@ using SharepointCommon.Common;
 
 namespace SharepointCommon.Linq
 {
-    internal class CamlableExecutor : IQueryExecutor
+    internal class CamlableExecutor<TL> : IQueryExecutor where TL: Item, new()
     {
-        private readonly IEnumerable _data;
+        private readonly IQueryList<TL> _list;
+        private string _debuggerDisplayCaml = "";
 
-        public CamlableExecutor()
+        public CamlableExecutor(IQueryList<TL> list)
         {
-        }
-
-        public CamlableExecutor(IEnumerable data)
-        {
-            _data = data;
+            _list = list;
         }
 
         public T ExecuteScalar<T>(QueryModel queryModel)
@@ -31,16 +28,17 @@ namespace SharepointCommon.Linq
                 ? ExecuteCollection<T>(queryModel).SingleOrDefault() 
                 : ExecuteCollection<T>(queryModel).Single();
         }
-
+        
         public IEnumerable<T> ExecuteCollection<T>(QueryModel queryModel)
         {
 
-            var visitor = new CamlableVisitor();
-            var camlModel = visitor.VisitQuery(queryModel);
+            var visitor = new CamlableVisitor<T>();
+            var caml = visitor.VisitQuery(queryModel);
+            _debuggerDisplayCaml = caml;
 
-           // EntityMapper.ToEntities<T>(null);
-
-            return new List<T>();
+            var items = _list.Items(new CamlQuery().ViewXml(caml));
+           
+            return items.Cast<T>();
         }
     }
 }

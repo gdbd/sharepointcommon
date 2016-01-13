@@ -2,19 +2,15 @@
 using System.Globalization;
 using System.Threading;
 using Microsoft.SharePoint.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Microsoft.SharePoint;
+using SharepointCommon.Attributes;
 
 namespace SharepointCommon.Common
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-
-    using Microsoft.SharePoint;
-
-    using Attributes;
-
-
     internal sealed class FieldMapper
     {
         internal static IEnumerable<Field> ToFields<T>()
@@ -122,7 +118,7 @@ namespace SharepointCommon.Common
                         foreach (var itm in asLkp)
                         {
                             //1;#a;#2;#b
-                            val += itm.Id + ";#asd;#";
+                            val +=  $"{itm.Id};#{itm.Title};#";
                         }
                         
                     }
@@ -184,6 +180,7 @@ namespace SharepointCommon.Common
             Type propType = propertyInfo.PropertyType;
             string spName = TranslateToFieldName(propertyInfo.Name);
             var fieldAttrs = propertyInfo.GetCustomAttributes(typeof(FieldAttribute), true);
+            var customAttrs = (CustomPropertyAttribute[])propertyInfo.GetCustomAttributes(typeof(CustomPropertyAttribute), true);
             string dispName = null;
             bool isMultilineText = false;
             object defaultValue = null;
@@ -200,9 +197,20 @@ namespace SharepointCommon.Common
                 required = attr.Required;
                 defaultValue = attr.DefaultValue;
             }
+            
 
             var field = new Field { Name = spName, Property = propertyInfo, DisplayName = dispName, 
                 Required = required, DefaultValue = defaultValue, FieldAttribute = attr, };
+
+            if (customAttrs.Length != 0)
+            {
+                var typeAttr = customAttrs.FirstOrDefault(ca => ca.Name == "Type");
+                if (typeAttr != null)
+                {
+                    field.Type = (SPFieldType)Enum.Parse(typeof(SPFieldType), typeAttr.Value);
+                    return field;
+                }
+            }
 
             if (attr != null && attr.FieldProvider != null)
             {

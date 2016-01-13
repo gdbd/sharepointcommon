@@ -154,6 +154,30 @@ namespace SharepointCommon.Test.ER
         }
 
         [Test]
+        public void Is_Updated_Sync_DisabledEvent_Test()
+        {
+            using (var ts = new TestListScope<UpdatedItem>("Is_Updated_Sync_DisabledEvent_Test", true))
+            {
+                ts.List.AddEventReceiver<UpdatedReceiverDisabledEvent>();
+                var entity = FillCusomItem(ts);
+                ts.List.Add(entity);
+
+                entity = ts.List.ById(entity.Id);
+
+                ModifyCustomItem(entity);
+                ts.List.Update(entity, true);
+                Assert.That(UpdatedItem.CalledCount, Is.EqualTo(1), "fired updated receiver on disabled!");
+
+                
+
+                if (UpdatedItem.Exception != null)
+                    throw UpdatedItem.Exception;
+
+                ValidateCustomItem(UpdatedItem.Recieved, entity);
+            }
+        }
+
+        [Test]
         public void Is_Updated_Async_Called_Test()
         {
             using (var ts = new TestListScope<UpdatedItemAsync>("Is_Updated_Async_Called_Test", true))

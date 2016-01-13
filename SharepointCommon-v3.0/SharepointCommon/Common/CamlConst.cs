@@ -47,6 +47,8 @@ namespace SharepointCommon.Common
         public const string URLEncodeAsURL = "URLEncodeAsURL";
         public const string URLEncode = "URLEncode";
         public const string Where = "Where";
+        public const string View = "View";
+        public const string Query = "Query";
         public const string XML = "XML";
         public const string Eq = "Eq";
         public const string DateRangesOverlap = "DateRangesOverlap";
