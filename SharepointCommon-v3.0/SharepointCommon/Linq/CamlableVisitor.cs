@@ -26,7 +26,7 @@ namespace SharepointCommon.Linq
         {
             base.VisitWhereClause(whereClause, queryModel, index);
             
-            var ex = Expression.Lambda(whereClause.Predicate, Expression.Parameter(typeof(T), "i"));
+            var ex = Expression.Lambda(whereClause.Predicate, Expression.Parameter(typeof(T)));
 
             var tex = (Expression<Func<T, bool>>)ex;
 
@@ -38,9 +38,47 @@ namespace SharepointCommon.Linq
             base.VisitSelectClause(selectClause, queryModel);
         }
 
+        public override void VisitGroupJoinClause(GroupJoinClause groupJoinClause, QueryModel queryModel, int index)
+        {
+            base.VisitGroupJoinClause(groupJoinClause, queryModel, index);
+        }
+
+        public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, GroupJoinClause groupJoinClause)
+        {
+            base.VisitJoinClause(joinClause, queryModel, groupJoinClause);
+        }
+
+        public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, int index)
+        {
+            base.VisitJoinClause(joinClause, queryModel, index);
+        }
+
         public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
         {
             base.VisitResultOperator(resultOperator, queryModel, index);
+
+            var take = resultOperator as Remotion.Linq.Clauses.ResultOperators.TakeResultOperator;
+            if (take != null)
+            {
+                var count = take.Count as ConstantExpression;
+                if(count == null) throw new NotImplementedException("Take with no-contant not implemented yet!");
+
+                var val = Convert.ToInt32(count.Value);
+
+                _caml.Take(val);
+            }
+
+            var skip = resultOperator as Remotion.Linq.Clauses.ResultOperators.SkipResultOperator;
+            if (skip != null)
+            {
+                throw new NotImplementedException("Skip not implemented yet!");
+                /*  var count = skip.Count as ConstantExpression;
+                  if (count == null) throw new NotImplementedException("Skip with no-contant not implemented yet!");
+
+                  var val = Convert.ToInt32(count.Value);
+
+                  _caml.Skip(val);*/
+            }
         }
 
         public override void VisitOrderByClause(OrderByClause orderByClause, QueryModel queryModel, int index)
