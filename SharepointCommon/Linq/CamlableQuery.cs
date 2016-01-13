@@ -12,15 +12,6 @@ namespace SharepointCommon.Linq
     [DebuggerDisplay("Query = {((SharepointCommon.Linq.CamlableExecutor<T>)((Remotion.Linq.DefaultQueryProvider)Provider).Executor)._debuggerDisplayCaml}")]
     internal class CamlableQuery<T> : QueryableBase<T> where T : Item, new()
     {
-        public CamlableQuery() : base(QueryParser.CreateDefault(), new CamlableExecutor<T>(null))
-        {
-            
-        }
-
-        public CamlableQuery(IEnumerable<T> data) : base(QueryParser.CreateDefault(), new CamlableExecutor<T>(null))
-        {
-
-        }
 
         public CamlableQuery(IQueryList<T> list) : base(QueryParser.CreateDefault(), new CamlableExecutor<T>(list))
         {

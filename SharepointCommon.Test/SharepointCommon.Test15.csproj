@@ -172,7 +172,6 @@
     <Compile Include="ExtentionsTests.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="MiscTests.cs" />
-    <Compile Include="Linq\CamlableVisitorTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />
     <Compile Include="Linq\QueryableTests.cs" />
     <Compile Include="PerfTest.cs" />
