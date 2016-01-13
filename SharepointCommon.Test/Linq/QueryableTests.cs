@@ -53,13 +53,53 @@ namespace SharepointCommon.Test.Linq
                 var entity2 = new Item { Title = "zxc", };
                 tc.List.Add(entity);
                 tc.List.Add(entity2);
-
+            
                 var query = tc.List.Items().Where(i => i.Title == "asd");
 
                 var coll = query.ToList();
 
                 Assert.That(coll.Count, Is.EqualTo(1));
                 Assert.That(coll[0].Id == entity.Id);
+            }
+        }
+
+        [Test]
+        public void Query_Where_By_Two_Conditions_Test()
+        {
+            using (var tc = new TestListScope<Item>("Query_Where_By_Text_Test"))
+            {
+                var entity = new Item { Title = "asd", };
+                var entity2 = new Item { Title = "zxc", };
+                tc.List.Add(entity);
+                tc.List.Add(entity2);
+
+                var query = tc.List.Items().Where(i => i.Title == "zxc" && i.Id == entity2.Id );
+
+                var coll = query.ToList();
+
+                Assert.That(coll.Count, Is.EqualTo(1));
+                Assert.That(coll[0].Id == entity2.Id);
+            }
+        }
+
+        [Test]
+        public void Query_Where_By_Two_Where_Test()
+        {
+            using (var tc = new TestListScope<Item>("Query_Where_By_Text_Test"))
+            {
+                var entity = new Item { Title = "asd", };
+                var entity2 = new Item { Title = "zxc", };
+                var entity3 = new Item { Title = "zxc", };
+                tc.List.Add(entity);
+                tc.List.Add(entity2);
+                tc.List.Add(entity3);
+
+                var query = tc.List.Items().Where(i => i.Id == entity2.Id).Where(i => i.Title == "zxc");
+
+                var coll = query.ToList();
+
+                Assert.That(coll.Count, Is.EqualTo(1));
+                Assert.That(coll[0].Id == entity2.Id);
             }
         }
     }

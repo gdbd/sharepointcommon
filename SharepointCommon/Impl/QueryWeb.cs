@@ -1,17 +1,15 @@
 using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint.Utilities;
+using System;
+using System.Diagnostics;
+using Microsoft.SharePoint;
+using System.Reflection;
+using SharepointCommon.Attributes;
+using SharepointCommon.Common;
 
 namespace SharepointCommon.Impl
 {
-    using System;
-    using System.Diagnostics;
-
-    using Microsoft.SharePoint;
-
-    using Attributes;
-    using Common;
-    using Entities;
-    using System.Reflection;
+  
 
     [DebuggerDisplay("Url = {Web.Url}")]
     internal sealed class QueryWeb : IQueryWeb

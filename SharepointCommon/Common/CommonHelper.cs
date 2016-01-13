@@ -72,7 +72,7 @@ namespace SharepointCommon.Common
                 }
                 catch (SPException)
                 {
-                    var group = list.ParentWeb.Groups.GetByID(id);
+                    var group = list.ParentWeb.SiteGroups.GetByID(id);
                     users.Add(new SPFieldUserValue(list.ParentWeb, group.ID, group.Name));
                 }
             }

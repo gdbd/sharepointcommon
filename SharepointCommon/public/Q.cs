@@ -34,13 +34,15 @@ using System.Linq.Expressions;
 using System.Text;
 using SharepointCommon.Attributes;
 using SharepointCommon.Expressions;
+using System.Collections.Generic;
+using System.Linq;
+using SharepointCommon.Common;
+
 
 // ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using Common;
+
 
     /// <summary>
     /// A helper class for working with CAML queries.
@@ -683,7 +685,21 @@ namespace SharepointCommon
                         urlEncodingType==UrlEncodingType.None ? "FALSE" : "TRUE"
                 });
         }
-        
+
+        /// <summary>
+        /// Specifies the VIEW element
+        /// </summary>
+        /// <param name="s">a CAML string that expresses the VIEW contents</param>
+        /// <returns>a new CAML View element</returns>
+        public static string View(string s) { return Tag(CamlConst.View, null, null, s); }
+
+        /// <summary>
+        /// Specifies the Query element
+        /// </summary>
+        /// <param name="s">a CAML string that expresses the Query contents</param>
+        /// <returns>a new CAML Query element</returns>
+        public static string Query(string s) { return Tag(CamlConst.Query, null, null, s); }
+
         /// <summary>
         /// Specifies the WHERE part of a query.
         /// </summary>

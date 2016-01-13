@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using Remotion.Linq;
@@ -8,16 +9,21 @@ using Remotion.Linq.Parsing.Structure;
 
 namespace SharepointCommon.Linq
 {
-    internal class CamlableQuery<T> : QueryableBase<T>
+    [DebuggerDisplay("Query = {((SharepointCommon.Linq.CamlableExecutor<T>)((Remotion.Linq.DefaultQueryProvider)Provider).Executor)._debuggerDisplayCaml}")]
+    internal class CamlableQuery<T> : QueryableBase<T> where T : Item, new()
     {
-        public CamlableQuery(IEnumerable<T> data) : base(QueryParser.CreateDefault(), new CamlableExecutor(data))
+        public CamlableQuery() : base(QueryParser.CreateDefault(), new CamlableExecutor<T>(null))
         {
             
         }
 
-        public CamlableQuery() : base(QueryParser.CreateDefault(), new CamlableExecutor())
+        public CamlableQuery(IEnumerable<T> data) : base(QueryParser.CreateDefault(), new CamlableExecutor<T>(null))
         {
-            
+
+        }
+
+        public CamlableQuery(IQueryList<T> list) : base(QueryParser.CreateDefault(), new CamlableExecutor<T>(list))
+        {
         }
 
         public CamlableQuery(IQueryParser queryParser, IQueryExecutor executor) : base(queryParser, executor)

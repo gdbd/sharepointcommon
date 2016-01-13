@@ -1,7 +1,5 @@
-﻿// ReSharper disable once CheckNamespace
-
-using SharepointCommon.Attributes;
-
+﻿using SharepointCommon.Attributes;
+// ReSharper disable once CheckNamespace
 namespace SharepointCommon
 {
     /// <summary>
@@ -14,6 +12,15 @@ namespace SharepointCommon
     /// <typeparam name="T"></typeparam>
     public abstract class ListEventReceiver<T> where T : Item, new()
     {
+        internal bool Cancelled;
+        internal string Message;
+
+        public virtual void Cancel(string message, params object[] args)
+        {
+            Cancelled = true;
+            Message = string.Format(message, args);
+        }
+
         public virtual void ItemAdding(T addingItem) { }
         public virtual void ItemAdded(T addedItem) { }
         public virtual void ItemUpdating(T originalItem, T changedItem) { }

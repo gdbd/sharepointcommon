@@ -39,6 +39,9 @@ namespace SharepointCommon
         internal string FolderStore { get; private set; }
 
         internal string CamlStore { get; private set; }
+        internal string ViewXmlStrore { get; private set; }
+
+        internal bool IsViewXml { get; private set; } = false;
 
         /// <summary>
         /// Sets ViewFields used in CAML query
@@ -96,6 +99,18 @@ namespace SharepointCommon
         }
 
         /// <summary>
+        /// Use this if caml string contains view xml
+        /// </summary>
+        /// <param name="viewXml">string that contains view xml</param>
+        /// <returns>Fluent instance of that class</returns>
+        public CamlQuery ViewXml(string viewXml)
+        {
+            ViewXmlStrore = viewXml;
+            IsViewXml = true;
+            return this;
+        }
+
+        /// <summary>
         /// Sets CAML query text. Use '<see cref="SharepointCommon.Q"/>' class to construct query
         /// </summary>
         /// <param name="caml">The caml.</param>
@@ -110,7 +125,17 @@ namespace SharepointCommon
         {
             var query = new SPQuery { };
             
-            if (CamlStore != null) query.Query = CamlStore;
+            if (IsViewXml)
+            {
+                query.ViewXml = ViewXmlStrore;
+                return query;
+            }
+
+            if (CamlStore != null)
+            {
+                query.Query = CamlStore;
+            }
+
             if (ViewFieldsStore != null && ViewFieldsStore.Length > 0)
             {
                 var sb = new System.Text.StringBuilder();

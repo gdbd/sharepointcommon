@@ -76,6 +76,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libraries\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="SharepointCommon, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e0b27f8c3bd0867d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>oldBuild\2.0\14\SharepointCommon.dll</HintPath>
+      <Aliases>ver2</Aliases>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -102,6 +107,12 @@
     <Compile Include="CustomFields\CustomLookupProvider.cs" />
     <Compile Include="CustomFields\CustomLookupProviderBad.cs" />
     <Compile Include="DocumentTests.cs" />
+    <Compile Include="Entity\Announcement.cs" />
+    <Compile Include="Entity\Category.cs" />
+    <Compile Include="Entity\ChoiceAsString.cs" />
+    <Compile Include="Entity\Form.cs" />
+    <Compile Include="Entity\Holiday.cs" />
+    <Compile Include="Entity\ItemCustomHyperlink.cs" />
     <Compile Include="Entity\ItemWithNoMappedProperty.cs" />
     <Compile Include="Entity\CascadeLookup.cs" />
     <Compile Include="Entity\LookupWithShowField.cs" />
@@ -156,8 +167,12 @@
     <Compile Include="ER\TestListEventReceiver.cs" />
     <Compile Include="ER\TestListItemEventReceiver.cs" />
     <Compile Include="ExtentionsTests.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="Linq\CamlableVisitorTests.cs" />
+    <Compile Include="Linq\QueryableTests.cs" />
+    <Compile Include="MiscTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />
-    <Compile Include="QueryableTests.cs" />
+    <Compile Include="PerfTest.cs" />
     <Compile Include="Repository\TestRepository.cs" />
     <Compile Include="Application\TestApp.cs" />
     <Compile Include="Settings.cs" />
@@ -175,7 +190,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SharepointCommon\SharepointCommon.csproj">
       <Project>{84F70ECA-0B60-4452-ADE3-1A9ABC7B765E}</Project>
-      <Name>SharepointCommon</Name>
+      <Name>SharepointCommon_Proj</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
