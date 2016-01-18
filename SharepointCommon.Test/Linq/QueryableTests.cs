@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.SharePoint;
 using Moq;
 using NUnit.Framework;
 using SharepointCommon.Linq;
@@ -26,7 +27,7 @@ namespace SharepointCommon.Test.Linq
         public void Items_Query_Mocked_Test()
         {
             var list = new Mock<IQueryList<Item>>(MockBehavior.Strict);
-            list.Setup(l => l.Items()).Returns(new CamlableQuery<Item>(list.Object));
+            list.Setup(l => l.Items()).Returns(new CamlableQuery<Item>(list.Object.List));
 
             list.Setup(l => l.Items(It.IsAny<CamlQuery>())).Returns(new List<Item> { });
 
@@ -82,6 +83,7 @@ namespace SharepointCommon.Test.Linq
 
                 Assert.That(coll.Count, Is.EqualTo(1));
                 Assert.That(coll[0].Id == entity.Id);
+                Assert.That(coll[0].Title == entity.Title);
             }
         }
 

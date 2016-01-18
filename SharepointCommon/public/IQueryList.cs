@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.SharePoint;
-using SharepointCommon.Events;
 
 // ReSharper disable once CheckNamespace
 namespace SharepointCommon
@@ -15,7 +14,7 @@ namespace SharepointCommon
     public interface IQueryList<T> where T : Item, new()
     {
         /// <summary>
-        /// Gets reference of parent <see cref="IQueryWeb" object />
+        /// Gets reference of parent <see cref="IQueryWeb" /> object
         /// </summary>
         IQueryWeb ParentWeb { get; }
 
@@ -265,10 +264,5 @@ namespace SharepointCommon
         /// </summary>
         /// <typeparam name="TCt">Type of entity, represents content type (marked with [ContentType])</typeparam>
         void RemoveContentType<TCt>() where TCt : Item, new();   
-    }
-
-    public class QueryEvent<T>
-    {
-        public event Action<T> Added;
     }
 }
