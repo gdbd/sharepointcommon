@@ -517,7 +517,7 @@ namespace SharepointCommon
 
         public virtual IOrderedQueryable<T> Items()
         {
-            return new CamlableQuery<T>(this);
+            return new CamlableQuery<T>(List);
         }
 
         public virtual void DeleteList(bool recycle)

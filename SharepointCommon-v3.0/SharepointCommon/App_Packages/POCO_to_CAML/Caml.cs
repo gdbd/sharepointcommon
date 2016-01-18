@@ -215,6 +215,20 @@ namespace CodeToCaml
         {
             var ne = e as NewExpression;
 
+            //// CHANGED
+            if (e.NodeType == ExpressionType.Convert)
+            {
+                var convert = e as UnaryExpression;
+                if (convert == null)
+                    throw new InvalidOperationException("Cannot understand query.");
+
+                ne = convert.Operand as NewExpression;
+            }
+            //// CHANGED
+
+
+            
+
             if (ne == null)
                 throw new InvalidOperationException("Anonymous type is required.");
 

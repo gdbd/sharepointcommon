@@ -4,16 +4,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.SharePoint;
 using Remotion.Linq;
 using Remotion.Linq.Parsing.Structure;
 
 namespace SharepointCommon.Linq
 {
-    [DebuggerDisplay("Query = {((SharepointCommon.Linq.CamlableExecutor<T>)((Remotion.Linq.DefaultQueryProvider)Provider).Executor)._debuggerDisplayCaml}")]
-    internal class CamlableQuery<T> : QueryableBase<T> where T : Item, new()
+    [DebuggerDisplay("Query = {((SharepointCommon.Linq.CamlableExecutor)((Remotion.Linq.DefaultQueryProvider)Provider).Executor)._debuggerDisplayCaml}")]
+    internal class CamlableQuery<T> : QueryableBase<T>
     {
 
-        public CamlableQuery(IQueryList<T> list) : base(QueryParser.CreateDefault(), new CamlableExecutor<T>(list))
+        public CamlableQuery(SPList list) : base(QueryParser.CreateDefault(), new CamlableExecutor(list))
         {
         }
 
