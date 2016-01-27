@@ -27,7 +27,7 @@ namespace SharepointCommon.Test.Linq
         public void Items_Query_Mocked_Test()
         {
             var list = new Mock<IQueryList<Item>>(MockBehavior.Strict);
-            list.Setup(l => l.Items()).Returns(new CamlableQuery<Item>(list.Object.List));
+            list.Setup(l => l.Items()).Returns(CamlableQuery<Item>.Create(list.Object));
 
             list.Setup(l => l.Items(It.IsAny<CamlQuery>())).Returns(new List<Item> { });
 
@@ -46,6 +46,35 @@ namespace SharepointCommon.Test.Linq
             Assert.Throws<InvalidOperationException>(() => query.First());
             Assert.Throws<InvalidOperationException>(() => query.Single());
         }
+
+        [Test]
+        public void Items_Query_Mocked_2_Test()
+        {
+            var list = new Mock<IQueryList<Item>>(MockBehavior.Strict);
+            list.Setup(l => l.Items()).Returns(CamlableQuery<Item>.Create(list.Object));
+
+            list.Setup(l => l.Items(It.IsAny<CamlQuery>())).Returns(new List<Item>
+            {
+                new Item { Id = 17,},
+                new Item { Id = 38,},
+            });
+
+            var query = list.Object.Items().Where(i => i.Id != 42);
+
+            var coll = query.ToList();
+            var one = query.FirstOrDefault();
+            var val = query.Count();
+            var val2 = query.Sum(i => i.Id);
+
+            Assert.That(coll.Count, Is.EqualTo(2));
+            Assert.That(one, Is.Not.Null);
+            Assert.That(val, Is.EqualTo(2));
+            Assert.That(val2, Is.EqualTo(17 + 38));
+
+            Assert.Throws<InvalidOperationException>(() => query.First());
+            Assert.Throws<InvalidOperationException>(() => query.Single());
+        }
+
 
 
         [Test]
@@ -188,7 +217,6 @@ namespace SharepointCommon.Test.Linq
         }
 
         [Test]
-        [Ignore]
         public void Query_Skip_Test()
         {
             using (var tc = new TestListScope<Item>("Query_Skip_Test"))
@@ -201,7 +229,7 @@ namespace SharepointCommon.Test.Linq
                 tc.List.Add(entity2);
                 tc.List.Add(entity3);
 
-                var query = tc.List.Items().Skip(1);
+                var query = tc.List.Items().Where(x => x.Id != 0).Skip(1);
 
                 var coll = query.ToList();
 
@@ -220,7 +248,9 @@ namespace SharepointCommon.Test.Linq
 
                 tc.List.Add(entity);
 
-                var query = tc.List.Items().Select(i => new { A = i.Title, B = i.CustomField1, C = i.Тыдыщ, });
+                var query = tc.List.Items()
+                    .Where(x => x.Id != 0)
+                    .Select(i => new { A = i.Title, B = i.CustomField1, C = i.Тыдыщ, });
 
                 var coll = query.ToList();
 

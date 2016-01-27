@@ -213,8 +213,6 @@ namespace CodeToCaml
 
         private static void BuildSelect(XmlWriter writer, Expression e)
         {
-            var ne = e as NewExpression;
-
             //// CHANGED
             if (e.NodeType == ExpressionType.Convert)
             {
@@ -222,25 +220,36 @@ namespace CodeToCaml
                 if (convert == null)
                     throw new InvalidOperationException("Cannot understand query.");
 
-                ne = convert.Operand as NewExpression;
+                var ne = convert.Operand as NewExpression;
+                var me = convert.Operand as MemberExpression;
+
+                IEnumerable<MemberExpression> mes = null;
+
+                if (ne != null)
+                {
+                    mes = ne.Arguments.Select(a => a as MemberExpression);
+                }
+                else if (me != null)
+                {
+                    mes = new List<MemberExpression> { me };
+                }
+                else
+                {
+                    throw new InvalidOperationException("Cannot understand query.");
+                }
+
+                foreach (var m in mes)
+                {
+                    if (m == null)
+                        throw new NotSupportedException();
+
+                    writer.WriteStartElement(Tags.FieldRef);
+                    writer.WriteAttributeString(Tags.Name, GetFieldName(m));
+                    writer.WriteEndElement();
+                }
+
             }
             //// CHANGED
-
-
-            
-
-            if (ne == null)
-                throw new InvalidOperationException("Anonymous type is required.");
-
-            foreach (var me in ne.Arguments.Select(arg => arg as MemberExpression))
-            {
-                if (me == null)
-                    throw new NotSupportedException();
-
-                writer.WriteStartElement(Tags.FieldRef);
-                writer.WriteAttributeString(Tags.Name, GetFieldName(me));
-                writer.WriteEndElement();
-            }
         }
 
         private static void BuildWhere(XmlWriter writer, Expression e)

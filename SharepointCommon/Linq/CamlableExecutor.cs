@@ -1,21 +1,22 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.SharePoint;
+using System.Linq.Expressions;
 using Remotion.Linq;
 using SharepointCommon.Common;
+using ResultOperators = Remotion.Linq.Clauses.ResultOperators;
 
 namespace SharepointCommon.Linq
 {
-    internal class CamlableExecutor : IQueryExecutor
+    internal class CamlableExecutor<TL> : IQueryExecutor where TL : Item, new()
     {
-        private readonly SPList _list;
+        private readonly IQueryList<TL> _qList;
+      
         private string _debuggerDisplayCaml = "";
 
-        public CamlableExecutor(SPList list)
+        public CamlableExecutor(IQueryList<TL> list)
         {
-            _list = list;
+            _qList = list;
         }
 
         public T ExecuteScalar<T>(QueryModel queryModel)
@@ -32,40 +33,126 @@ namespace SharepointCommon.Linq
         
         public IEnumerable<T> ExecuteCollection<T>(QueryModel queryModel)
         {
-            var visitorType = typeof(CamlableVisitor<>);
-            var visitorTypeGeneric = visitorType.MakeGenericType(queryModel.MainFromClause.ItemType);
-
-            // var visitor = new CamlableVisitor<T>();
-
-            var visitor = (IQueryModelVisitor)Activator.CreateInstance(visitorTypeGeneric);
-
+            var visitor = new CamlableVisitor<TL>();
+            
             visitor.VisitQueryModel(queryModel);
 
             var caml = visitor.ToString();
-
-           // var caml = visitor.VisitQuery(queryModel);
+            
             _debuggerDisplayCaml = caml;
-
-
-            var wf = WebFactory.Open(_list.ParentWeb);
-            var getById = wf.GetType().GetMethod("GetById");
-            var getByIdGeneric = getById.MakeGenericMethod(queryModel.MainFromClause.ItemType);
-            var qList = getByIdGeneric.Invoke(wf, new object[] { _list.ID });
-
-            // var qList = WebFactory.Open(_list.ParentWeb).GetById<T>(_list.ID);
 
             var camlQuery = new CamlQuery().ViewXml(caml);
 
-            // var items = _list.Items(new CamlQuery().ViewXml(caml));
+            var items = _qList.Items(camlQuery);
 
-            //  var itemsMethod = qList.GetType().GetMethod("Items", new[] { typeof(CamlQuery) });
+            
+            foreach (var resultOperator in queryModel.ResultOperators)
+            {
+                if (resultOperator is ResultOperators.CountResultOperator)
+                {
+                    var i = items.Count();
+                    yield return (T)(object)i;
+                }
 
-            var itemsMethod = qList.GetType().GetMethods()
-                .First(m => m.Name.Equals("Items") && !m.ContainsGenericParameters && m.GetParameters().Count() == 1);
-                
-            var items = itemsMethod.Invoke(qList, new object[] { camlQuery });
+                if (resultOperator is ResultOperators.SumResultOperator)
+                {
+                     var ex = Expression.Lambda(queryModel.SelectClause.Selector, Expression.Parameter(typeof(TL),"i"));
+                     var tex = (Expression<Func<TL, int>>)ex;
 
-            return ((IEnumerable)items).Cast<T>();
+                    Expression<Func<TL, int>> tex2 = a => a.Id;
+
+                    //   var sum = items.Sum(tex.Compile());
+                    var sum = items.AsQueryable().Sum(tex2);
+
+                    yield return (T)(object)sum;
+                }
+
+                var resOp = resultOperator as ResultOperators.FirstResultOperator;
+                if (resOp != null)
+                {
+                    if (resOp.ReturnDefaultWhenEmpty)
+                    {
+                        yield return (T)(object)items.FirstOrDefault();
+                    }
+                    else
+                    {
+                        yield return (T)(object)items.Single();
+                    }
+                }
+
+                var skipOp = resultOperator as ResultOperators.SkipResultOperator;
+                if (skipOp != null)
+                {
+                    var count = skipOp.GetConstantCount();
+                    var skip = items.Skip(count).Cast<T>();
+                    foreach (var c in skip)
+                    {
+                        yield return c;
+                    }
+                }
+
+                if (resultOperator is ResultOperators.TakeResultOperator)
+                {
+                    var cast = items.Cast<T>();
+                    foreach (var c in cast)
+                    {
+                        yield return c;
+                    }
+                }
+            }
+
+            if (queryModel.ResultOperators.Count == 0)
+            {
+                var cast = CastConvert<T>(items, queryModel.SelectClause.Selector);
+                foreach (var c in cast)
+                {
+                    yield return c;
+                }
+            }
+        }
+
+
+      /*  private T CastConvert<T>(TL item, Expression selector)
+        {
+            var argType = item.GetType();
+
+            if (argType != (typeof(T)))//T is anonimous type when linq Select performed
+            {
+                var creator = Expression.Lambda(selector, Expression.Parameter(typeof(TL)));//here
+                creator = new Expressions.RewriteMemberAccessVisitor().Execute(creator);
+                var creatorCompiled = (Func<TL, object>)creator.Compile();
+                var res = creatorCompiled(item);
+                return (T)res;
+            }
+            else
+            {
+                return (T)(object)item;
+            }
+        }*/
+
+        private IEnumerable<T> CastConvert<T>(IEnumerable<TL> items, Expression selector)
+        {
+            var argType = CommonHelper.GetEnumerableGenericArguments(items).First();
+
+            if (argType != (typeof(T)))//T is anonimous type when linq Select performed
+            {
+                var creator = Expression.Lambda(selector, Expression.Parameter(typeof(TL)));//here
+                creator = new Expressions.RewriteMemberAccessVisitor().Execute(creator);
+                var creatorCompiled = (Func<TL, object>)creator.Compile();
+           
+                foreach (var item in items)
+                {
+                    var res = creatorCompiled(item);
+                    yield return (T)res;
+                }
+            }
+            else
+            {
+                foreach (var item in items)
+                {
+                    yield return (T)(object)item;
+                }
+            }
         }
     }
 }

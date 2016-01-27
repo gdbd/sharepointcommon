@@ -60,7 +60,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>SharepointCommon.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>temp.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
@@ -514,6 +514,7 @@
     <Compile Include="Events\EventReceiverInfo.cs" />
     <Compile Include="Events\EventReceiverProperties.cs" />
     <Compile Include="Events\ListEventMgr.cs" />
+    <Compile Include="Expressions\RewriteMemberAccessVisitor.cs" />
     <Compile Include="Interception\ItemEventReceiverAccessInterceptor.cs" />
     <Compile Include="Extentions\ListExtention.cs" />
     <Compile Include="Extentions\WebExtention.cs" />

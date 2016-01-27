@@ -168,7 +168,6 @@
     <Compile Include="ER\TestListItemEventReceiver.cs" />
     <Compile Include="ExtentionsTests.cs" />
     <Compile Include="Helper.cs" />
-    <Compile Include="Linq\CamlableVisitorTests.cs" />
     <Compile Include="Linq\QueryableTests.cs" />
     <Compile Include="MiscTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />

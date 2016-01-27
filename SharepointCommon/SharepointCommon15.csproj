@@ -317,6 +317,7 @@
     <Compile Include="Events\EventReceiverProperties.cs" />
     <Compile Include="Events\ListEventMgr.cs" />
     <Compile Include="Events\ListItemEventReceiver.cs" />
+    <Compile Include="Expressions\RewriteMemberAccessVisitor.cs" />
     <Compile Include="Extentions\ItemExtention.cs" />
     <Compile Include="App_Packages\Castle\Core\Internal\AttributesUtil.cs" />
     <Compile Include="App_Packages\Castle\Core\Internal\CollectionExtensions.cs" />
