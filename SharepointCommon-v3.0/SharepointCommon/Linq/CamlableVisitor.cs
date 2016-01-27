@@ -23,7 +23,7 @@ namespace SharepointCommon.Linq
         public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
         {
             base.VisitWhereClause(whereClause, queryModel, index);
-            var ex = Expression.Lambda(whereClause.Predicate, Expression.Parameter(typeof(T)));
+            var ex = Expression.Lambda(whereClause.Predicate, Expression.Parameter(typeof(T)));//here
             var tex = (Expression<Func<T, bool>>)ex;
             _caml.AndAlso(tex);
         }
@@ -32,7 +32,7 @@ namespace SharepointCommon.Linq
         {
             base.VisitSelectClause(selectClause, queryModel);
             var objSel = Expression.Convert(selectClause.Selector, typeof(object));
-            var ex = Expression.Lambda(objSel, Expression.Parameter(typeof(T)));
+            var ex = Expression.Lambda(objSel, Expression.Parameter(typeof(T)));//here
             var tex = (Expression<Func<T, object>>)ex;
 
             if (objSel.Operand is Remotion.Linq.Clauses.Expressions.QuerySourceReferenceExpression)
@@ -54,16 +54,6 @@ namespace SharepointCommon.Linq
                 if (count == null) throw new NotImplementedException("Take with no-contant not implemented yet!");
                 var val = Convert.ToInt32(count.Value);
                 _caml.Take(val);
-            }
-
-            var skip = resultOperator as Remotion.Linq.Clauses.ResultOperators.SkipResultOperator;
-            if (skip != null)
-            {
-                throw new NotImplementedException("Skip not implemented yet!");
-                /*  var count = skip.Count as ConstantExpression;
-                  if (count == null) throw new NotImplementedException("Skip with no-contant not implemented yet!");
-                  var val = Convert.ToInt32(count.Value);
-                  _caml.Skip(val);*/
             }
         }
 

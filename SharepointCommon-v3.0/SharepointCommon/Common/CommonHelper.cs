@@ -233,5 +233,13 @@ namespace SharepointCommon.Common
             }
             return null;
         }
+
+        internal static IEnumerable<Type> GetEnumerableGenericArguments(object o)
+        {
+            return o.GetType()
+                    .GetInterfaces()
+                    .Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    .SelectMany(t => t.GetGenericArguments());
+        }
     }
 }

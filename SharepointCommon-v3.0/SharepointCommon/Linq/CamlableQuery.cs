@@ -10,13 +10,19 @@ using Remotion.Linq.Parsing.Structure;
 
 namespace SharepointCommon.Linq
 {
-    [DebuggerDisplay("Query = {((SharepointCommon.Linq.CamlableExecutor)((Remotion.Linq.DefaultQueryProvider)Provider).Executor)._debuggerDisplayCaml}")]
+    [DebuggerDisplay("Query = {((SharepointCommon.Linq.CamlableExecutor<T>)((Remotion.Linq.DefaultQueryProvider)Provider).Executor)._debuggerDisplayCaml}")]
     internal class CamlableQuery<T> : QueryableBase<T>
     {
-
-        public CamlableQuery(SPList list) : base(QueryParser.CreateDefault(), new CamlableExecutor(list))
+        public static CamlableQuery<T> Create<TL>(IQueryList<TL> list) where TL : Item, new()
         {
+            return new CamlableQuery<T>(QueryParser.CreateDefault(), new CamlableExecutor<TL>(list));
         }
+
+
+      /*  public CamlableQuery(IQueryList<TL> list) : base(QueryParser.CreateDefault(), new 
+            CamlableExecutor<TL>(list))
+        {
+        }*/
 
         public CamlableQuery(IQueryParser queryParser, IQueryExecutor executor) : base(queryParser, executor)
         {
