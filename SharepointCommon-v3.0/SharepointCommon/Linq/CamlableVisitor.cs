@@ -23,7 +23,7 @@ namespace SharepointCommon.Linq
         public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
         {
             base.VisitWhereClause(whereClause, queryModel, index);
-            var ex = Expression.Lambda(whereClause.Predicate, Expression.Parameter(typeof(T)));//here
+            var ex = Expression.Lambda(whereClause.Predicate, Expression.Parameter(typeof(T),""));
             var tex = (Expression<Func<T, bool>>)ex;
             _caml.AndAlso(tex);
         }
@@ -32,7 +32,7 @@ namespace SharepointCommon.Linq
         {
             base.VisitSelectClause(selectClause, queryModel);
             var objSel = Expression.Convert(selectClause.Selector, typeof(object));
-            var ex = Expression.Lambda(objSel, Expression.Parameter(typeof(T)));//here
+            var ex = Expression.Lambda(objSel, Expression.Parameter(typeof(T),""));
             var tex = (Expression<Func<T, object>>)ex;
 
             if (objSel.Operand is Remotion.Linq.Clauses.Expressions.QuerySourceReferenceExpression)
