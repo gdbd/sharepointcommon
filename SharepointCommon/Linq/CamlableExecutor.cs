@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Remotion.Linq;
 using SharepointCommon.Common;
+using SharepointCommon.Expressions;
 using ResultOperators = Remotion.Linq.Clauses.ResultOperators;
 
 namespace SharepointCommon.Linq
@@ -57,14 +58,23 @@ namespace SharepointCommon.Linq
                 if (resultOperator is ResultOperators.SumResultOperator)
                 {
                      var ex = Expression.Lambda(queryModel.SelectClause.Selector, Expression.Parameter(typeof(TL),"i"));
-                     var tex = (Expression<Func<TL, int>>)ex;
+              
 
-                    Expression<Func<TL, int>> tex2 = a => a.Id;
+                    var tex = new RewriteMemberAccessVisitor().Execute(ex);
 
-                    //   var sum = items.Sum(tex.Compile());
-                    var sum = items.AsQueryable().Sum(tex2);
+                    if (typeof(T) == typeof(double))
+                    {
+                        var tex2 = (Expression<Func<TL, double>>) tex;
+                        var sum = items.AsQueryable().Sum(tex2);
+                        yield return (T) (object) sum;
+                    }
 
-                    yield return (T)(object)sum;
+                    if (typeof(T) == typeof(int))
+                    {
+                        var tex2 = (Expression<Func<TL, int>>)tex;
+                        var sum = items.AsQueryable().Sum(tex2);
+                        yield return (T)(object)sum;
+                    }
                 }
 
                 var resOp = resultOperator as ResultOperators.FirstResultOperator;
@@ -110,39 +120,19 @@ namespace SharepointCommon.Linq
                 }
             }
         }
-
-
-      /*  private T CastConvert<T>(TL item, Expression selector)
-        {
-            var argType = item.GetType();
-
-            if (argType != (typeof(T)))//T is anonimous type when linq Select performed
-            {
-                var creator = Expression.Lambda(selector, Expression.Parameter(typeof(TL)));//here
-                creator = new Expressions.RewriteMemberAccessVisitor().Execute(creator);
-                var creatorCompiled = (Func<TL, object>)creator.Compile();
-                var res = creatorCompiled(item);
-                return (T)res;
-            }
-            else
-            {
-                return (T)(object)item;
-            }
-        }*/
-
         private IEnumerable<T> CastConvert<T>(IEnumerable<TL> items, Expression selector)
         {
             var argType = CommonHelper.GetEnumerableGenericArguments(items).First();
 
             if (argType != (typeof(T)))//T is anonimous type when linq Select performed
             {
-                var creator = Expression.Lambda(selector, Expression.Parameter(typeof(TL)));//here
+                var creator = Expression.Lambda(selector, Expression.Parameter(typeof(TL),""));
                 creator = new Expressions.RewriteMemberAccessVisitor().Execute(creator);
-                var creatorCompiled = (Func<TL, object>)creator.Compile();
+                var creatorCompiled = creator.Compile();
            
                 foreach (var item in items)
                 {
-                    var res = creatorCompiled(item);
+                    var res = creatorCompiled.DynamicInvoke(item);
                     yield return (T)res;
                 }
             }

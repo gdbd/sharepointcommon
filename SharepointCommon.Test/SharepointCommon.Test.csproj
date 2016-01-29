@@ -76,11 +76,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libraries\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="SharepointCommon, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e0b27f8c3bd0867d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>oldBuild\2.0\14\SharepointCommon.dll</HintPath>
-      <Aliases>ver2</Aliases>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -171,7 +166,7 @@
     <Compile Include="Linq\QueryableTests.cs" />
     <Compile Include="MiscTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />
-    <Compile Include="PerfTest.cs" />
+    <None Include="PerfTest.cs" />
     <Compile Include="Repository\TestRepository.cs" />
     <Compile Include="Application\TestApp.cs" />
     <Compile Include="Settings.cs" />
@@ -185,12 +180,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResearchTests.cs" />
     <Compile Include="UserTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SharepointCommon\SharepointCommon.csproj">
-      <Project>{84F70ECA-0B60-4452-ADE3-1A9ABC7B765E}</Project>
-      <Name>SharepointCommon_Proj</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
@@ -219,6 +208,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SharepointCommon\SharepointCommon.csproj">
+      <Project>{84f70eca-0b60-4452-ade3-1a9abc7b765e}</Project>
+      <Name>SharepointCommon</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

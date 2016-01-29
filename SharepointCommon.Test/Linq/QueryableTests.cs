@@ -217,6 +217,29 @@ namespace SharepointCommon.Test.Linq
         }
 
         [Test]
+        public void Query_Sum_Test()
+        {
+            using (var tc = new TestListScope<CustomItem>("Query_Sum_Test"))
+            {
+                var entity = new CustomItem { Title = "asd", CustomFieldNumber = 11,};
+                var entity2 = new CustomItem { Title = "zxc", CustomFieldNumber = 22, };
+                var entity3 = new CustomItem { Title = "qwe", CustomFieldNumber = 33, };
+
+                tc.List.Add(entity);
+                tc.List.Add(entity2);
+                tc.List.Add(entity3);
+
+                var sum = tc.List.Items().Sum(i => i.CustomFieldNumber);
+                var sum2 = tc.List.Items().Sum(i => i.Id);
+             
+
+                Assert.That(sum, Is.EqualTo(11+22+33));
+                Assert.That(sum2, Is.EqualTo(entity.Id + entity2.Id + entity3.Id));
+       
+            }
+        }
+
+        [Test]
         public void Query_Skip_Test()
         {
             using (var tc = new TestListScope<Item>("Query_Skip_Test"))
@@ -242,7 +265,7 @@ namespace SharepointCommon.Test.Linq
         [Test]
         public void Query_Select_Test()
         {
-            using (var tc = new TestListScope<CustomItem>("Query_Select_Test"))
+            using (var tc = new TestListScope<CustomItem>("Query_Select_Test", true))
             {
                 var entity = new CustomItem { Title = "asd", CustomField1 = "zxc", Тыдыщ = "zxc" };
 
