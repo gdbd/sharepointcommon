@@ -78,11 +78,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libraries\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="SharepointCommon, Version=2.0.0.0, Culture=neutral, PublicKeyToken=627269ce210281c3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>oldBuild\2.0\15\SharepointCommon.dll</HintPath>
-      <Aliases>ver2</Aliases>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -174,7 +169,7 @@
     <Compile Include="MiscTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />
     <Compile Include="Linq\QueryableTests.cs" />
-    <Compile Include="PerfTest.cs" />
+    <None Include="PerfTest.cs" />
     <Compile Include="Repository\TestRepository.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TestListScope.cs" />
@@ -212,15 +207,14 @@
     <None Include="SharepointCommonTest.snk" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\SharepointCommon\SharepointCommon15.csproj">
       <Project>{84f70eca-0b60-4452-ade3-1a9abc7b765e}</Project>
       <Name>SharepointCommon15</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

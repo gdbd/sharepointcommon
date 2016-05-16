@@ -117,6 +117,39 @@ namespace SharepointCommon.Test.Linq
         }
 
         [Test]
+        public void Query_Where_CustomItem_By_Nullable_Test()
+        {
+            using (var tc = new TestListScope<CustomItem>("Query_Where_CustomItem_By_Nullable_Test", true))
+            {
+                var entity = new CustomItem { Title = "asd", NullableBool = true, };
+                var entity2 = new CustomItem { Title = "zxc", NullableBool = false, };
+                var entity3 = new CustomItem { Title = "zxc", NullableBool = null, };
+
+                tc.List.Add(entity);
+                tc.List.Add(entity2);
+                tc.List.Add(entity3);
+
+                var query = tc.List.Items().Where(i => i.NullableBool == true);
+                var coll = query.ToList();
+                Assert.That(coll.Count, Is.EqualTo(1));
+                Assert.That(coll[0].Id == entity.Id);
+                Assert.That(coll[0].Title == entity.Title);
+                
+                query = tc.List.Items().Where(i => i.NullableBool == false);
+                coll = query.ToList();
+                Assert.That(coll.Count, Is.EqualTo(1));
+                Assert.That(coll[0].Id == entity2.Id);
+                Assert.That(coll[0].Title == entity2.Title);
+
+                query = tc.List.Items().Where(i => i.NullableBool == null);
+                coll = query.ToList();
+                Assert.That(coll.Count, Is.EqualTo(1));
+                Assert.That(coll[0].Id == entity3.Id);
+                Assert.That(coll[0].Title == entity3.Title);
+            }
+        }
+
+        [Test]
         public void Query_Where_CustomItem_Attr_By_Text_Test()
         {
             using (var tc = new TestListScope<CustomItem>("Query_Where_CustomItem_Attr_By_Text_Test", true))

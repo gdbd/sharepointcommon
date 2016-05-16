@@ -39,5 +39,7 @@
 
         [Field(DefaultValue = false)]
         public virtual bool WithDefault { get; set; }
+
+        public virtual bool? NullableBool { get; set; }
     }
 }
