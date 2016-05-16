@@ -439,7 +439,7 @@ namespace CodeToCaml
 
                     var ceEq = be.Right as ConstantExpression;
 
-                    if ((ceEq != null && ceEq.Value == null) || isNullable)
+                    if ((ceEq != null && ceEq.Value == null) /*|| isNullable*/)
                     {
                         writer.WriteStartElement(Tags.IsNull);
                         writer.WriteStartElement(Tags.FieldRef);
@@ -697,6 +697,11 @@ namespace CodeToCaml
         private static object GetFieldValue(Expression e)
         {
             var type = e.Type;
+
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                type = type.GetGenericArguments().First();
+            }
 
             if (type.FullName == typeof(bool).FullName)
             {
