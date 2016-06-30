@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharepointCommon16", "SharepointCommon\SharepointCommon16.csproj", "{84F70ECA-0B60-4452-ADE3-1A9ABC7B765E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharepointCommon.Test16", "SharepointCommon.Test\SharepointCommon.Test16.csproj", "{862730D3-4233-46D1-B8CC-E0C828943AF8}"
+EndProject
+Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "SharepointCommon.Docs16", "SharepointCommon.Docs\SharepointCommon.Docs16.shfbproj", "{03F011F7-993D-47F4-8906-D02FA02C684F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{84F70ECA-0B60-4452-ADE3-1A9ABC7B765E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84F70ECA-0B60-4452-ADE3-1A9ABC7B765E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84F70ECA-0B60-4452-ADE3-1A9ABC7B765E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84F70ECA-0B60-4452-ADE3-1A9ABC7B765E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{862730D3-4233-46D1-B8CC-E0C828943AF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{862730D3-4233-46D1-B8CC-E0C828943AF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{862730D3-4233-46D1-B8CC-E0C828943AF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{862730D3-4233-46D1-B8CC-E0C828943AF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03F011F7-993D-47F4-8906-D02FA02C684F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03F011F7-993D-47F4-8906-D02FA02C684F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03F011F7-993D-47F4-8906-D02FA02C684F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44F28208-8CCB-48E0-BB0F-4EC1AB2C13D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44F28208-8CCB-48E0-BB0F-4EC1AB2C13D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44F28208-8CCB-48E0-BB0F-4EC1AB2C13D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44F28208-8CCB-48E0-BB0F-4EC1AB2C13D8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs29
+		SccProjectUniqueName0 = SharepointCommon\\SharepointCommon15.csproj
+		SccProjectName0 = SharepointCommon
+		SccAuxPath0 = https://tfs.codeplex.com/tfs/tfs29
+		SccLocalPath0 = SharepointCommon
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName1 = SharepointCommon.Test\\SharepointCommon.Test15.csproj
+		SccProjectName1 = SharepointCommon.Test
+		SccAuxPath1 = https://tfs.codeplex.com/tfs/tfs29
+		SccLocalPath1 = SharepointCommon.Test
+		SccProvider1 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName2 = SharepointCommon.Docs\\SharepointCommon.Docs15.shfbproj
+		SccProjectName2 = SharepointCommon.Docs
+		SccAuxPath2 = https://tfs.codeplex.com/tfs/tfs29
+		SccLocalPath2 = SharepointCommon.Docs
+		SccProvider2 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName3 = SharepointCommon\\SharepointCommon.csproj
+		SccProjectName3 = SharepointCommon
+		SccAuxPath3 = https://tfs.codeplex.com/tfs/tfs29
+		SccLocalPath3 = SharepointCommon
+		SccProvider3 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+	EndGlobalSection
+EndGlobal
