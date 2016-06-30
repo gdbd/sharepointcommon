@@ -1,0 +1,226 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{862730D3-4233-46D1-B8CC-E0C828943AF8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SharepointCommon.Test</RootNamespace>
+    <AssemblyName>SharepointCommon.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\BUILD\16\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\BUILD\16\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>SharepointCommonTest.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\16\Microsoft.SharePoint.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq, Version=4.0.10827.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
+      <Visible>False</Visible>
+    </CodeAnalysisDependentAssemblyPaths>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppFacTests.cs" />
+    <Compile Include="Application\AppWithRepository.cs" />
+    <Compile Include="Application\TestApp.cs" />
+    <Compile Include="Application\TestAppEnsureLists.cs" />
+    <Compile Include="Application\TestAppNotMappedList.cs" />
+    <Compile Include="Application\TestAppNoVirtualProperty.cs" />
+    <Compile Include="AssertTests.cs" />
+    <Compile Include="CamlQueryTests.cs" />
+    <Compile Include="CastleTests.cs" />
+    <Compile Include="CommonHelperTests.cs" />
+    <Compile Include="CustomFields\Contract.cs" />
+    <Compile Include="CustomFields\CustomFieldTests.cs" />
+    <Compile Include="CustomFields\CustomLookupProvider.cs" />
+    <Compile Include="CustomFields\CustomLookupProviderBad.cs" />
+    <Compile Include="CustomFields\CustomMultiLookupProvider.cs" />
+    <Compile Include="DocumentTests.cs" />
+    <Compile Include="Entity\Announcement.cs" />
+    <Compile Include="Entity\CascadeLookup.cs" />
+    <Compile Include="Entity\Category.cs" />
+    <Compile Include="Entity\ChoiceAsString.cs" />
+    <Compile Include="Entity\Form.cs" />
+    <Compile Include="Entity\Holiday.cs" />
+    <Compile Include="Entity\ItemCustomHyperlink.cs" />
+    <Compile Include="Entity\NumberAsLookup.cs" />
+    <Compile Include="Entity\LookupWithShowField.cs" />
+    <Compile Include="ER\Entities\AddedDocSync.cs" />
+    <Compile Include="ER\Entities\AddedDocAsync.cs" />
+    <Compile Include="ER\Entities\AddingDoc.cs" />
+    <Compile Include="ER\Entities\AddingDocAsync.cs" />
+    <Compile Include="ER\Entities\DeletingDoc.cs" />
+    <Compile Include="ER\Entities\DeletingDocAsync.cs" />
+    <Compile Include="ER\Entities\DeletingItemAsync.cs" />
+    <Compile Include="ER\Entities\DeletingItem.cs" />
+    <Compile Include="ER\Entities\DeletedItemAsync.cs" />
+    <Compile Include="ER\Entities\DeletedItem.cs" />
+    <Compile Include="ER\Entities\UpdatedDocAsync.cs" />
+    <Compile Include="ER\Entities\UpdatingDoc.cs" />
+    <Compile Include="ER\Entities\UpdatingItemAsync.cs" />
+    <Compile Include="ER\Entities\UpdatingItem.cs" />
+    <Compile Include="ER\Entities\UpdatedItemAsync.cs" />
+    <Compile Include="ER\Entities\UpdatedItem.cs" />
+    <Compile Include="ER\Entities\AddingItemAsync.cs" />
+    <Compile Include="ER\Entities\AddingItem.cs" />
+    <Compile Include="ER\Entities\AddRemoveTest.cs" />
+    <Compile Include="ER\Entities\AddedItemAsync.cs" />
+    <Compile Include="Entity\ItemWithNoMappedProperty.cs" />
+    <Compile Include="Entity\NullableItem.cs" />
+    <Compile Include="Entity\CustomDocument.cs" />
+    <Compile Include="Entity\OneMoreField.cs" />
+    <Compile Include="Entity\TheChoice.cs" />
+    <Compile Include="ER\DoclibEventsTest.cs" />
+    <Compile Include="ER\Receivers\AddedDocReceiverSync.cs" />
+    <Compile Include="ER\Receivers\AddedDocReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\AddingDocReceiver.cs" />
+    <Compile Include="ER\Receivers\AddingDocReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\DeletingDocReceiver.cs" />
+    <Compile Include="ER\Receivers\DeletingReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\DeletedReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\DeletedReceiver.cs" />
+    <Compile Include="ER\Receivers\DeletingReceiver.cs" />
+    <Compile Include="ER\Receivers\UpdatedDocReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\UpdatingDocReceiver.cs" />
+    <Compile Include="ER\Receivers\UpdatingReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\UpdatingReceiver.cs" />
+    <Compile Include="ER\Receivers\UpdatedReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\UpdatedReceiver.cs" />
+    <Compile Include="ER\Receivers\AddingReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\AddingReceiver.cs" />
+    <Compile Include="ER\Receivers\AddRemoveReceiver.cs" />
+    <Compile Include="ER\Receivers\AddedReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\AddedReceiver.cs" />
+    <Compile Include="ER\Entities\AddedItem.cs" />
+    <Compile Include="ER\ListEventsTest.cs" />
+    <Compile Include="ExtentionsTests.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="MiscTests.cs" />
+    <Compile Include="MoqLibraryTests.cs" />
+    <Compile Include="Linq\QueryableTests.cs" />
+    <None Include="PerfTest.cs" />
+    <Compile Include="Repository\TestRepository.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="TestListScope.cs" />
+    <Compile Include="WebFactoryTests.cs" />
+    <Compile Include="Entity\CustomItem.cs" />
+    <Compile Include="Entity\CustomItemNoProperty.cs" />
+    <Compile Include="QueryListTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResearchTests.cs" />
+    <Compile Include="UserTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SharepointCommonTest.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SharepointCommon\SharepointCommon15.csproj">
+      <Project>{84f70eca-0b60-4452-ade3-1a9abc7b765e}</Project>
+      <Name>SharepointCommon15</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

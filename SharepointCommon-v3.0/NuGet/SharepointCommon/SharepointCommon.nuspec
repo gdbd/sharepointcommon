@@ -2,22 +2,24 @@
 <package>
   <metadata>
     <id>SharepointCommon</id>
-    <version>3.0.0-alpha</version>
+    <version>3.0.3-alpha</version>
     <authors>devi_ous</authors>
     <owners>devi_ous</owners>
     <licenseUrl>http://sharepointcommon.codeplex.com/license</licenseUrl>
     <projectUrl>http://sharepointcommon.codeplex.com</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
 
-    <description>Framework for Microsoft SharePoint© 2010 and 2013. Allows to map list items to simple hand-writen POCO classes and perform actions by manipulating with entities.
-- strong typed operations with items
-- abstract layer on Sharepoint object model
-- simplifying recurring routine actions
-- ability to unit test
+    <description>
+      Framework for Microsoft SharePoint© 2010, 2013 and 2016. Allows to map list items to simple hand-writen POCO classes and perform actions by manipulating with entities.
+      - strong typed operations with items
+      - abstract layer on Sharepoint object model
+      - simplifying recurring routine actions
+      - ability to unit test
+      - query list items by LINQ translated to CAML
     </description>
 
     <summary>
-      Framework for Microsoft SharePoint© 2010 and 2013. Allows to map list items to simple hand-writen POCO classes and perform actions by manipulating with entities.
+      Framework for Microsoft SharePoint© 2010, 2013 and 2016. Allows to map list items to simple hand-writen POCO classes and perform actions by manipulating with entities.
       GOALS:
       - strong typed operations with items
       - abstract layer on Sharepoint object model
@@ -31,7 +33,9 @@
       - lazy access to any entity property(Castle Proxy)
       - typed CAML queries(Caml.NET with extentions)
       - version 2.0 allow to map event receivers
-      - many other features upcoming</summary>
+      - version 3.0 include LINQ provider to query items
+      - many other features upcoming
+    </summary>
 
     <copyright>Copyright © devi_ous 2012-2016</copyright>
     <tags>Sharepoint Framework ORM POCO UnitTest Wrapper</tags>

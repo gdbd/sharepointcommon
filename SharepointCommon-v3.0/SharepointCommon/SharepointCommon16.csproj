@@ -1,0 +1,614 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{84F70ECA-0B60-4452-ADE3-1A9ABC7B765E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SharepointCommon</RootNamespace>
+    <AssemblyName>SharepointCommon</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\BUILD\16\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;PHYSICALASSEMBLY DOTNET DOTNET40 NET_4_5</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\BUILD\16\</OutputPath>
+    <DefineConstants>TRACE;PHYSICALASSEMBLY DOTNET DOTNET40 NET_4_5</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>0</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>..\BUILD\16\SharepointCommon.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>SharepointCommon.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\16\Microsoft.SharePoint.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Packages\POCO_to_CAML\Caml.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\Constant.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\Sort.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpElement.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpExtension.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpTypes\DateRange.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpTypes\MembershipType.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpTypes\SpAbstract.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpTypes\SpDataAttribute.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpTypes\SpModerationStatus.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\SpTypes\SpViewScope.cs" />
+    <Compile Include="App_Packages\POCO_to_CAML\Tags.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\AssertionConditionAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\AssertionConditionType.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\AssertionMethodAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\BaseTypeRequiredAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\CanBeNullAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\CannotApplyEqualityOperatorAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\ContractAnnotationAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\ImplicitUseKindFlags.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\ImplicitUseTargetFlags.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\InstantHandleAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\InvokerParameterNameAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\LinqTunnelAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\LocalizationRequiredAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\MeansImplicitUseAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\NoEnumerationAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\NotifyPropertyChangedInvocatorAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\NotNullAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\PathReferenceAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\PublicAPIAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\PureAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\StringFormatMethodAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\TerminatesProgramAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\UsedImplicitlyAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.Utilities.ArgumentUtility.Sources.1.15.23.0\ArgumentUtility.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.Utilities.Assertion.Sources.1.15.23.0\Assertion.cs" />
+    <Compile Include="App_Packages\Re-linq\App_Packages\Remotion.Utilities.NullableTypeUtility.Sources.1.15.23.0\NullableTypeUtility.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\AdditionalFromClause.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\CloneContext.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\Expressions\ExtensionExpression.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\Expressions\IPartialEvaluationExceptionExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\Expressions\IVBSpecificExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\Expressions\PartialEvaluationExceptionExpression.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\Expressions\QuerySourceReferenceExpression.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\Expressions\SubQueryExpression.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\Expressions\VBStringComparisonExpression.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ExpressionVisitors\AccessorFindingExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ExpressionVisitors\CloningExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ExpressionVisitors\FormattingExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ExpressionVisitors\ReferenceReplacingExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ExpressionVisitors\ReverseResolvingExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\FromClauseBase.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\GroupJoinClause.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\IBodyClause.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\IClause.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\IFromClause.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\IQuerySource.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\JoinClause.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\MainFromClause.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\OrderByClause.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\Ordering.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\OrderingDirection.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\QuerySourceMapping.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperatorBase.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\AggregateFromSeedResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\AggregateResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\AllResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\AnyResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\AverageResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\CastResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\ChoiceResultOperatorBase.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\ConcatResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\ContainsResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\CountResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\DefaultIfEmptyResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\DistinctResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\ExceptResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\FirstResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\GroupResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\IntersectResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\LastResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\LongCountResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\MaxResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\MinResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\OfTypeResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\ReverseResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\SequenceFromSequenceResultOperatorBase.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\SequenceTypePreservingResultOperatorBase.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\SingleResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\SkipResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\SumResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\TakeResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\UnionResultOperator.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\ResultOperators\ValueFromSequenceResultOperatorBase.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\SelectClause.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\StreamedData\IStreamedData.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\StreamedData\IStreamedDataInfo.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\StreamedData\StreamedScalarValueInfo.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\StreamedData\StreamedSequence.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\StreamedData\StreamedSequenceInfo.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\StreamedData\StreamedSingleValueInfo.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\StreamedData\StreamedValue.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\StreamedData\StreamedValueInfo.cs" />
+    <Compile Include="App_Packages\Re-linq\Clauses\WhereClause.cs" />
+    <Compile Include="App_Packages\Re-linq\Collections\ChangeResistantObservableCollectionEnumerator.cs" />
+    <Compile Include="App_Packages\Re-linq\Collections\IndexValuePair.cs" />
+    <Compile Include="App_Packages\Re-linq\Collections\MultiDictionaryExtensions.cs" />
+    <Compile Include="App_Packages\Re-linq\Collections\NotifyCollectionChangedAction.cs" />
+    <Compile Include="App_Packages\Re-linq\Collections\NotifyCollectionChangedEventArgs.cs" />
+    <Compile Include="App_Packages\Re-linq\Collections\ObservableCollection.cs" />
+    <Compile Include="App_Packages\Re-linq\Collections\ObservableCollectionExtensions.cs" />
+    <Compile Include="App_Packages\Re-linq\DefaultQueryProvider.cs" />
+    <Compile Include="App_Packages\Re-linq\IQueryExecutor.cs" />
+    <Compile Include="App_Packages\Re-linq\IQueryModelVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\MemberBindings\FieldInfoBinding.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\MemberBindings\MemberBinding.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\MemberBindings\MethodInfoBinding.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\MemberBindings\PropertyInfoBinding.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\MultiReplacingExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\PartialEvaluatingExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\ReplacingExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\SubQueryFindingExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\ExpressionTransformation.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\ExpressionTransformerRegistry.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\IExpressionTranformationProvider.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\IExpressionTransformer.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\PredefinedTransformations\AttributeEvaluatingExpressionTransformer.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\PredefinedTransformations\DictionaryEntryNewExpressionTransformer.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\PredefinedTransformations\InvocationOfLambdaExpressionTransformer.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\PredefinedTransformations\KeyValuePairNewExpressionTransformer.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\PredefinedTransformations\MemberAddingNewExpressionTransformerBase.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\PredefinedTransformations\MethodCallExpressionTransformerAttribute.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\PredefinedTransformations\NullableValueTransformer.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\PredefinedTransformations\TupleNewExpressionTransformer.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\PredefinedTransformations\VBCompareStringExpressionTransformer.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\Transformation\PredefinedTransformations\VBInformationIsNothingExpressionTransformer.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\TransformingExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\TransparentIdentifierRemovingExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\TreeEvaluation\EvaluatableExpressionFilterBase.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\TreeEvaluation\EvaluatableTreeFindingExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\TreeEvaluation\IEvaluatableExpressionFilter.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\TreeEvaluation\NullEvaluatableExpressionFilter.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ExpressionVisitors\TreeEvaluation\PartialEvaluationInfo.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ParserException.Obsolete.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\RelinqExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\RelinqExpressionVisitor.NET_3_5.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\ExpressionTreeParser.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\ExpressionTreeProcessors\CompoundExpressionTreeProcessor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\ExpressionTreeProcessors\NullExpressionTreeProcessor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\ExpressionTreeProcessors\PartialEvaluatingExpressionTreeProcessor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\ExpressionTreeProcessors\TransformingExpressionTreeProcessor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IExpressionTreeProcessor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\INodeTypeProvider.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\AggregateExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\AggregateFromSeedExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\AllExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\AnyExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\AverageExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\CastExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\ClauseGenerationContext.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\ConcatExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\ContainsExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\CountExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\DefaultIfEmptyExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\DistinctExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\ExceptExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\ExpressionNodeInstantiationException.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\ExpressionResolver.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\FirstExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\GroupByExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\GroupByWithResultSelectorExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\GroupJoinExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\IExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\IntersectExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\IQuerySourceExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\JoinExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\LastExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\LongCountExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\MainSourceExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\MaxExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\MethodCallExpressionNodeBase.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\MethodCallExpressionNodeFactory.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\MethodCallExpressionParseInfo.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\MinExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\OfTypeExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\OrderByDescendingExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\OrderByExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\QuerySourceExpressionNodeUtility.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\QuerySourceSetOperationExpressionNodeBase.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\ResolvedExpressionCache.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\ResultOperatorExpressionNodeBase.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\ReverseExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\SelectExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\SelectManyExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\SingleExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\SkipExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\SumExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\SupportedMethodSpecifications.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\TakeExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\ThenByDescendingExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\ThenByExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\UnionExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IntermediateModel\WhereExpressionNode.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\IQueryParser.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\MethodCallExpressionParser.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\NodeTypeProviders\CompoundNodeTypeProvider.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\NodeTypeProviders\MethodInfoBasedNodeTypeRegistry.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\NodeTypeProviders\MethodNameBasedNodeTypeRegistry.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\NodeTypeProviders\NameBasedRegistrationInfo.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\Structure\QueryParser.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ThrowingExpressionVisitor.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\ThrowingExpressionVisitor.NET_3_5.cs" />
+    <Compile Include="App_Packages\Re-linq\Parsing\TupleExpressionBuilder.cs" />
+    <Compile Include="App_Packages\Re-linq\QueryableBase.cs" />
+    <Compile Include="App_Packages\Re-linq\QueryModel.cs" />
+    <Compile Include="App_Packages\Re-linq\QueryModelBuilder.cs" />
+    <Compile Include="App_Packages\Re-linq\QueryModelVisitorBase.cs" />
+    <Compile Include="App_Packages\Re-linq\QueryProviderBase.cs" />
+    <Compile Include="App_Packages\Re-linq\Transformations\SubQueryFromClauseFlattener.cs" />
+    <Compile Include="App_Packages\Re-linq\UniqueIdentifierGenerator.cs" />
+    <Compile Include="App_Packages\Re-linq\Utilities\ExpressionExtensions.cs" />
+    <Compile Include="App_Packages\Re-linq\Utilities\ItemTypeReflectionUtility.cs" />
+    <Compile Include="App_Packages\Re-linq\Utilities\Lazy.cs" />
+    <Compile Include="App_Packages\Re-linq\Utilities\MethodInfoExtensions.cs" />
+    <Compile Include="App_Packages\Re-linq\Utilities\ReflectionUtility.cs" />
+    <Compile Include="App_Packages\Re-linq\Utilities\StringUtility.cs" />
+    <Compile Include="App_Packages\Re-linq\Utilities\TypeExtensions.cs" />
+    <Compile Include="App_Packages\Re-linq\Utilities\TypeInfo.cs" />
+    <Compile Include="Attributes\AsyncAttribute.cs" />
+    <Compile Include="Attributes\CustomPropertyAttribute.cs" />
+    <Compile Include="Attributes\DisableEventFiringAttribute.cs" />
+    <Compile Include="Attributes\ListAttribute.cs" />
+    <Compile Include="Attributes\NotMappedAttribute.cs" />
+    <Compile Include="Attributes\SequenceAttribute.cs" />
+    <Compile Include="Common\InvariantCultureScope.cs" />
+    <Compile Include="Events\EventReceiverInfo.cs" />
+    <Compile Include="Events\EventReceiverProperties.cs" />
+    <Compile Include="Events\ListEventMgr.cs" />
+    <Compile Include="Events\ListItemEventReceiver.cs" />
+    <Compile Include="Expressions\RewriteMemberAccessVisitor.cs" />
+    <Compile Include="Extentions\ItemExtention.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\AttributesUtil.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\CollectionExtensions.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\ILockHolder.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\InternalsVisible.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\IUpgradeableLockHolder.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\Lock.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\MonitorLock.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\MonitorLockHolder.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\MonitorUpgradeableLockHolder.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\NoOpLock.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\NoOpUpgradeableLock.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\PermissionUtil.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\SlimReadLockHolder.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\SlimReadWriteLock.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\SlimUpgradeableReadLockHolder.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\SlimWriteLockHolder.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\WeakKey.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\WeakKeyComparer.cs" />
+    <Compile Include="App_Packages\Castle\Core\Internal\WeakKeyDictionary.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\AbstractExtendedLoggerFactory.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\AbstractLoggerFactory.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\ConsoleFactory.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\ConsoleLogger.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\DiagnosticsLogger.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\DiagnosticsLoggerFactory.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\IContextProperties.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\IContextStack.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\IContextStacks.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\IExtendedLogger.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\IExtendedLoggerFactory.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\ILogger.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\ILoggerFactory.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\LevelFilteredLogger.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\LoggerException.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\LoggerLevel.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\NullLogFactory.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\NullLogger.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\StreamLogger.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\StreamLoggerFactory.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\TraceLogger.cs" />
+    <Compile Include="App_Packages\Castle\Core\Logging\TraceLoggerFactory.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\AbstractInvocation.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\AllMethodsHook.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\ClassMembersCollector.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\ClassProxyInstanceContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\ClassProxyTargetContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\ClassProxyWithTargetTargetContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\CompositeTypeContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\DelegateProxyTargetContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\Delegates.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\DelegateTypeGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\ForwardingMethodGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\InterfaceMembersCollector.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\InterfaceMembersOnClassCollector.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\InterfaceProxyInstanceContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\InterfaceProxyTargetContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\InterfaceProxyWithOptionalTargetContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\InterfaceProxyWithoutTargetContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\InterfaceProxyWithTargetInterfaceTargetContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\InvocationWithDelegateContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\InvocationWithGenericDelegateContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\ITypeContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\MembersCollector.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\MinimialisticMethodGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\MixinContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\OptionallyForwardingMethodGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\ProxyInstanceContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Contributors\WrappedClassMembersCollector.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\DefaultProxyBuilder.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\AttributeDisassembler.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\AttributesToAvoidReplicating.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\BaseProxyGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\CacheKey.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\ClassProxyGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\ClassProxyWithTargetGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\CompositionInvocationTypeGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\DelegateMembersCollector.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\DelegateProxyGenerationHook.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\DelegateProxyGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\AbstractTypeEmitter.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\ArgumentsUtil.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\ClassEmitter.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\CodeBuilders\AbstractCodeBuilder.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\CodeBuilders\ConstructorCodeBuilder.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\CodeBuilders\MethodCodeBuilder.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\ConstructorCollection.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\ConstructorEmitter.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\EventCollection.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\EventEmitter.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\GenericUtil.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\IMemberEmitter.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\LdcOpCodesDictionary.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\LdindOpCodesDictionary.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\MethodCollection.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\MethodEmitter.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\NestedClassCollection.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\NestedClassEmitter.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\OpCodeUtil.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\PropertiesCollection.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\PropertyEmitter.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\AddressOfReferenceExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\ArgumentReference.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\AssignArgumentStatement.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\AssignArrayStatement.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\AssignStatement.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\AsTypeReference.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\BindDelegateExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\ByRefReference.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\ConstReference.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\ConstructorInvocationStatement.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\ConvertExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\DefaultValueExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\EndExceptionBlockStatement.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\Expression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\ExpressionStatement.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\FieldReference.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\FinallyStatement.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\IfNullExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\IILEmitter.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\IndirectReference.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\LiteralIntExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\LoadArrayElementExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\LoadRefArrayElementExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\LocalReference.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\MethodInvocationExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\MethodTokenExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\MultiStatementExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\NewArrayExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\NewInstanceExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\NopStatement.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\NullCoalescingOperatorExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\NullExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\Reference.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\ReferenceExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\ReferencesToObjectArrayExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\ReturnReferenceExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\ReturnStatement.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\SelfReference.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\Statement.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\ThrowStatement.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\TryStatement.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\TypeReference.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\SimpleAST\TypeTokenExpression.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\StindOpCodesDictionary.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\StrongNameUtil.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\TypeConstructorEmitter.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\Emitters\TypeUtil.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\GeneratorException.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\GeneratorUtil.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\IGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\IInvocationCreationContributor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\INamingScope.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\InheritanceInvocationTypeGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\InterfaceProxyWithoutTargetGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\InterfaceProxyWithTargetGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\InterfaceProxyWithTargetInterfaceGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\InvocationTypeGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\MetaEvent.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\MetaMethod.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\MetaProperty.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\MetaType.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\MetaTypeElement.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\MethodFinder.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\MethodGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\MethodSignatureComparer.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\MethodWithInvocationGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\NamingScope.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Generators\TypeElementCollection.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\IAttributeDisassembler.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\IChangeProxyTarget.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\IInterceptor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\IInterceptorSelector.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\IInvocation.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Internal\AttributeUtil.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Internal\CompositionInvocation.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Internal\InheritanceInvocation.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Internal\InternalsUtil.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Internal\InvocationHelper.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\InvalidMixinConfigurationException.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\InvalidProxyConstructorArgumentsException.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\IProxyBuilder.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\IProxyGenerationHook.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\IProxyTargetAccessor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\MixinData.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\ModuleScope.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\PersistentProxyBuilder.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\ProxyGenerationException.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\ProxyGenerationOptions.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\ProxyGenerator.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\ProxyUtil.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Serialization\CacheMappingsAttribute.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Serialization\ProxyObjectReference.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Serialization\ProxyTypeConstants.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Serialization\RemotableInvocation.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\StandardInterceptor.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Tokens\DelegateMethods.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Tokens\FormatterServicesMethods.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Tokens\InvocationMethods.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Tokens\MethodBaseMethods.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Tokens\SerializationInfoMethods.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Tokens\TypeBuilderMethods.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Tokens\TypeMethods.cs" />
+    <Compile Include="App_Packages\Castle\DynamicProxy\Tokens\TypeUtilMethods.cs" />
+    <Compile Include="Common\Assert.cs" />
+    <Compile Include="Common\CamlConst.cs" />
+    <Compile Include="Attributes\FieldAttribute.cs" />
+    <Compile Include="Common\CommonHelper.cs" />
+    <Compile Include="Common\EnumMapper.cs" />
+    <Compile Include="Common\FilenameOrganizer.cs" />
+    <Compile Include="Entities\UserInfoList.cs" />
+    <Compile Include="Common\UserIterator.cs" />
+    <Compile Include="Extentions\ListExtention.cs" />
+    <Compile Include="Extentions\WebExtention.cs" />
+    <Compile Include="Impl\AppFac.cs" />
+    <Compile Include="Expressions\ExpressionVisitor.cs" />
+    <Compile Include="Common\FieldMapper.cs" />
+    <Compile Include="Attributes\ContentTypeAttribute.cs" />
+    <Compile Include="public\Document.cs" />
+    <Compile Include="Common\EntityMapper.cs" />
+    <Compile Include="Expressions\MemberAccessVisitor.cs" />
+    <Compile Include="Interception\AppBaseAccessInterceptor.cs" />
+    <Compile Include="Interception\DocumentAccessInterceptor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interception\ItemAccessInterceptor.cs" />
+    <Compile Include="Interception\ItemEventReceiverAccessInterceptor.cs" />
+    <Compile Include="Interception\UserAccessInterceptor.cs" />
+    <Compile Include="Linq\CamlableExecutor.cs" />
+    <Compile Include="Linq\CamlableQuery.cs" />
+    <Compile Include="Linq\CamlableVisitor.cs" />
+    <Compile Include="Properties\NamespaceDoc.cs" />
+    <Compile Include="Attributes\NotFieldAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Impl\QueryWeb.cs" />
+    <Compile Include="public\AppBase.cs" />
+    <Compile Include="public\CamlQuery.cs" />
+    <Compile Include="public\CustomFieldProvider.cs" />
+    <Compile Include="public\Field.cs" />
+    <Compile Include="public\IAppFac.cs" />
+    <Compile Include="public\IQueryList.cs" />
+    <Compile Include="public\IQueryWeb.cs" />
+    <Compile Include="public\Item.cs" />
+    <Compile Include="public\ListBase.cs" />
+    <Compile Include="public\ListEventReceiver.cs" />
+    <Compile Include="public\Mapper.cs" />
+    <Compile Include="public\PageType.cs" />
+    <Compile Include="public\Person.cs" />
+    <Compile Include="public\Q.cs" />
+    <Compile Include="public\SharepointCommonException.cs" />
+    <Compile Include="public\User.cs" />
+    <Compile Include="public\WebFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="App_Packages\Castle\DynamicProxy\DynProxy.snk" />
+    <None Include="App_Packages\Re-linq\Apache-2.0.licenseheader" />
+    <None Include="App_Packages\Re-linq\App_Packages\Remotion.JetBrains.Annotations.Sources.1.15.23.0\ReSharperAnnotations Apache-2.0.licenseheader" />
+    <None Include="App_Packages\Re-linq\App_Packages\Remotion.Utilities.ArgumentUtility.Sources.1.15.23.0\SharedSource Apache-2.0.licenseheader" />
+    <None Include="App_Packages\Re-linq\App_Packages\Remotion.Utilities.Assertion.Sources.1.15.23.0\SharedSource Apache-2.0.licenseheader" />
+    <None Include="App_Packages\Re-linq\App_Packages\Remotion.Utilities.NullableTypeUtility.Sources.1.15.23.0\SharedSource Apache-2.0.licenseheader" />
+    <None Include="SharepointCommon.pfx" />
+    <None Include="temp.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Packages\Castle\License.txt" />
+    <Content Include="Events\BeforeAndAfterProps.txt" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

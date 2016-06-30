@@ -224,6 +224,7 @@ namespace SharepointCommon.Test
             try
             {
                 lib = _queryWeb.Create<Document>("Add_Uploads_Overwrite_Rename_Test");
+                lib.IsVersioningEnabled = false;
                 var document = new Document
                 {
                     Name = "Doc1.dat",
