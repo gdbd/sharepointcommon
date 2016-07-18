@@ -26,6 +26,7 @@ namespace Remotion.Linq
   /// </summary>
   public interface IQueryExecutor
   {
+      string GetQueryPreview();
     /// <summary>
     /// Executes the given <paramref name="queryModel"/> as a scalar query, i.e. as a query returning a scalar value of type <typeparamref name="T"/>.
     /// The query ends with a scalar result operator, for example a <see cref="CountResultOperator"/> or a <see cref="SumResultOperator"/>.
