@@ -13,12 +13,14 @@ namespace SharepointCommon.Linq
     {
         private readonly IQueryList<TL> _qList;
       
-        private string _debuggerDisplayCaml = "";
+        private string _debuggerDisplayCaml = "Query preview will be available after first query execution";
 
         public CamlableExecutor(IQueryList<TL> list)
         {
             _qList = list;
         }
+
+        public string GetQueryPreview() => _debuggerDisplayCaml;
 
         public T ExecuteScalar<T>(QueryModel queryModel)
         {

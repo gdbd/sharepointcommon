@@ -117,9 +117,52 @@ namespace SharepointCommon.Test.Linq
         }
 
         [Test]
-        public void Query_Where_CustomItem_By_Nullable_Test()
+        public void Query_Where_CustomItem_By_Number_Test()
         {
-            using (var tc = new TestListScope<CustomItem>("Query_Where_CustomItem_By_Nullable_Test", true))
+            using (var tc = new TestListScope<CustomItem>("Query_Where_CustomItem_By_Number_Test", true))
+            {
+                var entity = new CustomItem { Title = "asd", CustomFieldNumber = 123, };
+                var entity2 = new CustomItem { Title = "zxc", CustomFieldNumber = 256, };
+                tc.List.Add(entity);
+                tc.List.Add(entity2);
+
+                var query = tc.List.Items().Where(i => i.CustomFieldNumber == 256);
+
+                var coll = query.ToList();
+
+                Assert.That(coll.Count, Is.EqualTo(1));
+                Assert.That(coll[0].Id == entity2.Id);
+                Assert.That(coll[0].Title == entity2.Title);
+            }
+        }
+
+        [Test]
+        public void Query_Where_CustomItem_By_DateTime_Test()
+        {
+            using (var tc = new TestListScope<CustomItem>("Query_Where_CustomItem_By_Number_Test", true))
+            {
+                var entity = new CustomItem { Title = "asd", CustomDate = new DateTime(2011,1,11), };
+                var entity2 = new CustomItem {Title = "zxc", CustomDate = new DateTime(2013, 5, 1)};
+                tc.List.Add(entity);
+                tc.List.Add(entity2);
+
+                var query = tc.List.Items().Where(i => i.CustomDate == entity2.CustomDate);
+                
+                var coll = query.ToList();
+
+                Assert.That(query.ToString(), Is.EqualTo(
+                    "<View><Query><Where><Eq><FieldRef Name=\"CustomDate\" /><Value Type=\"DateTime\">2013-05-01T00:00:00</Value></Eq></Where></Query></View>"));
+
+                Assert.That(coll.Count, Is.EqualTo(1));
+                Assert.That(coll[0].Id == entity2.Id);
+                Assert.That(coll[0].Title == entity2.Title);
+            }
+        }
+
+        [Test]
+        public void Query_Where_CustomItem_By_Nullable_And_Bool_Test()
+        {
+            using (var tc = new TestListScope<CustomItem>("Query_Where_CustomItem_By_Nullable_And_Bool_Test", true))
             {
                 var entity = new CustomItem { Title = "asd", NullableBool = true, };
                 var entity2 = new CustomItem { Title = "zxc", NullableBool = false, };
