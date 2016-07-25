@@ -1,0 +1,109 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="Microsoft.SharePoint" #>
+<#@ assembly name="Microsoft.SharePoint.Client" #>
+<#@ assembly name="Microsoft.SharePoint.Client.Runtime" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Microsoft.SharePoint.Client" #>
+<#@ import namespace="Microsoft.SharePoint" #>
+<#@ output extension=".cs" #>
+<# 
+/*change this variables to control code generation*/
+string webUrl = "http://weburl";
+string listName = "ListName";
+string entityName = "Entity"; 
+string nameSpace = "Project.Model"; 
+var excludeFields = new []{"ID", "Title", "ContentTypeId","ContentType", "Modified", "Created", "Author", 
+"Editor", "LinkTitle2", "SyncClientId", "LinkFilename2", "HTML_x0020_File_x0020_Type"};
+#>
+<#
+Func<ClientContext, Field, string> getLookupList = (ct, field) => {
+	
+	var lookupListId = ((FieldLookup)field).LookupList;
+	if(string.IsNullOrEmpty(lookupListId)){
+		return "broken_lookup";
+	}
+	else{
+		var listId = new Guid(lookupListId);
+		var lookuplistFolder = ct.Web.Lists.GetById(listId).RootFolder;
+		ct.Load(lookuplistFolder);
+		ct.ExecuteQuery();
+		return lookuplistFolder.Name;
+	}
+};
+#>
+using System;
+using System.Collections.Generic;
+using SharepointCommon;
+using SharepointCommon.Attributes;
+
+namespace <#=nameSpace#>
+{
+	public class <#= entityName #> : Item
+	{
+	<#
+		var ctx = new ClientContext(webUrl); 
+	    var list = ctx.Web.Lists.GetByTitle(listName);
+        var fields = list.Fields;
+        ctx.Load(fields);
+        ctx.ExecuteQuery();
+		
+        foreach (var field in fields)
+        {
+            var name = field.InternalName;
+            var type = field.TypeAsString;
+			var lookupListUrl = "";
+
+			if(excludeFields.Contains(name) || SPBuiltInFieldId.Contains(field.Id)) continue;
+
+			var propType = "";
+
+            switch (type)
+            {
+                case "Text":
+                case "Computed":
+                case "Choice":
+                case "Note":
+                case "URL":
+					propType = "string";
+					break;
+				case "Number":
+					propType = "double?";
+					break;		
+				case "Boolean":
+					propType = "bool?";
+					break;
+				case "DateTime":
+					propType = "DateTime?";
+					break;	
+				case "User":
+					propType = "User";
+					break;		
+				case "UserMulti":
+					propType = "IEnumerable<User>";
+					break;			
+				case "Lookup":
+					propType = "Item";
+					lookupListUrl = getLookupList(ctx, field);	
+					break;	
+				case "LookupMulti":
+					propType = "IEnumerable<Item>";
+					lookupListUrl = getLookupList(ctx, field);	
+					break;
+
+
+				default: propType = "err: " + type;
+					break;
+            }
+			if(type == "Lookup" || type == "LookupMulti"){ #>
+	[Field(LookupList="lists/<#=lookupListUrl#>")]
+	<#}
+	#>
+	public virtual <#= propType #> <#=name#> {get;set;}
+	<#
+        }	
+	#>	
+	}
+}
