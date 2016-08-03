@@ -171,7 +171,7 @@ ecf/
 rcf/
 
 # Windows Store app package directories and files
-AppPackages/
+
 BundleArtifacts/
 Package.StoreAssociation.xml
 _pkginfo.txt
@@ -188,7 +188,7 @@ ClientBin/
 *~
 *.dbmdl
 *.dbproj.schemaview
-*.pfx
+
 *.publishsettings
 node_modules/
 orleans.codegen.cs
@@ -250,3 +250,6 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+/SharepointCommon-v3.0/BUILD/16
+/SharepointCommon-v3.0/BUILD/15
+/SharepointCommon-v3.0/BUILD/14

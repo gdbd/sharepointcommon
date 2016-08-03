@@ -210,9 +210,9 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharepointCommon\SharepointCommon15.csproj">
+    <ProjectReference Include="..\SharepointCommon\SharepointCommon16.csproj">
       <Project>{84f70eca-0b60-4452-ade3-1a9abc7b765e}</Project>
-      <Name>SharepointCommon15</Name>
+      <Name>SharepointCommon16</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
