@@ -241,5 +241,39 @@ namespace SharepointCommon.Common
                     .Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                     .SelectMany(t => t.GetGenericArguments());
         }
+
+        internal static object Evaluate(Expression e)
+        {
+            //A little optimization for constant expressions
+            if (e.NodeType == ExpressionType.Constant)
+                return ((ConstantExpression)e).Value;
+            return Expression.Lambda(e).Compile().DynamicInvoke();
+        }
+
+        internal static string GetChoiceValue(Type enumType, string value)
+        {
+            var enumField = enumType.GetField(value);
+            var attr = (FieldAttribute)Attribute.GetCustomAttribute(enumField, typeof(FieldAttribute));
+
+            if (attr == null) return value;
+
+            return attr.Name ?? value;
+        }
+
+  
+        internal static Type CheckTypeOrNullableType(Type type, Func<Type, bool> check)
+        {
+            Type ret = type;
+
+            if (check(type))
+                return ret;
+
+            if (ImplementsOpenGenericInterface(type, typeof(Nullable<>)) &&check(ret = type.GetGenericArguments()[0]))
+            {
+                return ret;
+            }
+
+            return null;
+        }
     }
 }

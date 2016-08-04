@@ -212,6 +212,53 @@ namespace SharepointCommon.Test.Linq
         }
 
         [Test]
+        public void Query_Where_CustomItem_Attr_By_Choice_Test()
+        {
+            using (var tc = new TestListScope<CustomItem>("Query_Where_CustomItem_Attr_By_Choice_Test", true))
+            {
+                var entity = new CustomItem { Title = "asd", CustomChoice = TheChoice.Choice2, };
+                var entity2 = new CustomItem { Title = "zxc", CustomChoice = TheChoice.Choice3, };
+                tc.List.Add(entity);
+                tc.List.Add(entity2);
+
+                var query = tc.List.Items().Where(i => i.CustomChoice == TheChoice.Choice3);
+                var coll = query.ToList();
+                Assert.That(coll.Count, Is.EqualTo(1));
+                Assert.That(coll[0].Id == entity2.Id);
+
+
+                query = tc.List.Items().Where(i => i.CustomChoice == TheChoice.Choice2);
+                coll = query.ToList();
+                Assert.That(coll.Count, Is.EqualTo(1));
+                Assert.That(coll[0].Id == entity.Id);
+            }
+        }
+
+        [Test]
+        public void Query_Where_CustomItem_Attr_By_Choice_Nullable_Test()
+        {
+            using (var tc = new TestListScope<CustomItem>("Query_Where_CustomItem_Attr_By_Choice_Nullable_Test", true))
+            {
+                var entity = new CustomItem { Title = "asd", NullbleChoice = TheChoice.Choice2, };
+                var entity2 = new CustomItem { Title = "zxc", NullbleChoice = TheChoice.Choice3, };
+                tc.List.Add(entity);
+                tc.List.Add(entity2);
+
+                var query = tc.List.Items().Where(i => i.NullbleChoice == TheChoice.Choice3);
+                var coll = query.ToList();
+                Assert.That(coll.Count, Is.EqualTo(1));
+                Assert.That(coll[0].Id == entity2.Id);
+
+
+                query = tc.List.Items().Where(i => i.NullbleChoice == TheChoice.Choice2);
+                coll = query.ToList();
+                Assert.That(coll.Count, Is.EqualTo(1));
+                Assert.That(coll[0].Id == entity.Id);
+            }
+        }
+
+
+        [Test]
         public void Query_Where_By_Two_Conditions_Test()
         {
             using (var tc = new TestListScope<Item>("Query_Where_By_Two_Conditions_Test"))

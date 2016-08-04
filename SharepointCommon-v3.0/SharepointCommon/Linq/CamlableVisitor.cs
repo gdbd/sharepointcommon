@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using System.Linq.Expressions;
 using CodeToCaml;
+using SharepointCommon.Common;
 
 namespace SharepointCommon.Linq
 {
@@ -23,7 +25,25 @@ namespace SharepointCommon.Linq
         public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
         {
             base.VisitWhereClause(whereClause, queryModel, index);
-            var ex = Expression.Lambda(whereClause.Predicate, Expression.Parameter(typeof(T),""));
+
+            var predicate = whereClause.Predicate;
+
+            //rewrite enum, because it present as integer
+            var wb = whereClause.Predicate as BinaryExpression;
+            var un = wb?.Left as UnaryExpression;
+            if (un != null && un.NodeType == ExpressionType.Convert)
+            {
+                var typeEnum = CommonHelper.CheckTypeOrNullableType(un.Operand.Type, t => t.IsEnum);
+                
+                if(typeEnum != null)
+                {
+                    var r = CommonHelper.Evaluate(wb.Right);
+                    var enumValue = Enum.ToObject(typeEnum, r);
+                    predicate = Expression.MakeBinary(wb.NodeType, un.Operand, Expression.Convert(Expression.Constant(enumValue),un.Operand.Type));
+                }
+            }
+
+            var ex = Expression.Lambda(predicate, Expression.Parameter(typeof(T),""));
             var tex = (Expression<Func<T, bool>>)ex;
             _caml.AndAlso(tex);
         }
@@ -42,6 +62,16 @@ namespace SharepointCommon.Linq
 
             _caml.Select(tex);
         }
+
+     /*   protected override void VisitBodyClauses(ObservableCollection<IBodyClause> bodyClauses, QueryModel queryModel)
+        {
+            base.VisitBodyClauses(bodyClauses, queryModel);
+
+            foreach (var bodyClause in bodyClauses)
+            {
+                
+            }
+        }*/
 
         public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
         {
