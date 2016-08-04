@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Xml;
 using CodeToCaml.SpTypes;
+using SharepointCommon.Common;
 
 // ReSharper disable MergeConditionalExpression
 
@@ -670,6 +671,11 @@ namespace CodeToCaml
                 type = type.GetGenericArguments().First();
             }
 
+            if (type.IsEnum)
+            {
+                return Constant.SpText;
+            }
+
             switch (type.FullName)
             {
                 case Constant.TypeString:
@@ -701,6 +707,13 @@ namespace CodeToCaml
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 type = type.GetGenericArguments().First();
+            }
+
+            if (type.IsEnum || (CommonHelper.ImplementsOpenGenericInterface(type, typeof(Nullable<>)) && type.GetGenericArguments()[0].IsEnum))
+            {
+                var valEnum= CommonHelper.Evaluate(e);
+                var valStr = CommonHelper.GetChoiceValue(type, valEnum.ToString());
+                return valStr;
             }
 
             if (type.FullName == typeof(bool).FullName)
