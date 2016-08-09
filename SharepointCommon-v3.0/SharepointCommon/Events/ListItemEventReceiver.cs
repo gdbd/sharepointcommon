@@ -196,8 +196,16 @@ namespace SharepointCommon.Events
             if (cancelled)
             {
                 var message = (string)messageField.GetValue(receiver);
-                properties.ErrorMessage = message;
-                properties.Cancel = true;
+
+                if (string.IsNullOrEmpty(message))
+                {
+                    properties.Status = SPEventReceiverStatus.CancelNoError;
+                }
+                else
+                {
+                    properties.ErrorMessage = message;
+                    properties.Status = SPEventReceiverStatus.CancelWithError;
+                }
             }
         }
     }
