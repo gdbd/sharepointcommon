@@ -58,6 +58,18 @@ namespace SharepointCommon.Test
         }
 
         [Test]
+        public void CamlOption_ViewXml_Test()
+        {
+            var viewXml = Q.View(Q.Query(Q.Where(Q.Eq(Q.FieldRef<Item>(i => i.Title), Q.Value("test")))));
+
+            var query = new CamlQuery().ViewXml(viewXml);
+
+            Assert.IsNotNull(query);
+            Assert.That(query.ViewXmlStrore, 
+                Is.EqualTo(@"<View><Query><Where><Eq><FieldRef Name=""Title"" /><Value Type=""Text"">test</Value></Eq></Where></Query></View>"));
+        }
+
+        [Test]
         public void Typed_FieldRef_Creates_Correct_Caml_Test()
         {
             var fref = Q.FieldRef<Item>(i => i.Title);

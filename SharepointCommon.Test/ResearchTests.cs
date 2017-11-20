@@ -1,38 +1,45 @@
 ﻿using System;
+using System.Globalization;
+using Castle.Core.Internal;
 using Microsoft.SharePoint;
-using Microsoft.SharePoint.Utilities;
 using NUnit.Framework;
+using SharepointCommon.Entities;
+using SharepointCommon.Test.CustomFields;
+using SharepointCommon.Test.Entity;
 
 namespace SharepointCommon.Test
 {
     [TestFixture]
     public class ResearchTests
     {
-        private string _webUrl = Settings.TestSiteUrl;
+       // private string _webUrl = Settings.TestSiteUrl;
 
         [Test]
         public void SP()
         {
-            using (var wf = WebFactory.Open(_webUrl))
-            {
-               /* IQueryList<Item> list = null;
-                try
-                {
-                    list = wf.Create<Item>("TryFolders");
-                    list.IsFolderCreationAllowed = true;
 
-                    var splist = list.List;
+            var s1 = "91;#asd;#577;#asd;#";
+            var s2 = "91;#;#577;#";
 
-                    var itm = splist.AddItem("/lists/TryFolders/f1", SPFileSystemObjectType.File, null);
-                    itm["Title"] = "temp";
-                    itm.Update();
+            var mlv = new SPFieldLookupValueCollection(s1);
 
-                }
-                finally
-                {
-                    if (list != null) list.DeleteList(false);
-                }*/
-            }
+            var mlv2 = new SPFieldLookupValueCollection(s2);
+        }
+
+        [Test]
+        public void AnonumousMapper_Test()
+        {
+            var i = new CustomItem { };
+            var a = new { A = i.Title, B = i.CustomField1, C = i.Тыдыщ, };
+
+            var t = a.GetType();
+            var pp = t.GetProperties();
+
+
+           // var pg = new Castle.DynamicProxy.ProxyGenerator();
+           // var p = pg.CreateClassProxy(t);
+
+         //   var aq = Activator.CreateInstance(t);
         }
     }
 }

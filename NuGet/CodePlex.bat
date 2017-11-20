@@ -1,3 +1,4 @@
-7z.exe a -t7z SharepointCommon_v1.7_2010_Binary.7z ..\BUILD\14\sharepointcommon.dll ..\BUILD\14\sharepointcommon.xml
-7z.exe a -t7z SharepointCommon_v1.7_2013_Binary.7z ..\BUILD\15\sharepointcommon.dll ..\BUILD\15\sharepointcommon.xml
+7z.exe a -tzip SharepointCommon_v3.0.5_2010_Binary.zip sharepointcommon\lib\net35\sharepointcommon.dll sharepointcommon\lib\net35\sharepointcommon.xml
+7z.exe a -tzip SharepointCommon_v3.0.5_2013_Binary.zip sharepointcommon\lib\net45\sharepointcommon.dll sharepointcommon\lib\net45\sharepointcommon.xml
+7z.exe a -tzip SharepointCommon_v3.0.5_2016_Binary.zip sharepointcommon\lib\net46\sharepointcommon.dll sharepointcommon\lib\net46\sharepointcommon.xml
 pause

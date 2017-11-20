@@ -100,22 +100,76 @@
     <Compile Include="AssertTests.cs" />
     <Compile Include="CamlQueryTests.cs" />
     <Compile Include="CastleTests.cs" />
+    <Compile Include="CommonHelperTests.cs" />
     <Compile Include="CustomFields\Contract.cs" />
     <Compile Include="CustomFields\CustomFieldTests.cs" />
     <Compile Include="CustomFields\CustomLookupProvider.cs" />
     <Compile Include="CustomFields\CustomLookupProviderBad.cs" />
     <Compile Include="CustomFields\CustomMultiLookupProvider.cs" />
     <Compile Include="DocumentTests.cs" />
+    <Compile Include="Entity\Announcement.cs" />
     <Compile Include="Entity\CascadeLookup.cs" />
+    <Compile Include="Entity\Category.cs" />
+    <Compile Include="Entity\ChoiceAsString.cs" />
+    <Compile Include="Entity\Form.cs" />
+    <Compile Include="Entity\Holiday.cs" />
+    <Compile Include="Entity\ItemCustomHyperlink.cs" />
     <Compile Include="Entity\NumberAsLookup.cs" />
     <Compile Include="Entity\LookupWithShowField.cs" />
+    <Compile Include="ER\Entities\AddedDocSync.cs" />
+    <Compile Include="ER\Entities\AddedDocAsync.cs" />
+    <Compile Include="ER\Entities\AddingDoc.cs" />
+    <Compile Include="ER\Entities\AddingDocAsync.cs" />
+    <Compile Include="ER\Entities\DeletingDoc.cs" />
+    <Compile Include="ER\Entities\DeletingDocAsync.cs" />
+    <Compile Include="ER\Entities\DeletingItemAsync.cs" />
+    <Compile Include="ER\Entities\DeletingItem.cs" />
+    <Compile Include="ER\Entities\DeletedItemAsync.cs" />
+    <Compile Include="ER\Entities\DeletedItem.cs" />
+    <Compile Include="ER\Entities\UpdatedDocAsync.cs" />
+    <Compile Include="ER\Entities\UpdatingDoc.cs" />
+    <Compile Include="ER\Entities\UpdatingItemAsync.cs" />
+    <Compile Include="ER\Entities\UpdatingItem.cs" />
+    <Compile Include="ER\Entities\UpdatedItemAsync.cs" />
+    <Compile Include="ER\Entities\UpdatedItem.cs" />
+    <Compile Include="ER\Entities\AddingItemAsync.cs" />
+    <Compile Include="ER\Entities\AddingItem.cs" />
+    <Compile Include="ER\Entities\AddRemoveTest.cs" />
+    <Compile Include="ER\Entities\AddedItemAsync.cs" />
     <Compile Include="Entity\ItemWithNoMappedProperty.cs" />
     <Compile Include="Entity\NullableItem.cs" />
     <Compile Include="Entity\CustomDocument.cs" />
     <Compile Include="Entity\OneMoreField.cs" />
     <Compile Include="Entity\TheChoice.cs" />
+    <Compile Include="ER\DoclibEventsTest.cs" />
+    <Compile Include="ER\Receivers\AddedDocReceiverSync.cs" />
+    <Compile Include="ER\Receivers\AddedDocReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\AddingDocReceiver.cs" />
+    <Compile Include="ER\Receivers\AddingDocReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\DeletingDocReceiver.cs" />
+    <Compile Include="ER\Receivers\DeletingReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\DeletedReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\DeletedReceiver.cs" />
+    <Compile Include="ER\Receivers\DeletingReceiver.cs" />
+    <Compile Include="ER\Receivers\UpdatedDocReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\UpdatingDocReceiver.cs" />
+    <Compile Include="ER\Receivers\UpdatingReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\UpdatingReceiver.cs" />
+    <Compile Include="ER\Receivers\UpdatedReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\UpdatedReceiver.cs" />
+    <Compile Include="ER\Receivers\AddingReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\AddingReceiver.cs" />
+    <Compile Include="ER\Receivers\AddRemoveReceiver.cs" />
+    <Compile Include="ER\Receivers\AddedReceiverAsync.cs" />
+    <Compile Include="ER\Receivers\AddedReceiver.cs" />
+    <Compile Include="ER\Entities\AddedItem.cs" />
+    <Compile Include="ER\ListEventsTest.cs" />
     <Compile Include="ExtentionsTests.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="MiscTests.cs" />
     <Compile Include="MoqLibraryTests.cs" />
+    <Compile Include="Linq\QueryableTests.cs" />
+    <None Include="PerfTest.cs" />
     <Compile Include="Repository\TestRepository.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TestListScope.cs" />
@@ -153,15 +207,14 @@
     <None Include="SharepointCommonTest.snk" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\SharepointCommon\SharepointCommon15.csproj">
       <Project>{84f70eca-0b60-4452-ade3-1a9abc7b765e}</Project>
       <Name>SharepointCommon15</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

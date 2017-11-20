@@ -6,8 +6,10 @@ using SharepointCommon.Attributes;
 using SharepointCommon.Expressions;
 using SharepointCommon.Impl;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.SharePoint;
+using System.Globalization;
 
 namespace SharepointCommon.Common
 {
@@ -24,6 +26,57 @@ namespace SharepointCommon.Common
             if (fieldValue == null) return null;
 
             return fieldValue.User;
+        }
+
+        internal static SPUser GetUser(SPList list, string fieldStaticName, object value)
+        {
+            if (value == null) return null;
+
+            var userField = (SPFieldUser)list.Fields.TryGetFieldByStaticName(fieldStaticName);
+            if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
+            
+            var fieldValue = (SPFieldUserValue)userField.GetFieldValue(value.ToString());
+
+            if (fieldValue == null) return null;
+
+            return fieldValue.User;
+        }
+
+        internal static SPFieldUserValueCollection GetUsers(SPList list, string fieldStaticName, object value)
+        {
+            if(value == null) return null;
+
+            var userField = (SPFieldUser)list.Fields.TryGetFieldByStaticName(fieldStaticName);
+            if (userField == null) throw new SharepointCommonException(string.Format("Field {0} not exist", fieldStaticName));
+
+            IEnumerable<int> ids;
+            if (value is SPFieldUserValueCollection)
+            {
+                var vv = value as SPFieldUserValueCollection;
+                ids = vv.Select(v => v.LookupId);
+            }
+            else
+            {
+                var mlv = new SPFieldLookupValueCollection((string)value);
+             
+                ids = mlv.Select(v => v.LookupId);
+            }
+
+            var users = new SPFieldUserValueCollection();
+            foreach (var id in ids)
+            {
+                try
+                {
+                    var user = list.ParentWeb.AllUsers.GetByID(id);
+                    users.Add(new SPFieldUserValue(list.ParentWeb, user.ID, user.LoginName));
+                }
+                catch (SPException)
+                {
+                    var group = list.ParentWeb.SiteGroups.GetByID(id);
+                    users.Add(new SPFieldUserValue(list.ParentWeb, group.ID, group.Name));
+                }
+            }
+            return users;
         }
 
         internal static SPFieldUserValueCollection GetUsers(SPListItem item, string fieldStaticName)
@@ -158,6 +211,69 @@ namespace SharepointCommon.Common
             }
 
             return false;
+        }
+
+        internal static object GetDefaultValue(Type t)
+        {
+            if (t.IsValueType)
+            {
+                return Activator.CreateInstance(t);
+            }
+            return null;
+        }
+
+        internal static DateTime? GetDateTimeFieldValue(object fieldValue)
+        {
+#warning check time value in UI !
+            if (fieldValue == null) return null;
+            DateTime res;
+            if (DateTime.TryParse(fieldValue.ToString(), null, DateTimeStyles.AdjustToUniversal, out res))
+            {
+                return res;
+            }
+            return null;
+        }
+
+        internal static IEnumerable<Type> GetEnumerableGenericArguments(object o)
+        {
+            return o.GetType()
+                    .GetInterfaces()
+                    .Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    .SelectMany(t => t.GetGenericArguments());
+        }
+
+        internal static object Evaluate(Expression e)
+        {
+            //A little optimization for constant expressions
+            if (e.NodeType == ExpressionType.Constant)
+                return ((ConstantExpression)e).Value;
+            return Expression.Lambda(e).Compile().DynamicInvoke();
+        }
+
+        internal static string GetChoiceValue(Type enumType, string value)
+        {
+            var enumField = enumType.GetField(value);
+            var attr = (FieldAttribute)Attribute.GetCustomAttribute(enumField, typeof(FieldAttribute));
+
+            if (attr == null) return value;
+
+            return attr.Name ?? value;
+        }
+
+  
+        internal static Type CheckTypeOrNullableType(Type type, Func<Type, bool> check)
+        {
+            Type ret = type;
+
+            if (check(type))
+                return ret;
+
+            if (ImplementsOpenGenericInterface(type, typeof(Nullable<>)) &&check(ret = type.GetGenericArguments()[0]))
+            {
+                return ret;
+            }
+
+            return null;
         }
     }
 }

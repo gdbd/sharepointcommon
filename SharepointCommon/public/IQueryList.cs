@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.SharePoint;
 
@@ -13,7 +14,7 @@ namespace SharepointCommon
     public interface IQueryList<T> where T : Item, new()
     {
         /// <summary>
-        /// Gets reference of parent <see cref="IQueryWeb" object />
+        /// Gets reference of parent <see cref="IQueryWeb" /> object
         /// </summary>
         IQueryWeb ParentWeb { get; }
 
@@ -78,7 +79,20 @@ namespace SharepointCommon
         /// Gets the relative url of list. Ex: /lists/list1
         /// </summary>
         string RelativeUrl { get; }
-        
+
+        /// <summary>
+        /// Registers list event receiver
+        /// </summary>
+        /// <typeparam name="TEventReceiver">Type inherited from <see cref="ListEventReceiver{T}"/></typeparam>
+        void AddEventReceiver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>;
+
+
+        /// <summary>
+        /// Removes list event receiver
+        /// </summary>
+        /// <typeparam name="TEventReceiver">Type inherited from <see cref="ListEventReceiver{T}"/></typeparam>
+        void RemoveEventReceiver<TEventReceiver>() where TEventReceiver : ListEventReceiver<T>;
+
         /// <summary>
         /// Gets the url of specific list form
         /// </summary>
@@ -101,6 +115,15 @@ namespace SharepointCommon
         /// <param name="incrementVersion">if set to <c>true</c>increments item version.</param>
         /// <param name="selectors">Expressions used to enumerate fields been updated. Ex: e => e.Title</param>
         void Update(T entity, bool incrementVersion, params Expression<Func<T, object>>[] selectors);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="fieldSelector"></param>
+        /// <param name="valueToSet"></param>
+        /// <param name="incrementVersion"></param>
+        void UpdateField(T entity, Expression<Func<T, object>> fieldSelector, object valueToSet, bool incrementVersion = true);
 
         /// <summary>
         /// Deletes the specified entity.
@@ -169,6 +192,9 @@ namespace SharepointCommon
         /// <param name="option">The option used to filter items.</param>
         /// <returns>items by query.</returns>
         IEnumerable<TCt> Items<TCt>(CamlQuery option) where TCt : Item, new();
+
+
+        IOrderedQueryable<T> Items();
 
         /// <summary>
         /// Deletes the list.

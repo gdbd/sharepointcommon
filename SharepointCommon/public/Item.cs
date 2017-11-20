@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq.Expressions;
 using Microsoft.SharePoint;
+using Microsoft.SharePoint.Utilities;
 using SharepointCommon.Attributes;
 
 // ReSharper disable once CheckNamespace
@@ -24,6 +25,8 @@ namespace SharepointCommon
         public virtual Version Version { get; protected internal set; }
         public virtual Guid Guid { get; protected internal set; }
 
+        [NotMapped]
+        public virtual IQueryWeb ParentWeb { get; set; }
 
         /// <summary>
         /// Gets or sets the folder of file in document library.
@@ -65,5 +68,6 @@ namespace SharepointCommon
         {
             return ItemExtention.GetFieldName(null, fieldSelector);
         }
+
     }
 }

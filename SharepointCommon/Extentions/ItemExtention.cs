@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using Microsoft.SharePoint.Utilities;
 using SharepointCommon.Attributes;
 using SharepointCommon.Common;
 using SharepointCommon.Expressions;
@@ -23,7 +24,7 @@ namespace SharepointCommon
         }
 
         /// <summary>
-        /// Gets Name property of FieldAttribute if marked with
+        /// Gets Name property of FieldAttribute if marked with, else returns choice field name
         /// </summary>
         /// <typeparam name="T">type of entity</typeparam>
         /// <param name="self">instance of entity</param>
@@ -52,14 +53,12 @@ namespace SharepointCommon
                     enumType = argumentType;
                 }
             }
-           
-            var enumField = enumType.GetField(value.ToString());
-            var attr = (FieldAttribute)Attribute.GetCustomAttribute(enumField, typeof(FieldAttribute));
 
-            if (attr == null) return value.ToString();
-
-            return attr.Name ?? value.ToString();
+            return CommonHelper.GetChoiceValue(enumType, value.ToString());
+         
         }
+
+        
 
         /// <summary>
         /// Sets choice property by a text used in FieldAttribute.Name
@@ -117,6 +116,16 @@ namespace SharepointCommon
             }
 
             prop.SetValue(self, val, null);
+        }
+
+        /// <summary>
+        /// Gets display form url for item
+        /// </summary>
+        public static string FormUrl(this Item self, PageType pageType = PageType.Display, bool isDlg = false)
+        {
+            var siteRelative = self.ParentList.FormUrl(pageType, self.Id, isDlg);
+            var url = self.ParentWeb.Site.MakeFullUrl(siteRelative);
+            return url;
         }
     }
 }

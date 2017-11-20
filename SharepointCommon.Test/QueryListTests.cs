@@ -25,11 +25,11 @@ namespace SharepointCommon.Test
         private SPUser _secondUser;
         private SPUser _domainGroup;
         private SPGroup _spGroup;
-
+        
         private IQueryList<Item> _list;
         private IQueryList<Item> _listForLookup;
         private IQueryWeb _queryWeb;
-
+        
         [TestFixtureSetUp]
         public void Start()
         {
@@ -114,26 +114,26 @@ namespace SharepointCommon.Test
                 list = CreateCustomList();
 
                 var customItem = new CustomItem
-                {
-                    Title = "Items_ReturnsColectionOfCustomItemsTest",
-                    CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
-                    CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
-                    CustomFieldNumber = 123.5,
-                    CustomBoolean = true,
-                    CustomUser = new Person(_firstUser.LoginName),
-                    CustomUsers = new List<User> { new Person(_firstUser.LoginName), new User(_spGroup.Name) },
-                    CustomLookup = lookupItem,
-                    CustomMultiLookup = new List<Item> {lookupItem, lookupItem2},
-                    CustomDate = DateTime.Now,
-                    CustomChoice = TheChoice.Choice2,
-                    Тыдыщ = "тест",
-                };
+                    {
+                        Title = "Items_ReturnsColectionOfCustomItemsTest",
+                        CustomField1 = "Items_ReturnsColectionOfCustomItemsTest1",
+                        CustomField2 = "Items_ReturnsColectionOfCustomItemsTest2",
+                        CustomFieldNumber = 123.5,
+                        CustomBoolean = true,
+                        CustomUser = new Person(_firstUser.LoginName),
+                        CustomUsers = new List<User> { new Person(_firstUser.LoginName), new User(_spGroup.Name) },
+                        CustomLookup = lookupItem,
+                        CustomMultiLookup = new List<Item> {lookupItem, lookupItem2},
+                        CustomDate = DateTime.Now,
+                        CustomChoice = TheChoice.Choice2,
+                        Тыдыщ = "тест",
+                    };
                 list.Add(customItem);
                 var item = list.Items(new CamlQuery()
                     .Query(
                         Q.Where(Q.Eq(Q.FieldRef<CustomItem>(i => i.Title),
                             Q.Value("Items_ReturnsColectionOfCustomItemsTest")))))
-                    .FirstOrDefault();
+                .FirstOrDefault();
 
                 Assert.IsNotNull(item);
                 Assert.That(item.Id, Is.EqualTo(customItem.Id));
@@ -160,6 +160,7 @@ namespace SharepointCommon.Test
                 Assert.That(item.CustomMultiLookup.First().Title, Is.EqualTo(lookupItem.Title));
                 Assert.That(item.CustomChoice, Is.EqualTo(customItem.CustomChoice));
                 Assert.That(item.Тыдыщ, Is.EqualTo(customItem.Тыдыщ));
+                Assert.That(item.CustomDate.ToString(), Is.EqualTo(customItem.CustomDate.ToString()));
             }
             finally
             {
@@ -175,7 +176,7 @@ namespace SharepointCommon.Test
             return !_queryWeb.ExistsByName("Add_AddsCustomItem") ? _queryWeb.Create<CustomItem>("Add_AddsCustomItem") : _queryWeb.GetByName<CustomItem>("Add_AddsCustomItem");
         }
 
-    [Test]
+        [Test]
         public void Ensure_Lookup_Sets_ShowField_Test()
         {
             IQueryList<LookupWithShowField> list = null;
@@ -940,7 +941,7 @@ namespace SharepointCommon.Test
         }
 
         [Test]
-        public void Delete_With_Disable_Recucle_Test()
+        public void Delete_With_Disable_Recycle_Test()
         {
             _queryWeb.Web.Site.WebApplication.RecycleBinEnabled = false;
             _queryWeb.Web.Site.WebApplication.Update();
@@ -1445,8 +1446,8 @@ namespace SharepointCommon.Test
                 ts.List.Add(item3);
                 ts.List.Add(item4);
 
-                Assert.That(item1.Id, Is.Not.EqualTo(0));
-                Assert.That(item2.Id, Is.Not.EqualTo(0));
+            Assert.That(item1.Id, Is.Not.EqualTo(0));
+            Assert.That(item2.Id, Is.Not.EqualTo(0));
                 Assert.That(item3.Id, Is.Not.EqualTo(0));
 
                 var items = ts.List.ByField(i => i.Title, "ByField_Returns_Entity_Test").ToList();
@@ -1504,7 +1505,7 @@ namespace SharepointCommon.Test
                 Assert.That(items.First().Id, Is.EqualTo(item4.Id));
 
                 items = ts.List.ByField(i => i.CustomLookup, null).ToList();
-                CollectionAssert.IsNotEmpty(items);
+            CollectionAssert.IsNotEmpty(items);
                 Assert.That(items.Count(), Is.EqualTo(3));
                 Assert.That(items.First().Id, Is.EqualTo(item1.Id));
                 Assert.That(items.Last().Id, Is.EqualTo(item4.Id));
@@ -1643,7 +1644,13 @@ namespace SharepointCommon.Test
                 item = list.ById(item.Id);
 
                 Assert.DoesNotThrow(() => { var cl = item.CustomLookup; });
+
+             //   var id = item.CustomLookup.Id;
+             //   var title = item.CustomLookup.Title;
+
+
                 Assert.Null(item.CustomLookup);
+               
             }
             finally
             {
@@ -1671,6 +1678,63 @@ namespace SharepointCommon.Test
             }
         }
 
+        [Test]
+        public void Map_Choice_To_String_Test()
+        {
+            using (var ts = new TestListScope<ChoiceAsStringCreate>("Map_Choice_To_String_Test"))
+            {
+                //get choice as string
+                ts.List.Add(new ChoiceAsStringCreate { CustomChoice = TheChoice.Choice3, });
+                var list = ts.Web.GetById<ChoiceAsStringTest>(ts.List.Id);
+                var item = list.Items(CamlQuery.Default).Last();
+                var cl = item.CustomChoice;
+
+                Assert.That(cl, Is.EqualTo("Choice3"));
+
+                //set choice as string
+                var list2 = ts.Web.GetById<ChoiceAsStringTest>(ts.List.Id);
+                list2.Add(new ChoiceAsStringTest { CustomChoice = "Choice3" });
+                item = list.Items(CamlQuery.Default).Last();
+                cl = item.CustomChoice;
+                Assert.That(cl, Is.EqualTo("Choice3"));
+            }
+        }
+
+        [Test]
+        public void Access_To_Id_And_Title_Not_Load_LookupItem_Test()
+        {
+            using (var ts = new TestListScope<CustomItem>("Access_To_Id_And_Title_Not_Load_LookupItem_Test", true))
+            {
+                var lkpItm = new Item { Title = "Lookup_Item_Title", };
+                ts.LookupList.Add(lkpItm);
+                
+                var itm = new CustomItem { CustomLookup = lkpItm, };
+                ts.List.Add(itm);
+
+                lkpItm = ts.LookupList.ById(lkpItm.Id);
+
+                var item = ts.List.ById(itm.Id);
+
+                var cl = item.CustomLookup;
+                var intc = Helper.GetInterceptor<Interception.ItemAccessInterceptor>(cl).First();
+
+                Assert.IsNull(intc.ListItem);
+
+                var id = cl.Id;
+                var title = cl.Title;
+
+                Assert.That(id, Is.EqualTo(lkpItm.Id));
+                Assert.That(title, Is.EqualTo(lkpItm.Title));
+
+                Assert.IsNull(intc.ListItem);
+
+                var author = cl.Author;
+                Assert.That(author, Is.EqualTo(lkpItm.Author));
+
+                Assert.NotNull(intc.ListItem);
+            }
+        }
+
         #endregion
 
         #region Fields Tests
@@ -1683,6 +1747,19 @@ namespace SharepointCommon.Test
 
             Assert.That(list.ContainsField(e => e.CustomField1));
             Assert.That(list.ContainsField(e => e.CustomLookup));
+        }
+
+        [Test]
+        public void EnsureField_Custom_Property_Adds_Field_Test()
+        {
+            var list = _queryWeb.GetByName<ItemCustomHyperlink>(ListName1);
+            list.EnsureField(e => e.CustomField1);
+
+            Assert.That(list.ContainsField(e => e.CustomField1));
+
+            var f = list.GetField(l => l.CustomField1);
+            Assert.NotNull(f);
+            Assert.That(f.Type, Is.EqualTo(SPFieldType.URL));
         }
 
         [Test]

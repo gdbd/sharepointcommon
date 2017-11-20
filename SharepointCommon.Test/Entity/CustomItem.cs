@@ -31,6 +31,9 @@
 
         public virtual TheChoice CustomChoice { get; set; }
 
+        public virtual TheChoice? NullbleChoice { get; set; }
+
+
         [Field(DisplayName = "The CustomChoice 2")]
         public virtual TheChoice CustomChoice2 { get; set; }
 
@@ -39,5 +42,7 @@
 
         [Field(DefaultValue = false)]
         public virtual bool WithDefault { get; set; }
+
+        public virtual bool? NullableBool { get; set; }
     }
 }

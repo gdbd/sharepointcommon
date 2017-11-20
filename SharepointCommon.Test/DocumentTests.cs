@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.SharePoint;
 using Microsoft.SharePoint.Utilities;
 using NUnit.Framework;
 using SharepointCommon.Entities;
@@ -16,6 +17,12 @@ namespace SharepointCommon.Test
         private IQueryList<Item> _listForLookup;
         private IQueryWeb _queryWeb;
 
+        private SPUser _firstUser;
+        private SPGroup _spGroup;
+        private SPUser _domainGroup;
+        private SPUser _secondUser;
+
+
         [TestFixtureSetUp]
         public void Start()
         {
@@ -29,6 +36,20 @@ namespace SharepointCommon.Test
             {
                 _listForLookup = _queryWeb.Create<Item>(ListForLookup);
             }
+
+            var users = _queryWeb.Web.SiteUsers.Cast<SPUser>().ToList();
+            var uu = users.Where(u => u.IsDomainGroup == false).ToList();
+
+            _domainGroup = users.FirstOrDefault(u => u.IsDomainGroup);
+            if (_domainGroup == null)
+            {
+                throw new Exception("No domain groups in site users!");
+            }
+
+            _spGroup = _queryWeb.Web.SiteGroups[0];
+
+            _firstUser = uu[0];
+            _secondUser = uu[1];
         }
 
         [TestFixtureTearDown]
@@ -141,7 +162,10 @@ namespace SharepointCommon.Test
                     CustomBoolean = true,
                     CustomLookup = lookupItem,
                     CustomMultiLookup = new List<Item> { lookupItem, lookupItem2 },
-                    CustomDate = DateTime.Now,
+                    CustomDate = new DateTime(2011,1,11, 18, 15, 00),
+                    CustomUser = new Person(_firstUser.LoginName),
+                    CustomUsers = new List<User> { new Person(_firstUser.LoginName), new User(_spGroup.Name) }
+
                 };
                 list.Add(customDoc);
 
@@ -164,11 +188,25 @@ namespace SharepointCommon.Test
                 Assert.That(item.CustomField2, Is.EqualTo(customDoc.CustomField2));
                 Assert.That(item.CustomFieldNumber, Is.EqualTo(customDoc.CustomFieldNumber));
                 Assert.That(item.CustomBoolean, Is.EqualTo(customDoc.CustomBoolean));
+
+
+                Assert.That(item.CustomDate, Is.EqualTo(new DateTime(2011,1,11, 18, 15, 00)).Within(1).Seconds);
+
+
+
                 Assert.That(item.CustomLookup, Is.Not.Null);
                 Assert.That(item.CustomLookup.Id, Is.EqualTo(lookupItem.Id));
                 Assert.That(item.CustomMultiLookup, Is.Not.Null);
                 Assert.That(item.CustomMultiLookup.Count(), Is.EqualTo(2));
                 Assert.That(item.CustomMultiLookup.First().Title, Is.EqualTo(lookupItem.Title));
+
+                Assert.That(item.CustomUser.GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
+
+                Assert.That(item.CustomUsers.Count(), Is.EqualTo(2));
+                var users = item.CustomUsers.ToList();
+
+                Assert.That(users[0].GetType().ToString(), Is.EqualTo("Castle.Proxies.PersonProxy"));
+                Assert.That(users[1].GetType().ToString(), Is.EqualTo("Castle.Proxies.UserProxy"));
             }
             finally
             {
@@ -186,6 +224,7 @@ namespace SharepointCommon.Test
             try
             {
                 lib = _queryWeb.Create<Document>("Add_Uploads_Overwrite_Rename_Test");
+                lib.IsVersioningEnabled = false;
                 var document = new Document
                 {
                     Name = "Doc1.dat",
