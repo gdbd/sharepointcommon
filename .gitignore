@@ -1,0 +1,12 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+*.lock
+*.ide
+*.suo
+/.vs/SharepointCommon16/v15/Server/sqlite3
+/.vs
+/BUILD
+/SharepointCommon/obj
+/SharepointCommon.Test/obj
