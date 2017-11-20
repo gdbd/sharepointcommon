@@ -1,6 +1,6 @@
 ***Migrated from codeplex : https://sharepointcommon.codeplex.com***
 ***Old githib version: https://github.com/gdbd/sharepointcommon_old***
-***Please use v3.0 branch from source***
+
 
 latest news on twitter: [http://twitter.com/shpcommon](http://twitter.com/shpcommon)
 
