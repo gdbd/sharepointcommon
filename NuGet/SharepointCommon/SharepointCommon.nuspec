@@ -2,11 +2,11 @@
 <package>
   <metadata>
     <id>SharepointCommon</id>
-    <version>3.0.5-alpha</version>
+    <version>3.1.0</version>
     <authors>devi_ous</authors>
     <owners>devi_ous</owners>
-    <licenseUrl>http://sharepointcommon.codeplex.com/license</licenseUrl>
-    <projectUrl>http://sharepointcommon.codeplex.com</projectUrl>
+    <licenseUrl>https://github.com/gdbd/sharepointcommon</licenseUrl>
+    <projectUrl>https://github.com/gdbd/sharepointcommon</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
 
     <description>

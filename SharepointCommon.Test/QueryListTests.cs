@@ -30,7 +30,7 @@ namespace SharepointCommon.Test
         private IQueryList<Item> _listForLookup;
         private IQueryWeb _queryWeb;
         
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Start()
         {
             _queryWeb = WebFactory.Open(_webUrl);
@@ -73,7 +73,7 @@ namespace SharepointCommon.Test
             _secondUser = uu[1];
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void Stop()
         {
             _list.DeleteList(false);

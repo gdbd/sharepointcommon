@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("SharepointCommon")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyProduct("SharepointCommon")]
-[assembly: AssemblyCopyright("Copyright © devi_ous 2012-2015")]
+[assembly: AssemblyCopyright("Copyright © devi_ous 2012-2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

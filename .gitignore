@@ -10,3 +10,7 @@
 /BUILD
 /SharepointCommon/obj
 /SharepointCommon.Test/obj
+/packages/NUnit.3.9.0
+/NuGet/SharepointCommon/lib
+/SharepointCommon.Test/SharepointCommon.Test.csproj.user
+*.user

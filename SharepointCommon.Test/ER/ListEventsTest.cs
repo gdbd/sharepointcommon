@@ -16,7 +16,7 @@ namespace SharepointCommon.Test.ER
         private SPUser _domainGroup;
         private SPUser _secondUser;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Start()
         {
             var queryWeb = WebFactory.Open(Settings.TestSiteUrl);
