@@ -2,7 +2,7 @@
 ***Old githib version: https://github.com/gdbd/sharepointcommon_old***
 
 
-latest news on twitter: [http://twitter.com/shpcommon](http://twitter.com/shpcommon)
+Communicate: [http://twitter.com/shpcommon](http://twitter.com/shpcommon)
 
 # **Project Description** 
 
@@ -24,7 +24,7 @@ At future planned to support more functionality: event receivers, timer jobs, wo
 * create lists by wrapper and ensure fields by typed entity/content type
 * get items by typed query
 * create typed event receivers(since 2.0)
-* **get items by LINQ query (preview in 3.0)**
+* **get items by LINQ query (new in 3.0)**
 * get items by Id, Guid or value of specified field
 * add items(or items of specific content type) by typed entity
 * update items by typed entity
@@ -34,11 +34,13 @@ At future planned to support more functionality: event receivers, timer jobs, wo
 * LINQ  provider implemented with Re-LInq and POCO-To-CAML
 
 # **Development roadmap**
+* test and build for sharepoint 2019
+* go to frontend: rewrite to typescript
 * more complete LINQ implementation
-* support for BCS and Metadata firlds
+* support for BCS and Metadata fields
 
 # **Limitations**
-* use carefully with huge amount of data: code uses a lot of reflection! 
+* use carefully with big lists: code uses a lot of reflection! 
 
 # **Get started**
 Best way to get started with library is using nuget to add library to project. Now nugget package available both for SharePoint 2010 and 2013.
@@ -51,7 +53,8 @@ After deployed, library may be referenced and used from any .net 3.5 project (.N
 
 # **Basic example of using**
 ## Entity class example:
-{{
+
+```
 public class CustomItem : Item
 {
      public virtual string CustomField1 { get; set; }
@@ -67,19 +70,20 @@ public class CustomItem : Item
      [Field(LookupList = "ListForLookup")](Field(LookupList-=-_ListForLookup_))
      public virtual IEnumerable<Item> CustomMultiLookup { get; set; }
 }
-}}
+```
+
 
 ## Entity class for specific content type:
-{{
-    [ContentType("0x0104")](ContentType(_0x0104_))
+```
+    [ContentType("0x0104")]
     public class Announcement : Item
     {
         public virtual string Body { get; set; }
         public virtual DateTime Expires { get; set; }
     }
-}}
+```
 ## Application class example:
-{{
+```
 public class TestApp : AppBase<TestApp>
 {
    [List(Url = "lists/contract")](List(Url-=-_lists_contract_))
@@ -91,10 +95,10 @@ public class TestApp : AppBase<TestApp>
    [List(Id = "8A083287-CAEF-4DFA-8246-E8236676F5A1")](List(Id-=-_8A083287-CAEF-4DFA-8246-E8236676F5A1_))
    public virtual IQueryList<Order> Orders { get; set; }
 }
-}}
+```
 
 ## Get Application instance:
-{{
+```
 using (var app = TestApp.Factory.OpenNew("http://server-url/"))
 {
     // app.QueryWeb - wrapper on SPSite and SPWeb
@@ -102,22 +106,24 @@ using (var app = TestApp.Factory.OpenNew("http://server-url/"))
     var prs = app.PurchaseRequest;
     var orders = app.Orders;
 }
-}}
+```
 ## Open SPSite and SPWeb in Elevated mode
-In previous example, elevate existing: {{ factory.Elevate(); }}
+In previous example, elevate existing:  `factory.Elevate();`
 Or open new:
-{{
+```
 using (var factory = TestApp.Factory.ElevatedNew("http://server-url/")) { }
-}}
-## Create list for {{ CustomItem }}
-{{
+```
+
+## Create list for `CustomItem`
+```
 using (var wf = WebFactory.Open("http://server-url/"))
 {
      var list = wf.Create<CustomItem>("TestList");
 }
-}}
+```
+
 ## Adding item to list:
-{{
+```
 // create two items for lookup fields
 var lookupItem = new Item { Title = "item1" };
 listForLookup.Add(lookupItem);
@@ -139,9 +145,9 @@ var customItem = new CustomItem
       CustomDate = DateTime.Now,
 };
 list.Add(customItem);
-}}
+```
 ## Upload documents to SharePoint library:
-{{
+```
 lib = _queryWeb.Create<Document>("TestLibrary");
 var document = new Document
 {
@@ -150,9 +156,9 @@ var document = new Document
      RenameIfExists = true,
 };
 lib.Add(document);
-}}
+```
 ## Get items by _Query_:
-{{
+```
  var items = list.Items(new CamlQuery()
     .Query(Q.Where(
         Q.Eq(
@@ -161,59 +167,58 @@ lib.Add(document);
    .ViewFields<Item>(i => i.Id, i => i.Title),
    .Recursive()
 )
-}}
+```
 ## Get items by LINQ query(preview in 3.0):
-{{
+```
 var items = list.Items().Where(i => i.Title == "test");
-}}
+```
 Converted to CAML:
-{{
+```
 <Where>
   <Eq>     
      <FieldRef  Name=”Title” /> 
      <Value Type=”Text”>test</Value>
   </Eq>
 </Where>
-}}
+```
 
 Query:
-{{
+```
 var items = list.Items().Select(new { i.Title} );
-}}
+```
 Converted to CAML:
-{{
+```
 <Query/>
 <ViewFields>
   <FieldRef Name="Title" />
 </ViewFields>
-}}
+```
 
 More details about linq support see  [here](linq)
 
 ## Get items of content type 'Announcement'
-{{
+```
 var items = list.Items<Announcement>(CamlQuery.Default);
-}}
+```
 ## Update item
-{{
+```
 customItem.Title = "new value";            
 list.Update(customItem, true); // update with increment version
-}}
+```
 ## Update one field in item
-{{
+```
 customItem.Title = "new value";
 _list.Update(customItem, true, i => i.Title); // update only 'Title'
-}}
+v
 ## Delete items
-{{
+```
 _list.Delete(items.First(), false); // delete by entity, false to no move in recycle
 _list.Delete(items.First().Id, false); // delete by id
-}}
+```
 
 # **Documentation**
-All documentation available under codeplex 'documentation' tab [Documentation](Documentation)
-[Документация на русском языке](DocumentationRus)
+All documentation available under 'documentation' tab [Documentation](Documentation)
 
 # **Contribute**
-All code written are fully unit tested. All checkins must be tested with all previous tests.
-We are welcome people to contribute the project. To be in, write me message with theme '**contribute SharepointCommon**'
+All code written are fully unit tested. 
+Feel free to contbute the project!
