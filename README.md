@@ -1,8 +1,5 @@
 ***Migrated from codeplex : https://sharepointcommon.codeplex.com***
-***Old githib version: https://github.com/gdbd/sharepointcommon_old***
 
-
-Communicate: [http://twitter.com/shpcommon](http://twitter.com/shpcommon)
 
 # **Project Description** 
 
